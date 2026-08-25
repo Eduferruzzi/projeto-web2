@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CepService } from '../services/cep-service'
 
 @Component({
   selector: 'app-user-auto-register',
@@ -20,4 +21,22 @@ export class UserAutoRegister {
   bairro = '';
   cidade = '';
   estado = '';
+
+  private cepService = inject(CepService); //injetando o cepservice;
+
+  buscarCep() {
+    this.cepService.buscarCep(this.CEP).subscribe(resposta => {
+      this.logradouro = resposta.logradouro;
+      this.bairro = resposta.bairro;
+      this.cidade = resposta.localidade;
+      this.estado = resposta.estado;
+    });
+  }
+
+  verificarCep() {
+    if(this.CEP.length >=8)
+    {
+      this.buscarCep();
+    }
+  }
 }
