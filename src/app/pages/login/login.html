@@ -1,0 +1,52 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+            
+            <h2 class="mb-4 text-center">Login</h2>
+
+            <form>
+                <!-- email -->
+                <div class="mb-4">
+                    <label for="email" class="form-label">E-mail:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="email@gmail.com">
+                </div>
+
+                <!-- senha -->
+                <div class="mb-4">
+                    <label for="senha" class="form-label">Senha:</label>
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Sua senha">
+                </div>
+
+                <!-- tipo de usuario -->
+                <div class="mb-4">
+                    <label class="form-label d-block">Entrar como:</label>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoCliente" value="cliente" checked>
+                        <label class="form-check-label" for="tipoCliente">
+                            Cliente
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoTrabalhador" value="trabalhador">
+                        <label class="form-check-label" for="tipoTrabalhador">
+                            Trabalhador
+                        </label>
+                    </div>
+                </div>
+
+                <!-- botao entrar -->
+                <div class="d-grid gap-2 mb-4">
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+
+                <!-- botoes pra redirecionar -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="#" class="text-decoration-none">Esqueci a senha</a>
+                    <a href="#" class="text-decoration-none">Cadastrar-se</a>
+                </div>
+                
+            </form>
+
+    </div>
+</div>
