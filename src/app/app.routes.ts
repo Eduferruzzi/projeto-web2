@@ -1,8 +1,9 @@
-import { Routes } from '@angular/router';
-import { UserAutoRegister } from './pages/user-auto-register/user-auto-register';
-import { Login } from './pages/login/login';
-import { CRUDemployee } from './pages/crudemployee/crudemployee';
-import { UserHome } from './pages/user-home/user-home'
+import { Routes } from '@angular/router'
+import { UserAutoRegister } from './pages/user-auto-register/user-auto-register'
+import { Login } from './pages/login/login'
+import { CRUDemployee } from './pages/crudemployee/crudemployee'
+import { CustomerHome } from './pages/customer-home/customer-home'
+import { Payment } from './pages/payment/payment'
 
 export const routes: Routes = [
     {
@@ -19,6 +20,10 @@ export const routes: Routes = [
     },
     {
         path: 'user-home',
-        component: UserHome,
+        component: CustomerHome,
+    },
+    {
+        path: 'payment',
+        component: Payment,
     }
 ];
