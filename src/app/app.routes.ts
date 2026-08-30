@@ -3,6 +3,7 @@ import { UserAutoRegister } from './pages/user-auto-register/user-auto-register'
 import { Login } from './pages/login/login';
 import { CRUDemployee } from './pages/crudemployee/crudemployee';
 import { UserHome } from './pages/user-home/user-home'
+import {EmployeeHome} from './pages/employee-home/employee-home';
 
 export const routes: Routes = [
     {
@@ -20,5 +21,9 @@ export const routes: Routes = [
     {
         path: 'user-home',
         component: UserHome,
+    },
+    {
+        path: 'employee-home',
+        component: EmployeeHome,
     }
 ];
