@@ -1,0 +1,86 @@
+<!-- RF005 - Mostrar orçamento: dados da solicitação + preço orçado em destaque -->
+<div class="container mt-4 mb-5">
+
+    <div class="alert alert-warning" *ngIf="!solicitacao">
+        Solicitação não encontrada.
+    </div>
+
+    <div *ngIf="solicitacao">
+
+        <h2 class="mb-4 text-center">Orçamento da Solicitação #{{ solicitacao.id }}</h2>
+
+        <!-- valor orçado em destaque -->
+        <div class="card border-primary border-2 mb-4">
+            <div class="card-body text-center">
+                <p class="mb-1 text-uppercase fw-bold">Valor orçado</p>
+                <p class="display-4 fw-bold text-primary mb-2">{{ formatarValor(solicitacao.valorOrcamento) }}</p>
+                <p class="mb-0 text-muted">
+                    Orçado por {{ solicitacao.funcionarioOrcamento }} em {{ solicitacao.dataHoraOrcamento }}
+                </p>
+            </div>
+        </div>
+
+        <!-- dados completos da solicitação -->
+        <div class="card mb-4">
+            <div class="card-header fw-bold">Dados da Solicitação</div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Data/Hora da abertura</span>
+                        <span>{{ solicitacao.dataHora }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Estado atual</span>
+                        <span class="badge text-bg-secondary">{{ solicitacao.estado }}</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Cliente</span>
+                        <span>{{ solicitacao.cliente }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Categoria do equipamento</span>
+                        <span>{{ solicitacao.categoria }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="form-label fw-bold d-block">Descrição do equipamento</span>
+                    <span>{{ solicitacao.descricaoEquipamento }}</span>
+                </div>
+
+                <div>
+                    <span class="form-label fw-bold d-block">Descrição do defeito</span>
+                    <span>{{ solicitacao.descricaoDefeito }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- botões de ação: RF006 e RF007 -->
+        <div class="d-flex gap-3 justify-content-center" *ngIf="!mostrarFormRejeicao">
+            <button type="button" class="btn btn-success fw-bold" (click)="aprovar()">Aprovar o Serviço</button>
+            <button type="button" class="btn btn-danger fw-bold" (click)="abrirRejeicao()">Rejeitar o Serviço</button>
+        </div>
+
+        <!-- RF007 - motivo da rejeição -->
+        <div class="card border-danger" *ngIf="mostrarFormRejeicao">
+            <div class="card-header fw-bold">Motivo da Rejeição</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="motivo" class="form-label">Escreva o motivo da rejeição:</label>
+                    <textarea id="motivo" name="motivo" rows="4" class="form-control"
+                              [(ngModel)]="motivoRejeicao"
+                              placeholder="Ex: valor acima do esperado"></textarea>
+                    <div class="text-danger mt-1" *ngIf="erroMotivo">{{ erroMotivo }}</div>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-danger" (click)="confirmarRejeicao()">Confirmar Rejeição</button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelarRejeicao()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

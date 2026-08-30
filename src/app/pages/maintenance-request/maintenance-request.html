@@ -1,0 +1,73 @@
+<p>maintenance-request works!</p>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h1 class="h3 text-center mb-4">
+            Nova Solicitacao de manutencao
+          </h1>
+          <form
+            #formulario="ngForm"
+            (ngSubmit)="cadastrarSolicitacao(formulario)"
+          >
+            <div class="mb-3">
+              <label for="equipamento" class="form-label">
+                Descricao do equipamento
+              </label>
+
+              <input
+                type="text"
+                id="equipamento"
+                name="equipamento"
+                class="form-control"
+                placeholder="Exemplo: Notebook Dell Inspiron"
+                [(ngModel)]="descricaoEquipamento"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label for="categoria" class="form-label">
+                Categoria do equipamento
+              </label>
+            </div>
+
+            <div class="mb-4">
+              <label for="defeito" class="form-label">
+                Descricao do defeito
+              </label>
+
+              <textarea
+                id="defeito"
+                name="defeito"
+                class="form-control"
+                rows="5"
+                placeholder="Descreva o problema apresentado pelo equipamento"
+                [(ngModel)]="descricaoDefeito"
+                required
+              ></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <a
+                routerLink="/user-home"
+                class="btn btn-outline-secondary"
+              >
+                Cancelar
+              </a>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="formulario.invalid"
+              >
+                Cadastrar solicitacao
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
