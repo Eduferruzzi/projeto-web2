@@ -7,6 +7,7 @@ import { CustomerHome } from './pages/customer-home/customer-home'
 import { Payment } from './pages/payment/payment'
 import { MaintenanceRequest } from './pages/maintenance-request/maintenance-request';
 import { Quote } from './pages/quote/quote';
+import { EmployeeHome } from './pages/employee-home/employee-home'
 
 export const routes: Routes = [
     {
@@ -38,5 +39,9 @@ export const routes: Routes = [
         path: 'quote/:id',
         component: Quote,
     },
+    {
+        path: 'employee-home',
+        component: EmployeeHome,
+    }
 
 ];
