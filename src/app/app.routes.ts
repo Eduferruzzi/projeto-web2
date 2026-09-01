@@ -6,6 +6,7 @@ import { CustomerHome } from './pages/customer-home/customer-home'
 import { Payment } from './pages/payment/payment'
 import { MaintenanceRequest } from './pages/maintenance-request/maintenance-request';
 import { Quote } from './pages/quote/quote';
+import { ExecuteMaintenance } from './pages/execute-maintenance/execute-maintenance'
 
 export const routes: Routes = [
     {
@@ -31,9 +32,13 @@ export const routes: Routes = [
     {
         path: 'maintenance-request',
         component: MaintenanceRequest,
-},
+    },
     {
         path: 'quote/:id',
         component: Quote,
+    },
+    {
+        path: 'execute-maintenance',
+        component: ExecuteMaintenance,
     },
 ];
