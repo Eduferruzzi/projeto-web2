@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router'
 import { UserAutoRegister } from './pages/user-auto-register/user-auto-register'
 import { Login } from './pages/login/login'
@@ -6,6 +7,7 @@ import { CustomerHome } from './pages/customer-home/customer-home'
 import { Payment } from './pages/payment/payment'
 import { MaintenanceRequest } from './pages/maintenance-request/maintenance-request';
 import { Quote } from './pages/quote/quote';
+import { EmployeeHome } from './pages/employee-home/employee-hom
 import { ExecuteMaintenance } from './pages/execute-maintenance/execute-maintenance'
 
 export const routes: Routes = [
@@ -23,6 +25,7 @@ export const routes: Routes = [
     },
     {
         path: 'user-home',
+
         component: CustomerHome,
     },
     {
@@ -38,7 +41,10 @@ export const routes: Routes = [
         component: Quote,
     },
     {
+        path: 'employee-home',
+        component: EmployeeHome,
+    },
         path: 'execute-maintenance',
         component: ExecuteMaintenance,
-    },
+    }
 ];

@@ -81,4 +81,22 @@ export class SolicitacaoService {
         });
         solicitacao.estado = novoEstado;
     }
+
+    // RF 011 - Somente solicitacoes em aberto
+    listarAbertas() : Solicitacao[]{
+        return this.solicitacoes.filter(s => s.estado == "ABERTA");
+    }
+
+    // RF 012 Efetuar o orcamento 
+    efetuarOrcamento(id : number, valor : number, funcionario : string){
+        const solicitacao = this.buscarPorId(id);
+        if(!solicitacao){
+            return;
+        }
+        solicitacao.valorOrcamento = valor;
+        solicitacao.dataHoraOrcamento = new Date().toLocaleDateString('pt-BR');
+        solicitacao.funcionarioOrcamento = funcionario;
+        this.alterarEstado(id, "ORCADA");
+
+    }
 }
