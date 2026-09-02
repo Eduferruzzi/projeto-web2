@@ -7,7 +7,8 @@ import { CustomerHome } from './pages/customer-home/customer-home'
 import { Payment } from './pages/payment/payment'
 import { MaintenanceRequest } from './pages/maintenance-request/maintenance-request';
 import { Quote } from './pages/quote/quote';
-import { EmployeeHome } from './pages/employee-home/employee-home'
+import { EmployeeHome } from './pages/employee-home/employee-hom
+import { ExecuteMaintenance } from './pages/execute-maintenance/execute-maintenance'
 
 export const routes: Routes = [
     {
@@ -42,6 +43,8 @@ export const routes: Routes = [
     {
         path: 'employee-home',
         component: EmployeeHome,
+    },
+        path: 'execute-maintenance',
+        component: ExecuteMaintenance,
     }
-
 ];
