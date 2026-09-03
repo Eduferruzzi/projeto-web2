@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CepService } from '../../services/cep-service'
+import { CepService } from '../../services/user-auto-register/cep-service'
 
 @Component({
   selector: 'app-user-auto-register',
@@ -39,4 +39,5 @@ export class UserAutoRegister {
       this.buscarCep();
     }
   }
+
 }

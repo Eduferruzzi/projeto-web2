@@ -1,86 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Auto Cadastro</h1>
+<div class="container mt-5">
+    <form class="form">
+        <div class="text-center mb-4">
+            <h2>Autocadastro</h2>
+            <p>
+                Complete os campos abaixo para realizer o seu cadastro.
+            </p>
+        </div>
+        
+        <h3>Dados Pessoais</h3>
 
-        <form>
-            <div class="mb-3">
-                <label class="form-label">CPF</label>
-                <input type="text" class="form-control" [(ngModel)]="CPF" name="cpf">
-            </div>
+        <div class="row g-3">
+    
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Nome</label>
-                <input type="text" class="form-control" [(ngModel)]="nome" name="nome">
+                <input type="text" class="form-control" [(ngModel)]="nome" name="nome" placeholder="Digite seu nome completo">
             </div>
 
+            <div class="mb-3 col-12 col-md-6">
+                <label class="form-label">CPF</label>
+                <input type="text" class="form-control" [(ngModel)]="CPF" name="cpf" placeholder="Digite seu CPF">
+            </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" [(ngModel)]="email" name="email">
+                <input type="email" class="form-control" [(ngModel)]="email" name="email" placeholder="Digite seu email">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Telefone</label>
-                <input type="text" class="form-control" [(ngModel)]="telefone" name="telefone">
+                <input type="text" class="form-control" [(ngModel)]="telefone" name="telefone" placeholder="Digite seu telefone">
             </div>
-
-            <h3>Endereço</h3>
-
             
-            <div class="mb-3">      
+        </div>
+
+        <h3 class="mb-4 mt-4">Endereço</h3>
+
+        <div class="row g-3">
+
+            <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">CEP</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    [(ngModel)]="CEP" 
-                    name="CEP"
-                    (input)="verificarCep()"
-                >   
-                
+                <input type="text" class="form-control" [(ngModel)]="CEP" name="CEP" (input)="verificarCep()" placeholder="Digite seu CEP">
+
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-8">
                 <label class="form-label">Logradouro</label>
-                <input type="text" class="form-control" [(ngModel)]="logradouro" name="logradouro">
+                <input type="text" class="form-control" [(ngModel)]="logradouro" name="logradouro" placeholder="Digite seu logradouro">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Numero</label>
-                <input type="text" class="form-control" [(ngModel)]="numero" name="numero">
+                <input type="text" class="form-control" [(ngModel)]="numero" name="numero" placeholder="Digite o número da sua residência">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-8">
                 <label class="form-label">Complemento</label>
-                <input type="text" class="form-control" [(ngModel)]="complemento" name="complemento">
+                <input type="text" class="form-control" [(ngModel)]="complemento" name="complemento" placeholder="Digite o complemento do endereço">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Bairro</label>
-                <input type="text" class="form-control" [(ngModel)]="bairro" name="bairro">
+                <input type="text" class="form-control" [(ngModel)]="bairro" name="bairro" placeholder="Digite seu bairro">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Cidade</label>
-                <input type="text" class="form-control" [(ngModel)]="cidade" name="cidade">
+                <input type="text" class="form-control" [(ngModel)]="cidade" name="cidade" placeholder="Digite sua cidade">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Estado</label>
-                <input type="text" class="form-control" [(ngModel)]="estado" name="estado">
+                <input type="text" class="form-control" [(ngModel)]="estado" name="estado" placeholder="Digite seu estado">
             </div>
+        
+        </div>
 
-            <button type="submit" class="btn btn-primary">
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-primary mt-3 ">
                 Cadastrar
             </button>
-        </form>
-        <br>
-    </div>
-</body>
-</html>
+        </div>
+
+        
+    </form>
+    <br>
+</div>
