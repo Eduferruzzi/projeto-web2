@@ -14,7 +14,8 @@ import { UserAutoRegister } from './pages/user-auto-register'
 export const routes: Routes = [
     {
         path: '',
-        component: Login,
+        redirectTo: 'login',
+        pathMatch: 'full'
     },
     {
         path: 'user-auto-register',
