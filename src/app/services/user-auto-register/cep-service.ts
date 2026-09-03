@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CEP } from '../models/CEP';
+import { CEP } from '../../models/CEP';
 
 @Injectable({
     providedIn: 'root'
