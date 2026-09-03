@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CepService } from '../../services/user-auto-register/cep-service'
-import { NgxMaskDirective } from 'ngx-mask';
-import { NgForm } from '@angular/forms';
+import { Component, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { CepService } from '../../services'
+import { NgForm } from '@angular/forms'
+import { NgxMaskDirective } from 'ngx-mask'
 
 @Component({
   selector: 'app-user-auto-register',
