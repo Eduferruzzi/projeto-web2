@@ -1,7 +1,7 @@
 import { Component, OnInit} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Solicitacao } from '../../models/Solicitacao';
-import { SolicitacaoService } from '../../services/solicitacao-service';
+import { SolicitacaoService } from '../../services';
 
 
 @Component({
