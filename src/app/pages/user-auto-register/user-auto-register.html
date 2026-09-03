@@ -1,5 +1,5 @@
 <div class="container mt-5">
-    <form class="form">
+    <form class="form" #formCadastro="ngForm" (ngSubmit)="cadastrar(formCadastro)">
         <div class="text-center mb-4">
             <h2>Autocadastro</h2>
             <p>
@@ -14,22 +14,93 @@
 
             <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Nome</label>
-                <input type="text" class="form-control" [(ngModel)]="nome" name="nome" placeholder="Digite seu nome completo">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="nome" 
+                    name="nome" 
+                    placeholder="Digite seu nome completo"
+                    required
+                    #nomeCampo="ngModel" 
+                > <!-- esse "Campo" dps de todos os #, é pq se for só o nome da propridade, tipo #nome="ngModel" puxa o nome do
+                TS e fica com um objeto vazio no campo object[Object] -->
+                @if(nomeCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Nome é obrigatório.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">CPF</label>
-                <input type="text" class="form-control" [(ngModel)]="CPF" name="cpf" placeholder="Digite seu CPF">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="CPF" 
+                    name="cpf" 
+                    mask="000.000.000-00" 
+                    [showMaskTyped]="true"
+                    required
+                    #cpfCampo="ngModel" 
+                >
+                @if(cpfCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        CPF invalido.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" [(ngModel)]="email" name="email" placeholder="Digite seu email">
+                <input 
+                    type="email"
+                    class="form-control" 
+                    [(ngModel)]="email" 
+                    name="email" 
+                    placeholder="Digite seu email"
+                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    #emailCampo="ngModel"
+                    required
+                >
+                @if (emailCampo.invalid && formCadastro.submitted)
+                {   
+                    
+                    <div class="text-danger mt-1">
+                        @if(emailCampo.errors?.['required'])
+                        {
+                            Email é obrigatório.
+                        }
+
+                        @if(emailCampo.errors?.['pattern'])
+                        {
+                            Email inválido.
+                        }
+                    </div>
+                }
+                
             </div>
 
             <div class="mb-3 col-12 col-md-6">
                 <label class="form-label">Telefone</label>
-                <input type="text" class="form-control" [(ngModel)]="telefone" name="telefone" placeholder="Digite seu telefone">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="telefone" 
+                    name="telefone" 
+                    placeholder="Digite seu telefone" 
+                    mask="(00) 00000-0000" 
+                    [showMaskTyped]="true"
+                    required
+                    #telefoneCampo="ngModel" 
+                >
+                @if(telefoneCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Telefone invalido.
+                    </div>
+                }
             </div>
             
         </div>
@@ -40,42 +111,142 @@
 
             <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">CEP</label>
-                <input type="text" class="form-control" [(ngModel)]="CEP" name="CEP" (input)="verificarCep()" placeholder="Digite seu CEP">
-
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="CEP" 
+                    name="CEP" 
+                    (input)="verificarCep()" 
+                    mask="00000-000" 
+                    [showMaskTyped]="true"
+                    required
+                    #cepCampo="ngModel" 
+                >
+                @if(cepCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        CEP é invalido.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-8">
                 <label class="form-label">Logradouro</label>
-                <input type="text" class="form-control" [(ngModel)]="logradouro" name="logradouro" placeholder="Digite seu logradouro">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="logradouro" 
+                    name="logradouro" 
+                    placeholder="Digite seu logradouro"
+                    required
+                    #logradouroCampo="ngModel" 
+                >
+                @if(logradouroCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Logradouro é obrigatório.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Numero</label>
-                <input type="text" class="form-control" [(ngModel)]="numero" name="numero" placeholder="Digite o número da sua residência">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="numero" 
+                    name="numero" 
+                    placeholder="Digite o número da sua residência"
+                    mask="0*"
+                    required
+                    #numeroCampo="ngModel" 
+                >
+                @if(numeroCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Número é obrigatório.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-8">
                 <label class="form-label">Complemento</label>
-                <input type="text" class="form-control" [(ngModel)]="complemento" name="complemento" placeholder="Digite o complemento do endereço">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="complemento" 
+                    name="complemento" 
+                    placeholder="Digite o complemento do endereço"
+                    #complementoCampo="ngModel" 
+                >
+                
             </div>
 
             <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Bairro</label>
-                <input type="text" class="form-control" [(ngModel)]="bairro" name="bairro" placeholder="Digite seu bairro">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="bairro" 
+                    name="bairro" 
+                    placeholder="Digite seu bairro"
+                    required
+                    #bairroCampo="ngModel" 
+                >
+                @if(bairroCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Bairro é obrigatório.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Cidade</label>
-                <input type="text" class="form-control" [(ngModel)]="cidade" name="cidade" placeholder="Digite sua cidade">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="cidade" 
+                    name="cidade" 
+                    placeholder="Digite sua cidade"
+                    required
+                    #cidadeCampo="ngModel" 
+                >
+                @if(cidadeCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Cidade é obrigatório.
+                    </div>
+                }
             </div>
 
             <div class="mb-3 col-12 col-md-4">
                 <label class="form-label">Estado</label>
-                <input type="text" class="form-control" [(ngModel)]="estado" name="estado" placeholder="Digite seu estado">
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    [(ngModel)]="estado" 
+                    name="estado" 
+                    placeholder="Digite seu estado"
+                    required
+                    #estadoCampo="ngModel" 
+                >
+                @if(estadoCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">
+                        Estado é obrigatório.
+                    </div>
+                }
             </div>
         
         </div>
 
+        @if(mensagemSucesso)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                {{mensagemSucesso}}
+            </div>
+        }
         <div class="d-flex justify-content-end mt-3">
             <button type="submit" class="btn btn-primary mt-3 ">
                 Cadastrar
