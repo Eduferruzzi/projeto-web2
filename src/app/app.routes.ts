@@ -13,6 +13,10 @@ import { UserAutoRegister } from './pages/user-auto-register'
 
 export const routes: Routes = [
     {
+        path: '',
+        component: Login,
+    },
+    {
         path: 'user-auto-register',
         component: UserAutoRegister,
     },

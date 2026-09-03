@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +9,4 @@ import { Router, RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('projeto-web2');
-  private router = inject(Router)
-
-  constructor(){
-    this.router.navigate(['login'])
-  }
 }
