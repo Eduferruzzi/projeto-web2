@@ -1,0 +1,205 @@
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      @if (!solicitacao) {
+        <div class="alert alert-warning">
+          Solicitação não encontrada.
+        </div>
+
+        <a routerLink="/user-home" class="btn btn-outline-secondary">
+          Voltar
+        </a>
+      } @else {
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h1 class="h3 text-center mb-4">
+              Visualizar serviço
+            </h1>
+
+            <h2 class="h5 mb-3">Dados da solicitação</h2>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <strong>Número da solicitação</strong>
+                <p>#{{ solicitacao.id }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Data e hora</strong>
+                <p>{{ solicitacao.dataHora }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Cliente</strong>
+                <p>{{ solicitacao.cliente }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Estado atual</strong>
+                <p>
+                  <span class="badge text-bg-primary">
+                    {{ solicitacao.estado }}
+                  </span>
+                </p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Equipamento</strong>
+                <p>{{ solicitacao.descricaoEquipamento }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Categoria</strong>
+                <p>{{ solicitacao.categoria }}</p>
+              </div>
+
+              <div class="col-12">
+                <strong>Descrição do defeito</strong>
+                <p>{{ solicitacao.descricaoDefeito }}</p>
+              </div>
+            </div>
+
+            @if (solicitacao.valorOrcamento !== null) {
+              <div class="alert alert-primary">
+                <strong>Valor orçado:</strong>
+                {{ formatarValor(solicitacao.valorOrcamento) }}
+                <br>
+                <span>
+                  Funcionário: {{ solicitacao.funcionarioOrcamento }}
+                </span>
+                <br>
+                <span>
+                  Data/Hora: {{ solicitacao.dataHoraOrcamento }}
+                </span>
+              </div>
+            }
+
+            @if (solicitacao.motivoRejeicao) {
+              <div class="alert alert-danger">
+                <strong>Motivo da rejeição:</strong>
+                {{ solicitacao.motivoRejeicao }}
+              </div>
+            }
+
+            <h2 class="h5 mt-4 mb-3">Histórico da solicitação</h2>
+
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle">
+                <thead class="table-primary">
+                  <tr>
+                    <th>Data/Hora</th>
+                    <th>Etapa</th>
+                    <th>Responsável</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @for (passo of solicitacao.historico; track $index) {
+                    <tr>
+                      <td>{{ passo.dataHora }}</td>
+                      <td>
+                        {{ descreverPasso(passo) }}
+
+                        @if (passo.observacao) {
+                          <div class="text-muted small">
+                            {{ passo.observacao }}
+                          </div>
+                        }
+                      </td>
+                      <td>{{ passo.funcionario ?? 'Cliente' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="3" class="text-center text-muted">
+                        Nenhum histórico encontrado.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            @if (mostrarRejeicao) {
+              <div class="border rounded p-3 mt-4">
+                <label for="motivoRejeicao" class="form-label">
+                  Motivo da rejeição
+                </label>
+
+                <textarea
+                  id="motivoRejeicao"
+                  name="motivoRejeicao"
+                  class="form-control"
+                  rows="4"
+                  [(ngModel)]="motivoRejeicao"
+                ></textarea>
+
+                @if (erroMotivo) {
+                  <div class="text-danger mt-1">{{ erroMotivo }}</div>
+                }
+
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="cancelarRejeicao()"
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="rejeitarServico()"
+                  >
+                    Confirmar rejeição
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (mensagem) {
+              <div
+                class="alert mt-4 d-flex justify-content-between align-items-center"
+                [class.alert-success]="mensagemSucesso"
+                [class.alert-danger]="!mensagemSucesso"
+              >
+                <span>{{ mensagem }}</span>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-dark"
+                  (click)="fecharMensagem()"
+                >
+                  OK
+                </button>
+              </div>
+            }
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <a routerLink="/user-home" class="btn btn-outline-secondary">
+                Voltar
+              </a>
+
+              @if (solicitacao.estado === 'ORCADA' && !mostrarRejeicao) {
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  (click)="abrirRejeicao()"
+                >
+                  Rejeitar
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  (click)="aprovarServico()"
+                >
+                  Aprovar
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
