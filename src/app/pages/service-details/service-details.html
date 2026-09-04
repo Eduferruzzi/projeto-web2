@@ -196,6 +196,16 @@
                   Aprovar
                 </button>
               }
+
+              <!-- RF010 - Pagar Servico -->
+              @if (solicitacao.estado === 'ARRUMADA') {
+                <a
+                  [routerLink]="['/payment', solicitacao.id]"
+                  class="btn btn-success"
+                >
+                  Pagar Serviço
+                </a>
+              }
             </div>
           </div>
         </div>

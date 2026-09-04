@@ -1,23 +1,51 @@
-<!-- Descrição do equipamento, Categoria do equipamento, Descrição do defeito, Data e Hora, STATUS -->
-<div class="container mt-4">
+<!-- RF010 - Pagar Serviço: dados da solicitação, valor em destaque e confirmação -->
+<div class="container mt-4 mb-5">
     <div class="row justify-content-center">
-            
-            <h2 class="mb-4 text-center">Solicitação #id</h2>
+        <div class="col-lg-8">
 
-            <div class="d-grid justify-content-center mb-4">
-                <p class="mb-2 text-center fw-bold">Descrição do equipamento</p>
-                <p class="mb-2 text-center">Categoria do equipamento</p>
-                <p class="mb-2 text-center">Descrição do defeito</p>
-                <p class="mb-2 text-center">Arrumada</p>
-                <p class="mb-2 text-center">Concluído: Horário - Data</p>
-                <p class="mb-2 text-center fw-bold fs-3">R$XXXX.XX</p>
-                
-                <form>
-                    <!-- botao pagar -->
-                    <div class="mb-4 d-grid justify-content-center">
-                        <button type="submit" class="btn btn-primary fw-bold fs-3">Pagar</button>
+            @if (!solicitacao) {
+                <div class="alert alert-warning">Solicitação não encontrada.</div>
+            }
+
+            @if (solicitacao) {
+                <h2 class="mb-4 text-center">Pagamento da Solicitação #{{ solicitacao.id }}</h2>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="mb-2 text-center fw-bold fs-5">{{ solicitacao.descricaoEquipamento }}</p>
+                        <p class="mb-2 text-center">{{ solicitacao.categoria }}</p>
+                        <p class="mb-2 text-center">{{ solicitacao.descricaoDefeito }}</p>
+                        <p class="mb-2 text-center">
+                            <span class="badge text-bg-primary">{{ solicitacao.estado }}</span>
+                        </p>
+                        <p class="mb-0 text-center text-muted">Aberta em {{ solicitacao.dataHora }}</p>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <!-- valor em destaque -->
+                <div class="card border-primary border-2 mb-4">
+                    <div class="card-body text-center">
+                        <p class="mb-1 text-uppercase fw-bold">Valor a pagar</p>
+                        <p class="display-4 fw-bold text-primary mb-0">
+                            {{ formatarValor(solicitacao.valorOrcamento) }}
+                        </p>
+                    </div>
+                </div>
+
+                @if (mensagem) {
+                    <div class="alert alert-success">{{ mensagem }}</div>
+                }
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a routerLink="/user-home" class="btn btn-outline-secondary">Voltar</a>
+
+                    @if (solicitacao.estado === 'ARRUMADA') {
+                        <button type="button" class="btn btn-success fw-bold"
+                                (click)="confirmarPagamento()">Confirmar Pagamento</button>
+                    }
+                </div>
+            }
+
+        </div>
     </div>
 </div>

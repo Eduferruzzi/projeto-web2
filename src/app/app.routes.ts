@@ -36,7 +36,7 @@ export const routes: Routes = [
         component: CustomerHome,
     },
     {
-        path: 'payment',
+        path: 'payment/:id',
         component: Payment,
     },
     {
