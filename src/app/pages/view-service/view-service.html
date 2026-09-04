@@ -1,0 +1,113 @@
+<!-- RF008 - Visualizar Serviço: todos os dados + histórico completo de atualizações -->
+<div class="container mt-4 mb-5">
+
+    <div class="alert alert-warning" *ngIf="!solicitacao">
+        Solicitação não encontrada.
+    </div>
+
+    <div *ngIf="solicitacao">
+
+        <h2 class="mb-4 text-center">Solicitação #{{ solicitacao.id }}</h2>
+
+        <!-- dados completos da solicitação -->
+        <div class="card mb-4">
+            <div class="card-header fw-bold">Dados da Solicitação</div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Data/Hora da abertura</span>
+                        <span>{{ solicitacao.dataHora }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Estado atual</span>
+                        <span class="badge" [ngClass]="corDoEstado(solicitacao.estado)">{{ solicitacao.estado }}</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Cliente</span>
+                        <span>{{ solicitacao.cliente }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Categoria do equipamento</span>
+                        <span>{{ solicitacao.categoria }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="form-label fw-bold d-block">Descrição do equipamento</span>
+                    <span>{{ solicitacao.descricaoEquipamento }}</span>
+                </div>
+
+                <div class="mb-3">
+                    <span class="form-label fw-bold d-block">Descrição do defeito</span>
+                    <span>{{ solicitacao.descricaoDefeito }}</span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Valor do orçamento</span>
+                        <span class="fs-5 fw-bold">{{ formatarValor(solicitacao.valorOrcamento) }}</span>
+                    </div>
+                    <div class="col-md-6" *ngIf="solicitacao.funcionarioOrcamento">
+                        <span class="form-label fw-bold d-block">Orçado por</span>
+                        <span>{{ solicitacao.funcionarioOrcamento }} em {{ solicitacao.dataHoraOrcamento }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-3" *ngIf="solicitacao.motivoRejeicao">
+                    <span class="form-label fw-bold d-block">Motivo da rejeição</span>
+                    <span>{{ solicitacao.motivoRejeicao }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- histórico: todos os passos pelos quais a solicitação passou -->
+        <div class="card mb-4">
+            <div class="card-header fw-bold">Histórico da Solicitação</div>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Data/Hora</th>
+                            <th scope="col">De</th>
+                            <th scope="col">Para</th>
+                            <th scope="col">Funcionário</th>
+                            <th scope="col">Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let passo of solicitacao.historico">
+                            <td>{{ passo.dataHora }}</td>
+                            <td>
+                                <span class="badge" *ngIf="passo.estadoAnterior"
+                                      [ngClass]="corDoEstado(passo.estadoAnterior)">{{ passo.estadoAnterior }}</span>
+                                <span *ngIf="!passo.estadoAnterior">—</span>
+                            </td>
+                            <td>
+                                <span class="badge" [ngClass]="corDoEstado(passo.estadoNovo)">{{ passo.estadoNovo }}</span>
+                            </td>
+                            <td>{{ passo.funcionario || 'Cliente' }}</td>
+                            <td>{{ passo.observacao || '—' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- botões de ação conforme o estado atual (RF003) -->
+        <div class="d-flex gap-3 justify-content-center">
+            <button type="button" class="btn btn-secondary" (click)="voltar()">Voltar</button>
+
+            <button type="button" class="btn btn-primary fw-bold"
+                    *ngIf="solicitacao.estado === 'ORCADA'"
+                    (click)="aprovarOuRejeitar()">Aprovar/Rejeitar Serviço</button>
+
+            <button type="button" class="btn btn-success fw-bold"
+                    *ngIf="solicitacao.estado === 'ARRUMADA'"
+                    (click)="pagar()">Pagar Serviço</button>
+        </div>
+
+    </div>
+</div>

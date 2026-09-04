@@ -41,6 +41,73 @@ export class SolicitacaoService {
                 { dataHora: '19/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '19/08/2026 17:02', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' }
             ]
+        },
+        {
+            id: 3,
+            dataHora: '18/08/2026 15:34',
+            descricaoEquipamento: 'Desktop Dell Optiplex',
+            categoria: 'Desktop',
+            descricaoDefeito: 'Reinicia sozinho depois de alguns minutos ligado.',
+            estado: 'APROVADA',
+            cliente: 'Jose Pereira',
+            valorOrcamento: 320,
+            dataHoraOrcamento: '18/08/2026 16:10',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            historico: [
+                { dataHora: '18/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '18/08/2026 16:10', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '18/08/2026 18:45', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null }
+            ]
+        },
+        {
+            id: 4,
+            dataHora: '17/08/2026 09:12',
+            descricaoEquipamento: 'Teclado mecanico Logitech',
+            categoria: 'Teclado',
+            descricaoDefeito: 'Algumas teclas nao respondem ao toque.',
+            estado: 'REJEITADA',
+            cliente: 'Joaquina Lima',
+            valorOrcamento: 150,
+            dataHoraOrcamento: '17/08/2026 11:00',
+            funcionarioOrcamento: 'Mario',
+            motivoRejeicao: 'Valor proximo ao de um teclado novo.',
+            historico: [
+                { dataHora: '17/08/2026 09:12', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '17/08/2026 11:00', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' },
+                {
+                    dataHora: '17/08/2026 14:20',
+                    estadoAnterior: 'ORCADA',
+                    estadoNovo: 'REJEITADA',
+                    funcionario: null,
+                    observacao: 'Valor proximo ao de um teclado novo.'
+                }
+            ]
+        },
+        {
+            id: 5,
+            dataHora: '16/08/2026 08:40',
+            descricaoEquipamento: 'Notebook Lenovo Ideapad',
+            categoria: 'Notebook',
+            descricaoDefeito: 'Superaquece e desliga durante o uso.',
+            estado: 'ARRUMADA',
+            cliente: 'Joao da Silva',
+            valorOrcamento: 275.4,
+            dataHoraOrcamento: '16/08/2026 10:15',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            historico: [
+                { dataHora: '16/08/2026 08:40', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '16/08/2026 10:15', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '16/08/2026 13:05', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '17/08/2026 16:30',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Mario',
+                    observacao: 'Troca da pasta termica e limpeza do cooler.'
+                }
+            ]
         }
     ];
 

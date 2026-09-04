@@ -9,6 +9,7 @@ import { MaintenanceRequest } from './pages/maintenance-request'
 import { Payment } from './pages/payment'
 import { Quote } from './pages/quote'
 import { UserAutoRegister } from './pages/user-auto-register'
+import { ViewService } from './pages/view-service'
 
 
 export const routes: Routes = [
@@ -53,5 +54,9 @@ export const routes: Routes = [
     {
         path: 'execute-maintenance',
         component: ExecuteMaintenance,
+    },
+    {
+        path: 'view-service/:id',
+        component: ViewService,
     }
 ];
