@@ -20,6 +20,7 @@ export class SolicitacaoService {
             dataHoraOrcamento: '21/08/2026 09:30',
             funcionarioOrcamento: 'Maria',
             motivoRejeicao: null,
+            dataHoraPagamento: null,
             historico: [
                 { dataHora: '20/08/2026 14:14', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '21/08/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' }
@@ -37,6 +38,7 @@ export class SolicitacaoService {
             dataHoraOrcamento: '19/08/2026 17:02',
             funcionarioOrcamento: 'Mario',
             motivoRejeicao: null,
+            dataHoraPagamento: null,
             historico: [
                 { dataHora: '19/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '19/08/2026 17:02', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' }
@@ -54,6 +56,7 @@ export class SolicitacaoService {
             dataHoraOrcamento: '18/08/2026 16:10',
             funcionarioOrcamento: 'Maria',
             motivoRejeicao: null,
+            dataHoraPagamento: null,
             historico: [
                 { dataHora: '18/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '18/08/2026 16:10', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
@@ -72,6 +75,7 @@ export class SolicitacaoService {
             dataHoraOrcamento: '17/08/2026 11:00',
             funcionarioOrcamento: 'Mario',
             motivoRejeicao: 'Valor proximo ao de um teclado novo.',
+            dataHoraPagamento: null,
             historico: [
                 { dataHora: '17/08/2026 09:12', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '17/08/2026 11:00', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' },
@@ -96,6 +100,7 @@ export class SolicitacaoService {
             dataHoraOrcamento: '16/08/2026 10:15',
             funcionarioOrcamento: 'Maria',
             motivoRejeicao: null,
+            dataHoraPagamento: null,
             historico: [
                 { dataHora: '16/08/2026 08:40', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '16/08/2026 10:15', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
@@ -132,6 +137,16 @@ export class SolicitacaoService {
         }
         solicitacao.motivoRejeicao = motivo;
         this.alterarEstado(id, 'REJEITADA', motivo);
+    }
+
+    // RF010 - Pagar Servico: registra a data/hora do pagamento
+    pagar(id : number) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao || solicitacao.estado !== 'ARRUMADA') {
+            return;
+        }
+        solicitacao.dataHoraPagamento = new Date().toLocaleString('pt-BR');
+        this.alterarEstado(id, 'PAGA', `Pagamento confirmado em ${solicitacao.dataHoraPagamento}.`);
     }
 
     private alterarEstado(id : number, novoEstado : EstadoSolicitacao, observacao? : string) {

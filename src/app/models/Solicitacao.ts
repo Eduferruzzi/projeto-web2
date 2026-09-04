@@ -28,5 +28,6 @@ export interface Solicitacao {
     dataHoraOrcamento : string | null;
     funcionarioOrcamento : string | null;
     motivoRejeicao : string | null;
+    dataHoraPagamento : string | null;
     historico : HistoricoSolicitacao[];
 }
