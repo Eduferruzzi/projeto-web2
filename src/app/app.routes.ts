@@ -10,6 +10,7 @@ import { Payment } from './pages/payment'
 import { Quote } from './pages/quote'
 import { ServiceDetails } from './pages/service-details'
 import { UserAutoRegister } from './pages/user-auto-register'
+import { Budget } from './pages/budget'
 
 
 export const routes: Routes = [
@@ -58,5 +59,9 @@ export const routes: Routes = [
     {
         path: 'execute-maintenance',
         component: ExecuteMaintenance,
+    },
+    {
+        path: 'budgettemp/:id',
+        component: Budget,
     }
 ];

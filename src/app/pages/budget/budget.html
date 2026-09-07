@@ -1,1 +1,69 @@
-<p>budget works!</p>
+<div class="container mb-4 mt-5">
+
+    <div class="alert alert-warning " *ngIf="!solicitacao">
+        Solicitacao nao encontrada
+    </div>
+
+    <div *ngIf="solicitacao">
+        <!-- dados solicitacao -->
+        <h2 class="mb-4 text-center">Efetuar orcamento - Solicitacao #{{solicitacao.id}}</h2>
+
+        <div class="card mb-4">
+            <div class="card-header fw-bold">Dados da solicitacao</div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Data/Hora de abertura</span>
+                        <span>{{solicitacao.dataHora}}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Estado atual</span>
+                        <span class="badge text-bg-seconday">{{solicitacao.estado}}</span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Cliente</span>
+                        <span>{{solicitacao.cliente}}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-label fw-bold d-block">Categoria do equipamento</span>
+                        <span class="badge text-bg-seconday">{{solicitacao.categoria}}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="form-label fw-bold d-block">Descricao do equipamento</span>
+                    <span>{{solicitacao.descricaoEquipamento}}</span>
+                </div>
+
+                <div>
+                    <span class="dorm-label fw-bold d-block">Descricao do defeito</span>
+                    <span>{{solicitacao.descricaoDefeito}}</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card border-primary border-2">
+            <div class="card-header fw-bold">Registrar orcamento</div>
+            <div class="card-body">
+                <div class="mb-3" style="max-width: 320px;">
+                    <label for="valor" class="form-label fw-bold">Valor do orcamento</label>
+                    <input id="valor" name="valor" type="number" class="form-control" [(ngModel)]="ValorOrcamento" min="0" step="0.01" placeholder="0.00">
+                    <div class="text-danger mt-1" *ngIf="erroValor">{{erroValor}}</div> 
+                </div>
+
+                <p class="text-muted mb-3">
+                    Este orcamento sera registrado em nome de {{FuncionarioLogado}}, com data e hora do momento
+                </p>
+
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-primary fw-bold" (click)="confirmarOrcamento()">Confirmar Orcamento</button>
+                    <button type="button" class="btn btn-primary fw-bold" (click)="cancelar()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

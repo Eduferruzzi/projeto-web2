@@ -2,10 +2,12 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-budget',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './budget.html',
   styleUrl: './budget.css',
 })

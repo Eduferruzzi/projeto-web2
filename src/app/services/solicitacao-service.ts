@@ -113,7 +113,24 @@ export class SolicitacaoService {
                     observacao: 'Troca da pasta termica e limpeza do cooler.'
                 }
             ]
+        },{
+            id: 6,
+            dataHora: '22/08/2026 10:00',
+            descricaoEquipamento: 'Celular Motorola Edge 40',
+            categoria: 'Celular',
+            descricaoDefeito: 'Tela quebrada, nao liga a tela mas o aparelho funciona.',
+            estado: 'ABERTA',
+            cliente: 'Carlos Pereira',
+            valorOrcamento: null,
+            dataHoraOrcamento: null,
+            funcionarioOrcamento: null,
+            motivoRejeicao: null,
+            historico: [
+                { dataHora: '22/08/2026 10:00', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null }
+            ],
+            dataHoraPagamento: null
         }
+        
     ];
 
     buscarPorId(id : number) : Solicitacao | undefined {
