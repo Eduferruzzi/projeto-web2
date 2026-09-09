@@ -35,7 +35,7 @@
   </div>
 
   <!-- form de conclusao -->
-  <div class="card mb-4">
+  <div class="card mb-4" *ngIf="exibirFormConclusao">
     <div class="card-header bg-primary text-white">
       <strong>Registrar Conserto</strong>
     </div>
@@ -47,6 +47,7 @@
             <strong>Descrição da Manutenção:</strong>
           </label>
           <textarea 
+            #descricaoManutencao
             id="descricaoManutencao" 
             name="descricaoManutencao" 
             rows="3" 
@@ -61,6 +62,7 @@
             <strong>Orientações para o Cliente:</strong>
           </label>
           <textarea 
+            #orientacoesCliente
             id="orientacoesCliente" 
             name="orientacoesCliente" 
             rows="3" 
@@ -71,11 +73,11 @@
         </div>
 
         <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Concluir Manutenção</button>
-          <button type="button" class="btn btn-secondary">
+          <input type="button" class="btn btn-primary" value="Concluir Manutenção" (click)="concluirManutencao(descricaoManutencao.value, orientacoesCliente.value)" />
+          <button type="button" class="btn btn-secondary" (click)="alternarRedirecionamento(true)">
             Redirecionar Manutenção
           </button>
-          <button type="button" class="btn btn-secondary">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
         </div>
 
       </form>
@@ -83,7 +85,7 @@
   </div>
 
   <!-- redirecionamento -->
-  <div class="card mb-4 border-warning">
+  <div class="card mb-4 border-warning" *ngIf="exibirRedirecionamento">
     <div class="card-header bg-primary text-white">
       <strong>Redirecionar Manutenção para Outro Funcionário</strong>
     </div>
@@ -95,6 +97,7 @@
             <strong>Selecione o Funcionário Destino:</strong>
           </label>
           <select 
+            #funcionarioDestino
             id="funcionarioDestino" 
             name="funcionarioDestino" 
             class="form-select" 
@@ -107,8 +110,8 @@
         </div>
 
         <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Confirmar Redirecionamento</button>
-          <button type="button" class="btn btn-secondary">
+          <input type="button" class="btn btn-primary" value="Confirmar Redirecionamento" (click)="redirecionarManutencao(funcionarioDestino.value)" />
+          <button type="button" class="btn btn-secondary" (click)="alternarRedirecionamento(false)">
             Voltar para Manutenção
           </button>
         </div>
@@ -116,4 +119,5 @@
       </form>
     </div>
   </div>
+
 </div>
