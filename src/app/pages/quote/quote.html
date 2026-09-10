@@ -13,7 +13,7 @@
         <div class="card border-primary border-2 mb-4">
             <div class="card-body text-center">
                 <p class="mb-1 text-uppercase fw-bold">Valor orçado</p>
-                <p class="display-4 fw-bold text-primary mb-2">{{ formatarValor(solicitacao.valorOrcamento) }}</p>
+                <p class="display-4 fw-bold text-primary mb-2">{{ solicitacao.valorOrcamento | moedaBr }}</p>
                 <p class="mb-0 text-muted">
                     Orçado por {{ solicitacao.funcionarioOrcamento }} em {{ solicitacao.dataHoraOrcamento }}
                 </p>

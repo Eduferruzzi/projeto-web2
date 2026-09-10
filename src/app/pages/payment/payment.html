@@ -27,7 +27,7 @@
                     <div class="card-body text-center">
                         <p class="mb-1 text-uppercase fw-bold">Valor a pagar</p>
                         <p class="display-4 fw-bold text-primary mb-0">
-                            {{ formatarValor(solicitacao.valorOrcamento) }}
+                            {{ solicitacao.valorOrcamento | moedaBr }}
                         </p>
                     </div>
                 </div>

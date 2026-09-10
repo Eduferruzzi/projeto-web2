@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Solicitacao, EstadoSolicitacao } from '../models/Solicitacao';
+import { dataHoraAtual } from '../shared';
 
 // Dados em memoria enquanto a API (Spring Boot) nao esta integrada.
 @Injectable({
@@ -156,13 +157,22 @@ export class SolicitacaoService {
         this.alterarEstado(id, 'REJEITADA', motivo);
     }
 
+    // RF009 - Resgatar Servico: o que estava REJEITADA volta para APROVADA
+    resgatar(id : number) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao || solicitacao.estado !== 'REJEITADA') {
+            return;
+        }
+        this.alterarEstado(id, 'APROVADA', 'Servico resgatado pelo cliente.');
+    }
+
     // RF010 - Pagar Servico: registra a data/hora do pagamento
     pagar(id : number) {
         const solicitacao = this.buscarPorId(id);
         if (!solicitacao || solicitacao.estado !== 'ARRUMADA') {
             return;
         }
-        solicitacao.dataHoraPagamento = new Date().toLocaleString('pt-BR');
+        solicitacao.dataHoraPagamento = dataHoraAtual();
         this.alterarEstado(id, 'PAGA', `Pagamento confirmado em ${solicitacao.dataHoraPagamento}.`);
     }
 
@@ -172,7 +182,7 @@ export class SolicitacaoService {
             return;
         }
         solicitacao.historico.push({
-            dataHora: new Date().toLocaleString('pt-BR'),
+            dataHora: dataHoraAtual(),
             estadoAnterior: solicitacao.estado,
             estadoNovo: novoEstado,
             funcionario: null,
