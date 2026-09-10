@@ -1,4 +1,4 @@
-import { inject, Service } from '@angular/core';
+import { inject } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CEP } from '../../models/CEP';

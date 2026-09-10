@@ -1,0 +1,119 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Efetuar Manutenção</h2>
+
+  <!-- dados da solicitacao e do cliente -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <strong>Solicitação #42</strong> - 01/09/2026 16:20
+    </div>
+    <div class="card-body">
+      <h5 class="card-title mb-3">Dados do Cliente</h5>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <p class="mb-1"><strong>Nome:</strong> Samuel Lino </p>
+          <p class="mb-1"><strong>CPF:</strong> 123.456.789-10</p>
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1"><strong>E-mail:</strong> samuel@email.com</p>
+          <p class="mb-1"><strong>Telefone:</strong> (41) 99999-9999</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <p class="mb-1"><strong>Equipamento:</strong> Notebook Acer V5</p>
+          <p class="mb-1"><strong>Categoria:</strong> Notebook</p>
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1"><strong>Descrição do Defeito:</strong> Não liga.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- form de conclusao -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <strong>Registrar Conserto</strong>
+    </div>
+    <div class="card-body">
+      <form>
+        
+        <div class="mb-3">
+          <label for="descricaoManutencao" class="form-label">
+            <strong>Descrição da Manutenção:</strong>
+          </label>
+          <textarea 
+            id="descricaoManutencao" 
+            name="descricaoManutencao" 
+            rows="3" 
+            class="form-control" 
+            placeholder="Diga o que foi feito na manutenção" 
+            required
+          ></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="orientacoesCliente" class="form-label">
+            <strong>Orientações para o Cliente:</strong>
+          </label>
+          <textarea 
+            id="orientacoesCliente" 
+            name="orientacoesCliente" 
+            rows="3" 
+            class="form-control" 
+            placeholder="Orientações para o cliente" 
+            required
+          ></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Concluir Manutenção</button>
+          <button type="button" class="btn btn-secondary">
+            Redirecionar Manutenção
+          </button>
+          <button type="button" class="btn btn-secondary">Cancelar</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- redirecionamento -->
+  <div class="card mb-4 border-warning">
+    <div class="card-header bg-primary text-white">
+      <strong>Redirecionar Manutenção para Outro Funcionário</strong>
+    </div>
+    <div class="card-body">
+      <form>
+        
+        <div class="mb-3">
+          <label for="funcionarioDestino" class="form-label">
+            <strong>Selecione o Funcionário Destino:</strong>
+          </label>
+          <select 
+            id="funcionarioDestino" 
+            name="funcionarioDestino" 
+            class="form-select" 
+            required
+          >
+            <option value="" disabled selected>Escolha o funcionário</option>
+            <option value="2">Bruno Henrique</option>
+            <option value="3">Gabriel Barbosa</option>
+          </select>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Confirmar Redirecionamento</button>
+          <button type="button" class="btn btn-secondary">
+            Voltar para Manutenção
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
