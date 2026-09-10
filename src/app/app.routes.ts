@@ -21,19 +21,22 @@ export const routes: Routes = [
     {
         path: 'user-auto-register',
         component: UserAutoRegister,
+        data: { showNavbar: false }
     },
     {
         path: 'login',
         component: Login,
+        data: { showNavbar: false }
     },
     {
         path: 'crud-employee',
         component: CRUDemployee,
+        data: { showNavbar: true }
     },
     {
         path: 'user-home',
-
         component: CustomerHome,
+        data: { showNavbar: true }
     },
     {
         path: 'payment/:id',
