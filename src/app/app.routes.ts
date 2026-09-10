@@ -42,29 +42,36 @@ export const routes: Routes = [
     {
         path: 'payment/:id',
         component: Payment,
+        data: { showNavbar: true }
     },
     {
         path: 'maintenance-request',
         component: MaintenanceRequest,
+        data: { showNavbar: true }
     },
     {
         path: 'service/:id',
         component: ServiceDetails,
+        data: { showNavbar: true }
     },
     {
         path: 'quote/:id',
         component: Quote,
+        data: { showNavbar: true }
     },
     {
         path: 'employee-home',
         component: EmployeeHome,
+        data: { showNavbar: true }
     },
     {
         path: 'execute-maintenance',
         component: ExecuteMaintenance,
+        data: { showNavbar: true }
     },
     {
         path: 'budgettemp/:id',
         component: Budget,
+        data: { showNavbar: true }
     }
 ];
