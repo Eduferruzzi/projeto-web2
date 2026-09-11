@@ -12,6 +12,7 @@ import { ServiceDetails } from './pages/service-details'
 import { UserAutoRegister } from './pages/user-auto-register'
 import { Budget } from './pages/budget'
 import { CreateCategories, EditCategories, ListCategories } from './pages/category-crud'
+import { Reports } from './pages/reports'
 
 
 export const routes: Routes = [
@@ -88,6 +89,11 @@ export const routes: Routes = [
     {
         path: 'categories/edit/:id',
         component: EditCategories,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'reports',
+        component: Reports,
         data: { showNavbar: true }
     }
 ];

@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+.card {
+  border: none;
+}
+
+textarea {
+  resize: vertical;
+}
