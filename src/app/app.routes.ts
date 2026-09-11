@@ -11,6 +11,7 @@ import { Quote } from './pages/quote'
 import { ServiceDetails } from './pages/service-details'
 import { UserAutoRegister } from './pages/user-auto-register'
 import { Budget } from './pages/budget'
+import { CreateCategories, EditCategories, ListCategories } from './pages/category-crud'
 
 
 export const routes: Routes = [
@@ -72,6 +73,21 @@ export const routes: Routes = [
     {
         path: 'budgettemp/:id',
         component: Budget,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'categories',
+        component: ListCategories,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'categories/new',
+        component: CreateCategories,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'categories/edit/:id',
+        component: EditCategories,
         data: { showNavbar: true }
     }
 ];
