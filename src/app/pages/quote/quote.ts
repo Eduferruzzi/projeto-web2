@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
+import { MoedaBrPipe } from '../../pipes';
+import { formatarMoedaBr } from '../../shared';
 
 // RF005 - Mostrar orcamento (inclui RF006 aprovar e RF007 rejeitar)
 @Component({
   selector: 'app-quote',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MoedaBrPipe],
   templateUrl: './quote.html',
   styleUrl: './quote.css',
 })
@@ -34,7 +36,7 @@ export class Quote {
       return;
     }
     this.solicitacaoService.aprovar(this.solicitacao.id);
-    window.alert(`Serviço Aprovado no Valor ${this.formatarValor(this.solicitacao.valorOrcamento)}`);
+    window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(this.solicitacao.valorOrcamento)}`);
     this.router.navigate(['/user-home']);
   }
 
@@ -60,12 +62,5 @@ export class Quote {
     this.solicitacaoService.rejeitar(this.solicitacao.id, this.motivoRejeicao.trim());
     window.alert('Serviço Rejeitado');
     this.router.navigate(['/user-home']);
-  }
-
-  formatarValor(valor : number | null) : string {
-    if (valor === null) {
-      return 'R$ 0,00';
-    }
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 }

@@ -197,6 +197,17 @@
                 </button>
               }
 
+              <!-- RF009 - Resgatar Servico -->
+              @if (solicitacao.estado === 'REJEITADA') {
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  (click)="resgatarServico()"
+                >
+                  Resgatar Serviço
+                </button>
+              }
+
               <!-- RF010 - Pagar Servico -->
               @if (solicitacao.estado === 'ARRUMADA') {
                 <a
