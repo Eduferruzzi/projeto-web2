@@ -1,0 +1,113 @@
+<nav class="navbar navbar-light bg-white border-bottom px-4 py-3">
+    <a [routerLink]="['/login']" class="btn btn-primary rounded-pill px-4 fw-bold">HOME</a>
+
+    <div class="d-flex gap-4">
+        <a [routerLink]="['/employee-crud']" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Nome Funcionario</a>
+        <a [routerLink]="['/employee-requests']" class="btn btn-outline-primary rounded-pill px-4 fw-bold">SOLICITAÇÕES</a>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <form class="form" #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
+                <div class="row g-3">
+                    <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" placeholder="Nome" [(ngModel)]="nome" name="nome" required minlength="2" #nomeCampo="ngModel">
+                        @if (nomeCampo.invalid && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                Nome é obrigatório.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="Email" [(ngModel)]="email" name="email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" #emailCampo="ngModel">
+                        @if (emailCampo.invalid && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                @if (emailCampo.errors?.['required']) {
+                                    Email é obrigatório.
+                                }
+                                @if (emailCampo.errors?.['pattern']) {
+                                    Email inválido.
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" class="form-control" placeholder="Data de Nascimento" [(ngModel)]="dataNascimento" name="dataNascimento" required #dataNascimentoCampo="ngModel">
+                        @if (dataNascimentoCampo.invalid && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                Data de nascimento é obrigatória.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-control" placeholder="Senha" [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel">
+                        @if (senhaCampo.invalid && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                Senha obrigatória com no mínimo 4 caracteres.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" class="form-control" placeholder="Confirmar Senha" [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4" #confirmarSenhaCampo="ngModel">
+                        @if (confirmarSenhaCampo.invalid && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                Confirmação da senha é obrigatória.
+                            </div>
+                        }
+                        @if (senha && confirmarSenha && senha !== confirmarSenha && formCadastro.submitted) {
+                            <div class="text-danger mt-1">
+                                As senhas devem coincidir.
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-danger px-4" (click)="limparFormulario()">APAGAR</button>
+                    <button type="submit" class="btn btn-success px-4">ADD</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-5">
+    <div class="card-body">
+        <table class="table table-striped table-hover align-middle">
+            <caption class="text-center fw-bold">LISTA DE FUNCIONARIOS</caption>
+
+            <thead class="table-info">
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let funcionario of funcionarios">
+                    <td>{{ funcionario.nome }}</td>
+                    <td>{{ funcionario.email }}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-primary" title="Editar" (click)="editarFuncionario(funcionario)">E</button>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger" title="Excluir" (click)="excluirFuncionario(funcionario.id)">X</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
