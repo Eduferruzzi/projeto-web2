@@ -1,6 +1,6 @@
 
 import { Routes } from '@angular/router'
-import { CRUDemployee } from './pages/crudemployee'
+import { CRUDemployee } from './pages/employee-crud'
 import { CustomerHome } from './pages/customer-home'
 import { EmployeeHome } from './pages/employee-home'
 import { ExecuteMaintenance } from './pages/execute-maintenance'
@@ -10,10 +10,9 @@ import { Payment } from './pages/payment'
 import { Quote } from './pages/quote'
 import { ServiceDetails } from './pages/service-details'
 import { UserAutoRegister } from './pages/user-auto-register'
-import { Budget } from './pages/budget'
+import { Budget } from './pages/employee-quote'
 import { CreateCategories, EditCategories, ListCategories } from './pages/category-crud'
-import { Reports } from './pages/reports'
-
+import { EmployeeRequests } from './pages/employee-requests'
 
 export const routes: Routes = [
     {
@@ -32,7 +31,7 @@ export const routes: Routes = [
         data: { showNavbar: false }
     },
     {
-        path: 'crud-employee',
+        path: 'employee-crud',
         component: CRUDemployee,
         data: { showNavbar: true }
     },
@@ -48,6 +47,11 @@ export const routes: Routes = [
     },
     {
         path: 'maintenance-request',
+        component: MaintenanceRequest,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'maintenance-request/:id',
         component: MaintenanceRequest,
         data: { showNavbar: true }
     },
@@ -72,7 +76,12 @@ export const routes: Routes = [
         data: { showNavbar: true }
     },
     {
-        path: 'budgettemp/:id',
+        path: 'execute-maintenance/:id',
+        component: ExecuteMaintenance,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'employee-quote/:id',
         component: Budget,
         data: { showNavbar: true }
     },
@@ -93,7 +102,12 @@ export const routes: Routes = [
     },
     {
         path: 'reports',
-        component: Reports,
+        component: EmployeeRequests,
+        data: { showNavbar: true }
+    },
+    {
+        path: 'employee-requests',
+        component: EmployeeRequests,
         data: { showNavbar: true }
     }
 ];

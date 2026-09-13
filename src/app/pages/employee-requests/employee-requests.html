@@ -1,0 +1,91 @@
+<nav class="navbar navbar-light bg-white border-bottom px-4 py-3">
+    <a [routerLink]="['/user-home']" class="btn btn-primary rounded-pill px-4 fw-bold">HOME</a>
+    
+    <div class="d-flex gap-4">
+        <a [routerLink]="['/employee-crud']" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Nome Funcioario</a>
+        <a [routerLink]="['/employee-requests']" class="btn btn-outline-primary rounded-pill px-4 fw-bold">SOLICITAÇÕES</a>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 mt-4">
+
+    <!-- filtros de solicitacoes -->
+     <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3">
+        
+        <input type="radio" class="btn-check" name="filtro" id="filtro-hoje" [checked]="filtroAtivo == 'HOJE'" (click)="onFiltroChange('HOJE')">
+        <label class="btn btn-outline-primary" for="filtro-hoje">Hoje</label> 
+
+        <input type="radio" class="btn-check" name="filtro" id="filtro-periodo" [checked]="filtroAtivo == 'PERIODO'" (click)="onFiltroChange('PERIODO')">
+        <label class="btn btn-outline-primary" for="filtro-periodo">Periodo</label>
+
+        <input type="radio" class="btn-check" name="filtro" id="filtro-todas" [checked]="filtroAtivo == 'TODAS'" (click)="onFiltroChange('TODAS')">
+        <label class="btn btn-outline-primary" for="filtro-todas">Todas</label>
+
+     </div>
+
+    <!-- campos de data-->
+    <div class="d-flex flex-wrap align-items-center gap-2" *ngIf="filtroAtivo === 'PERIODO'">
+        
+        <label class="form-label mb-0 small text-muted">De:</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="dataInicio" (change)="aplicarFiltro()">
+        <label class="form-label mb-0 small text-muted">Ate:</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="dataFim" (change)="aplicarFiltro()">
+
+    </div>
+
+</div>
+
+<!-- cores das solicitacoes -->
+<div class="d-flex flex-wrap gap-3 mb-3 small">
+
+    <span class="legend-item"><span class="legend-dot status-aberta"></span><span class="legend-label">aberta</span></span>
+    <span class="legend-item"><span class="legend-dot status-orcada"></span><span class="legend-label">Orcada</span></span>
+    <span class="legend-item"><span class="legend-dot status-rejeitada"></span><span class="legend-label">Rejeitada</span></span>
+    <span class="legend-item"><span class="legend-dot status-aprovada"></span><span class="legend-label">Aprovada</span></span>
+    <span class="legend-item"><span class="legend-dot status-redirecionada"></span><span class="legend-label">Redirecionada</span></span>
+    <span class="legend-item"><span class="legend-dot status-arrumada"></span><span class="legend-label">Arrumada</span></span>
+    <span class="legend-item"><span class="legend-dot status-paga"></span><span class="legend-label">Paga</span></span>
+    <span class="legend-item"><span class="legend-dot status-finalizada"></span><span class="legend-label">Finalizada</span></span>
+</div>
+
+<!-- tabela de solicitacoes -->
+<div class="table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead class="table-info">
+            <tr style="background-color: #0d47a1;">
+                <th class="text-center py-3 text-white">Data/hora</th>
+                <th class="text-center py-3 text-white">Cliente</th>
+                <th class="text-center py-3 text-white">Descricao</th>
+                <th class="text-center py-3 text-white">Estado</th>
+                <th class="text-center py-3 text-white">Acoes</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div class="table-scroll-wrapper">
+    <table class="table table-bordered aling-middle mb-0">
+        <tbody>
+            <tr *ngFor="let s of solicitacoesFiltradas" [ngClass]="'status-' + s.estado.toLowerCase()">
+                <td class="text-center">{{ s.dataHora }}</td>
+                <td>{{ s.cliente }}</td>
+                <td>{{ s.descricaoDefeito | slice:0:30 }}...</td>
+                <td class="text-center">
+                    <span class="badge status-badge" [ngClass]="'status-' + s.estado.toLowerCase()">{{ s.estado }}</span>
+                </td>
+                <td class="text-center">
+                    <a *ngIf="s.estado === 'ABERTA'" [routerLink]="['/employee-quote', s.id]" class="btn btn-outline-dark btn-sm
+                     btn-acao">Efetuar orcamento</a>
+
+                     <a *ngIf="s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA'" [routerLink]="['/maintenance-request', s.id]" class="btn btn-outline-dark btn-sm
+                     btn-acao">Redirect</a>
+
+                     <a *ngIf="s.estado === 'PAGA'" [routerLink]="['/execute-maintenance', s.id]" class="btn btn-outline-dark btn-sm
+                     btn-acao">Efetuar manutencao</a>
+
+                     <span *ngIf="!['ABERTA','APROVADA','REDIRECIONADA','PAGA'].includes(s.estado)" class="text-muted">-</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

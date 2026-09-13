@@ -25,7 +25,9 @@ export class SolicitacaoService {
             historico: [
                 { dataHora: '20/08/2026 14:14', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '21/08/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 2,
@@ -43,7 +45,9 @@ export class SolicitacaoService {
             historico: [
                 { dataHora: '19/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '19/08/2026 17:02', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 3,
@@ -62,7 +66,9 @@ export class SolicitacaoService {
                 { dataHora: '18/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '18/08/2026 16:10', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
                 { dataHora: '18/08/2026 18:45', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 4,
@@ -87,7 +93,9 @@ export class SolicitacaoService {
                     funcionario: null,
                     observacao: 'Valor proximo ao de um teclado novo.'
                 }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 5,
@@ -113,7 +121,9 @@ export class SolicitacaoService {
                     funcionario: 'Mario',
                     observacao: 'Troca da pasta termica e limpeza do cooler.'
                 }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },{
             id: 6,
             dataHora: '22/08/2026 10:00',
@@ -129,7 +139,9 @@ export class SolicitacaoService {
             historico: [
                 { dataHora: '22/08/2026 10:00', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null }
             ],
-            dataHoraPagamento: null
+            dataHoraPagamento: null,
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         }
         
     ];
@@ -207,5 +219,17 @@ export class SolicitacaoService {
         solicitacao.funcionarioOrcamento = funcionario;
         this.alterarEstado(id, "ORCADA");
 
+    }
+
+    //RF 013 - Listar todas as solicitacoes para um funcionario especifico
+    listarParaFuncionario(funcionario : string) : Solicitacao[]{
+        return this.solicitacoes.filter(s => s.estado !== 'REDIRECIONADA' || s.funcionarioRedirecionado === funcionario).sort((a, b) => this.paraTimestamp(a.dataHora) - this.paraTimestamp(b.dataHora));
+    }
+
+    private paraTimestamp(dataHora : string) : number{
+        const [data, hora] = dataHora.split(' ');
+        const [dia, mes, ano] = data.split('/');
+        const [horaNum, minuto] = hora.split(':');
+        return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(horaNum), Number(minuto)).getTime();
     }
 }

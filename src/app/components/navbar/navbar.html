@@ -1,11 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
 
-        <a class="navbar-brand fw-semibold" routerLink="/user-home">
+        <a class="navbar-brand fw-semibold" routerLink="/employee-home">
             Manutenção de Equipamentos
         </a>
-
-        
 
         <div class="collapse navbar-collapse" id="menuNavbar">
 
@@ -14,7 +12,7 @@
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/user-home"
+                        routerLink="/employee-home"
                         routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: true }"
                     >
@@ -25,7 +23,7 @@
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/crud-employee"
+                        routerLink="/employee-crud"
                         routerLinkActive="active"
                     >
                         Funcionários
@@ -35,17 +33,17 @@
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/equipamentos"
+                        routerLink="/employee-requests"
                         routerLinkActive="active"
                     >
-                        Equipamentos
+                        Solicitações
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/manutencoes"
+                        routerLink="/execute-maintenance"
                         routerLinkActive="active"
                     >
                         Manutenções
@@ -55,7 +53,7 @@
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/reports"
+                        routerLink="/categories"
                         routerLinkActive="active"
                     >
                         Relatórios
@@ -70,9 +68,9 @@
                     Usuário
                 </span>
 
-                <button class="btn btn-outline-secondary btn-sm">
+                <a class="btn btn-outline-secondary btn-sm" routerLink="/login">
                     Sair
-                </button>
+                </a>
 
             </div>
 

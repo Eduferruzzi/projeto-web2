@@ -8,8 +8,8 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-budget',
   imports: [CommonModule, FormsModule],
-  templateUrl: './budget.html',
-  styleUrl: './budget.css',
+  templateUrl: './employee-quote.html',
+  styleUrl: './employee-quote.css',
 })
 export class Budget {
   private route = inject(ActivatedRoute);

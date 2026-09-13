@@ -30,4 +30,6 @@ export interface Solicitacao {
     motivoRejeicao : string | null;
     dataHoraPagamento : string | null;
     historico : HistoricoSolicitacao[];
+    funcionarioResponsavel : string | null;
+    funcionarioRedirecionado : string | null;
 }
