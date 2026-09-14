@@ -1,7 +1,6 @@
 <div class="container mt-4">
   <h2 class="mb-4">Efetuar Manutenção</h2>
 
-  <!-- Adiciona um ngIf para carregar apenas se encontrar a solicitação -->
   <div class="alert alert-warning" *ngIf="!solicitacao">
       Solicitação não encontrada.
   </div>
@@ -17,7 +16,6 @@
           <div class="row mb-3">
             <div class="col-md-12">
               <p class="mb-1"><strong>Nome:</strong> {{ solicitacao.cliente }}</p>
-              <!-- Adicione CPF, Email e Telefone aqui SE você colocar esses dados no model Solicitacao -->
             </div>
           </div>
 
