@@ -1,38 +1,40 @@
 <div class="container mt-4">
   <h2 class="mb-4">Efetuar Manutenção</h2>
 
-  <!-- dados da solicitacao e do cliente -->
-  <div class="card mb-4">
-    <div class="card-header bg-primary text-white">
-      <strong>Solicitação #42</strong> - 01/09/2026 16:20
-    </div>
-    <div class="card-body">
-      <h5 class="card-title mb-3">Dados do Cliente</h5>
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <p class="mb-1"><strong>Nome:</strong> Samuel Lino </p>
-          <p class="mb-1"><strong>CPF:</strong> 123.456.789-10</p>
-        </div>
-        <div class="col-md-6">
-          <p class="mb-1"><strong>E-mail:</strong> samuel@email.com</p>
-          <p class="mb-1"><strong>Telefone:</strong> (41) 99999-9999</p>
-        </div>
-      </div>
-
-      <hr>
-
-      <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
-      <div class="row">
-        <div class="col-md-6">
-          <p class="mb-1"><strong>Equipamento:</strong> Notebook Acer V5</p>
-          <p class="mb-1"><strong>Categoria:</strong> Notebook</p>
-        </div>
-        <div class="col-md-6">
-          <p class="mb-1"><strong>Descrição do Defeito:</strong> Não liga.</p>
-        </div>
-      </div>
-    </div>
+  <!-- Adiciona um ngIf para carregar apenas se encontrar a solicitação -->
+  <div class="alert alert-warning" *ngIf="!solicitacao">
+      Solicitação não encontrada.
   </div>
+
+  <div *ngIf="solicitacao">
+      <!-- dados da solicitacao e do cliente -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <strong>Solicitação #{{ solicitacao.id }}</strong> - {{ solicitacao.dataHora }}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title mb-3">Dados do Cliente</h5>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <p class="mb-1"><strong>Nome:</strong> {{ solicitacao.cliente }}</p>
+              <!-- Adicione CPF, Email e Telefone aqui SE você colocar esses dados no model Solicitacao -->
+            </div>
+          </div>
+
+          <hr>
+
+          <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
+              <p class="mb-1"><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Descrição do Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
   <!-- form de conclusao -->
   <div class="card mb-4" *ngIf="exibirFormConclusao">
