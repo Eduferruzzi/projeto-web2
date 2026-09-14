@@ -24,7 +24,6 @@ export class ExecuteMaintenance {
   exibirFormConclusao: boolean = true;
 
   constructor() {
-    // Pegar o ID da URL e buscar a solicitação (igual no quote.ts)
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.buscarPorId(id);
   }
