@@ -1,7 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; 
 import { ExecuteMaintenanceService } from '../../services/execute-maintenance-service';
+import { SolicitacaoService } from '../../services'; 
+import { Solicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-execute-maintenance',
@@ -10,11 +12,21 @@ import { ExecuteMaintenanceService } from '../../services/execute-maintenance-se
   styleUrl: './execute-maintenance.css'
 })
 export class ExecuteMaintenance {
+
   private maintenanceService = inject(ExecuteMaintenanceService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute); 
+  private solicitacaoService = inject(SolicitacaoService); 
+
+  solicitacao: Solicitacao | undefined; 
 
   exibirRedirecionamento: boolean = false;
   exibirFormConclusao: boolean = true;
+
+  constructor() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.solicitacao = this.solicitacaoService.buscarPorId(id);
+  }
 
   concluirManutencao(descricao: string, orientacoes: string): void {
     if (!descricao || !orientacoes) {
@@ -22,10 +34,9 @@ export class ExecuteMaintenance {
       return;
     }
 
-    // alerta de confirmação
     const confirmou = confirm('Deseja concluir esta manutenção?');
 
-    if (confirmou) {
+    if (confirmou && this.solicitacao) { // ve se a solicitacao existe
       this.maintenanceService.salvarConclusao(descricao, orientacoes);
       this.router.navigate(['/employee-home']);
     }

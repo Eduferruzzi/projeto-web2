@@ -70,8 +70,8 @@ export const routes: Routes = [
         component: EmployeeHome,
         data: { showNavbar: true }
     },
-    {
-        path: 'execute-maintenance',
+{
+        path: 'execute-maintenance/:id', 
         component: ExecuteMaintenance,
         data: { showNavbar: true }
     },
