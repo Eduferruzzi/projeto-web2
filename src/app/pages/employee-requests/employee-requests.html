@@ -74,16 +74,15 @@
                     <span class="badge status-badge" [ngClass]="'status-' + s.estado.toLowerCase()">{{ s.estado }}</span>
                 </td>
                 <td class="text-center">
-                    <a *ngIf="s.estado === 'ABERTA'" [routerLink]="['/employee-quote', s.id]" class="btn btn-outline-dark btn-sm
-                     btn-acao">Efetuar orcamento</a>
+                    <a *ngIf="s.estado === 'ABERTA'" [routerLink]="['/employee-quote', s.id]" class="btn btn-outline-dark btn-sm btn-acao">Efetuar orcamento</a>
 
-                     <a *ngIf="s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA'" [routerLink]="['/maintenance-request', s.id]" class="btn btn-outline-dark btn-sm
-                     btn-acao">Redirect</a>
+                    
+                    <a *ngIf="s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA'" [routerLink]="['/execute-maintenance', s.id]" class="btn btn-outline-dark btn-sm btn-acao">Efetuar manutencao</a>
 
-                     <a *ngIf="s.estado === 'PAGA'" [routerLink]="['/execute-maintenance', s.id]" class="btn btn-outline-dark btn-sm
-                     btn-acao">Efetuar manutencao</a>
+                    
+                    <button *ngIf="s.estado === 'PAGA'" (click)="finalizar(s.id)" class="btn btn-outline-success btn-sm btn-acao">Finalizar</button>
 
-                     <span *ngIf="!['ABERTA','APROVADA','REDIRECIONADA','PAGA'].includes(s.estado)" class="text-muted">-</span>
+                    <span *ngIf="!['ABERTA','APROVADA','REDIRECIONADA','PAGA'].includes(s.estado)" class="text-muted">-</span>
                 </td>
             </tr>
         </tbody>

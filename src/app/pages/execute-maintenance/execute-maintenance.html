@@ -104,8 +104,9 @@
             required
           >
             <option value="" disabled selected>Escolha o funcionário</option>
-            <option value="2">Bruno Henrique</option>
-            <option value="3">Gabriel Barbosa</option>
+            <option *ngFor="let func of funcionariosSelect" [value]="func.id">
+                {{ func.nome }}
+            </option>
           </select>
         </div>
 
