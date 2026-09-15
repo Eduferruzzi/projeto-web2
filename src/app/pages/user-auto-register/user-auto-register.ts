@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms'
 import { CepService } from '../../services'
 import { NgForm } from '@angular/forms'
 import { NgxMaskDirective } from 'ngx-mask'
+import { Router, RouterLink } from '@angular/router'
 
 @Component({
   selector: 'app-user-auto-register',
-  imports: [FormsModule, NgxMaskDirective],
+  imports: [FormsModule, NgxMaskDirective, RouterLink],
   templateUrl: './user-auto-register.html',
   styleUrl: './user-auto-register.css',
 })
@@ -27,6 +28,7 @@ export class UserAutoRegister {
   mensagemSucesso = '';
 
   private cepService = inject(CepService); //injetando o cepservice;
+  private router = inject(Router);
 
   buscarCep() {
     this.cepService.buscarCep(this.CEP).subscribe(resposta => {
@@ -68,6 +70,10 @@ export class UserAutoRegister {
       this.mensagemSucesso = 'Cadastro realizado com sucesso!';
 
       form.resetForm();
+
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1000);
     }
     catch (error) {
       console.error('Erro ao cadastrar usuário:', error);

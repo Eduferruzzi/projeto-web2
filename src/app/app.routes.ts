@@ -68,9 +68,9 @@ export const routes: Routes = [
     {
         path: 'employee-home',
         component: EmployeeHome,
-        data: { showNavbar: true }
+        data: { showEmployeeNavbar: true }
     },
-{
+    {
         path: 'execute-maintenance/:id', 
         component: ExecuteMaintenance,
         data: { showNavbar: true }
@@ -78,7 +78,7 @@ export const routes: Routes = [
     {
         path: 'execute-maintenance/:id',
         component: ExecuteMaintenance,
-        data: { showNavbar: true }
+        data: { showEmployeeNavbar: true }
     },
     {
         path: 'employee-quote/:id',
