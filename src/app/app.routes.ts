@@ -57,9 +57,11 @@ export const routes: Routes = [
     {
         path: 'employee-home',
         component: EmployeeHome,
+        data: { showEmployeeNavbar: true }
     },
     {
         path: 'execute-maintenance',
         component: ExecuteMaintenance,
+        data: { showEmployeeNavbar: true }
     }
 ];
