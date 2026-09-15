@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Solicitacao, EstadoSolicitacao } from '../models/Solicitacao';
+import { dataHoraAtual } from '../shared';
 
 // Dados em memoria enquanto a API (Spring Boot) nao esta integrada.
 @Injectable({
@@ -24,7 +25,9 @@ export class SolicitacaoService {
             historico: [
                 { dataHora: '20/08/2026 14:14', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '21/08/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 2,
@@ -42,7 +45,9 @@ export class SolicitacaoService {
             historico: [
                 { dataHora: '19/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '19/08/2026 17:02', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 3,
@@ -61,7 +66,9 @@ export class SolicitacaoService {
                 { dataHora: '18/08/2026 15:34', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
                 { dataHora: '18/08/2026 16:10', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
                 { dataHora: '18/08/2026 18:45', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 4,
@@ -86,7 +93,9 @@ export class SolicitacaoService {
                     funcionario: null,
                     observacao: 'Valor proximo ao de um teclado novo.'
                 }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
         },
         {
             id: 5,
@@ -112,7 +121,72 @@ export class SolicitacaoService {
                     funcionario: 'Mario',
                     observacao: 'Troca da pasta termica e limpeza do cooler.'
                 }
-            ]
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },{
+            id: 6,
+            dataHora: '22/08/2026 10:00',
+            descricaoEquipamento: 'Celular Motorola Edge 40',
+            categoria: 'Celular',
+            descricaoDefeito: 'Tela quebrada, nao liga a tela mas o aparelho funciona.',
+            estado: 'ABERTA',
+            cliente: 'Carlos Pereira',
+            valorOrcamento: null,
+            dataHoraOrcamento: null,
+            funcionarioOrcamento: null,
+            motivoRejeicao: null,
+            historico: [
+                { dataHora: '22/08/2026 10:00', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null }
+            ],
+            dataHoraPagamento: null,
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 7,
+            dataHora: '15/09/2026 09:20',
+            descricaoEquipamento: 'Notebook Acer Aspire 5',
+            categoria: 'Notebook',
+            descricaoDefeito: 'Bateria nao carrega e o equipamento desliga fora da tomada.',
+            estado: 'PAGA',
+            cliente: 'Ana Martins',
+            valorOrcamento: 280,
+            dataHoraOrcamento: '15/09/2026 10:00',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: '15/09/2026 14:30',
+            historico: [
+                { dataHora: '15/09/2026 09:20', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '15/09/2026 10:00', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '15/09/2026 11:15', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '15/09/2026 13:40', estadoAnterior: 'APROVADA', estadoNovo: 'ARRUMADA', funcionario: 'Temporario' },
+                { dataHora: '15/09/2026 14:30', estadoAnterior: 'ARRUMADA', estadoNovo: 'PAGA', funcionario: null }
+            ],
+            funcionarioResponsavel: 'Temporario',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 8,
+            dataHora: '15/09/2026 08:45',
+            descricaoEquipamento: 'Impressora Epson EcoTank',
+            categoria: 'Impressora',
+            descricaoDefeito: 'Imprime com falhas e apresenta manchas nas folhas.',
+            estado: 'REDIRECIONADA',
+            cliente: 'Bruno Alves',
+            valorOrcamento: 195,
+            dataHoraOrcamento: '15/09/2026 09:30',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '15/09/2026 08:45', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '15/09/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '15/09/2026 10:20', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '15/09/2026 11:00', estadoAnterior: 'APROVADA', estadoNovo: 'REDIRECIONADA', funcionario: 'Maria', observacao: 'Solicitacao redirecionada para outro funcionario.' }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: 'Temporario'
         }
     ];
 
@@ -139,13 +213,22 @@ export class SolicitacaoService {
         this.alterarEstado(id, 'REJEITADA', motivo);
     }
 
+    // RF009 - Resgatar Servico: o que estava REJEITADA volta para APROVADA
+    resgatar(id : number) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao || solicitacao.estado !== 'REJEITADA') {
+            return;
+        }
+        this.alterarEstado(id, 'APROVADA', 'Servico resgatado pelo cliente.');
+    }
+
     // RF010 - Pagar Servico: registra a data/hora do pagamento
     pagar(id : number) {
         const solicitacao = this.buscarPorId(id);
         if (!solicitacao || solicitacao.estado !== 'ARRUMADA') {
             return;
         }
-        solicitacao.dataHoraPagamento = new Date().toLocaleString('pt-BR');
+        solicitacao.dataHoraPagamento = dataHoraAtual();
         this.alterarEstado(id, 'PAGA', `Pagamento confirmado em ${solicitacao.dataHoraPagamento}.`);
     }
 
@@ -155,7 +238,7 @@ export class SolicitacaoService {
             return;
         }
         solicitacao.historico.push({
-            dataHora: new Date().toLocaleString('pt-BR'),
+            dataHora: dataHoraAtual(),
             estadoAnterior: solicitacao.estado,
             estadoNovo: novoEstado,
             funcionario: null,
@@ -180,5 +263,17 @@ export class SolicitacaoService {
         solicitacao.funcionarioOrcamento = funcionario;
         this.alterarEstado(id, "ORCADA");
 
+    }
+
+    //RF 013 - Listar todas as solicitacoes para um funcionario especifico
+    listarParaFuncionario(funcionario : string) : Solicitacao[]{
+        return this.solicitacoes.filter(s => s.estado !== 'REDIRECIONADA' || s.funcionarioRedirecionado === funcionario).sort((a, b) => this.paraTimestamp(a.dataHora) - this.paraTimestamp(b.dataHora));
+    }
+
+    private paraTimestamp(dataHora : string) : number{
+        const [data, hora] = dataHora.split(' ');
+        const [dia, mes, ano] = data.split('/');
+        const [horaNum, minuto] = hora.split(':');
+        return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(horaNum), Number(minuto)).getTime();
     }
 }

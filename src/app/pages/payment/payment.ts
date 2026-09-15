@@ -2,11 +2,13 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
+import { MoedaBrPipe } from '../../pipes';
+import { formatarMoedaBr } from '../../shared';
 
 // RF010 - Pagar Servico
 @Component({
   selector: 'app-payment',
-  imports: [RouterLink],
+  imports: [RouterLink, MoedaBrPipe],
   templateUrl: './payment.html',
   styleUrl: './payment.css',
 })
@@ -28,17 +30,6 @@ export class Payment {
     }
 
     this.solicitacaoService.pagar(this.solicitacao.id);
-    this.mensagem = `Pagamento de ${this.formatarValor(this.solicitacao.valorOrcamento)} confirmado em ${this.solicitacao.dataHoraPagamento}.`;
-  }
-
-  formatarValor(valor: number | null): string {
-    if (valor === null) {
-      return 'Não informado';
-    }
-
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
+    this.mensagem = `Pagamento de ${formatarMoedaBr(this.solicitacao.valorOrcamento)} confirmado em ${this.solicitacao.dataHoraPagamento}.`;
   }
 }

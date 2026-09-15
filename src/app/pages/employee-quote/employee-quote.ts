@@ -2,12 +2,14 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-budget',
-  imports: [],
-  templateUrl: './budget.html',
-  styleUrl: './budget.css',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './employee-quote.html',
+  styleUrl: './employee-quote.css',
 })
 export class Budget {
   private route = inject(ActivatedRoute);

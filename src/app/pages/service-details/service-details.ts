@@ -68,6 +68,17 @@ export class ServiceDetails {
     this.mensagemSucesso = false;
   }
 
+  // RF009 - Resgatar Servico
+  resgatarServico(): void {
+    if (!this.solicitacao) {
+      return;
+    }
+
+    this.solicitacaoService.resgatar(this.solicitacao.id);
+    this.mensagem = 'Serviço resgatado. A solicitação voltou para o estado APROVADA.';
+    this.mensagemSucesso = true;
+  }
+
   fecharMensagem(): void {
     this.mensagem = '';
   }

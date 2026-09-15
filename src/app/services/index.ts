@@ -1,3 +1,5 @@
 export * from './user-auto-register'
 export * from './solicitacao-service'
 export * from './user-service'
+export * from './execute-maintenance-service'
+export * from './cat-equip-service'
