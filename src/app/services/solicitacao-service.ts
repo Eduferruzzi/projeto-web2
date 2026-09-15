@@ -270,6 +270,51 @@ export class SolicitacaoService {
         return this.solicitacoes.filter(s => s.estado !== 'REDIRECIONADA' || s.funcionarioRedirecionado === funcionario).sort((a, b) => this.paraTimestamp(a.dataHora) - this.paraTimestamp(b.dataHora));
     }
 
+    // RF014 - Efetuar Manutenção
+    efetuarManutencao(id: number, descricao: string, orientacoes: string, funcionario: string) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao) return;
+        
+        solicitacao.historico.push({
+            dataHora: dataHoraAtual(),
+            estadoAnterior: solicitacao.estado,
+            estadoNovo: 'ARRUMADA',
+            funcionario: funcionario,
+            observacao: `Manutenção: ${descricao} | Orientações: ${orientacoes}`
+        });
+        solicitacao.estado = 'ARRUMADA';
+    }
+
+    // RF015 - Redirecionar Manutenção
+    redirecionarManutencao(id: number, funcOrigem: string, nomeFuncDestino: string) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao) return;
+        
+        solicitacao.funcionarioRedirecionado = nomeFuncDestino;
+        solicitacao.historico.push({
+            dataHora: dataHoraAtual(),
+            estadoAnterior: solicitacao.estado,
+            estadoNovo: 'REDIRECIONADA',
+            funcionario: funcOrigem,
+            observacao: `Redirecionado para ${nomeFuncDestino}`
+        });
+        solicitacao.estado = 'REDIRECIONADA';
+    }
+
+    // RF016 - Finalizar Solicitação
+    finalizarSolicitacao(id: number, funcionario: string) {
+        const solicitacao = this.buscarPorId(id);
+        if (!solicitacao) return;
+        
+        solicitacao.historico.push({
+            dataHora: dataHoraAtual(),
+            estadoAnterior: solicitacao.estado,
+            estadoNovo: 'FINALIZADA',
+            funcionario: funcionario
+        });
+        solicitacao.estado = 'FINALIZADA';
+    }
+
     private paraTimestamp(dataHora : string) : number{
         const [data, hora] = dataHora.split(' ');
         const [dia, mes, ano] = data.split('/');

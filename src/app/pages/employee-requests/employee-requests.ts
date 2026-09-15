@@ -72,6 +72,14 @@ export class EmployeeRequests implements OnInit {
     );
   }
 
+  
+  finalizar(id: number): void {
+    if (confirm('Você quer finalizar esta solicitação?')) {
+      this.solicitacaoService.finalizarSolicitacao(id, this.nomeFuncionarioLogado);
+      this.aplicarFiltro(); 
+    }
+  }
+
   private parseDataHora(dataHora: string): Date {
     const [data, hora] = dataHora.split(' ');
     const [dia, mes, ano] = data.split('/');

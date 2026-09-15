@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router'; 
-import { ExecuteMaintenanceService } from '../../services/execute-maintenance-service';
-import { SolicitacaoService } from '../../services'; 
+import { SolicitacaoService } from '../../services/solicitacao-service'; 
+import { UserService } from '../../services/user-service'; 
 import { Solicitacao } from '../../models/Solicitacao';
+import { User } from '../../models/user';
 
 @Component({
   selector: 'app-execute-maintenance',
@@ -11,21 +12,27 @@ import { Solicitacao } from '../../models/Solicitacao';
   templateUrl: './execute-maintenance.html',
   styleUrl: './execute-maintenance.css'
 })
-export class ExecuteMaintenance {
-
-  private maintenanceService = inject(ExecuteMaintenanceService);
+export class ExecuteMaintenance implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute); 
   private solicitacaoService = inject(SolicitacaoService); 
+  private userService = inject(UserService);
 
   solicitacao: Solicitacao | undefined; 
+  funcionariosSelect: User[] = [];
+  
+  // só um mock (peguei o mesmo do q tava no requests)
+  nomeFuncionarioLogado = 'Eduardo'; 
 
   exibirRedirecionamento: boolean = false;
   exibirFormConclusao: boolean = true;
 
-  constructor() {
+  ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.buscarPorId(id);
+
+    // carrega os funcionarios menos vc mesmo
+    this.funcionariosSelect = this.userService.listarTodos().filter(f => f.nome !== this.nomeFuncionarioLogado);
   }
 
   concluirManutencao(descricao: string, orientacoes: string): void {
@@ -33,12 +40,9 @@ export class ExecuteMaintenance {
       alert('Por favor, preencha todos os campos da manutenção.');
       return;
     }
-
-    const confirmou = confirm('Deseja concluir esta manutenção?');
-
-    if (confirmou && this.solicitacao) { // ve se a solicitacao existe
-      this.maintenanceService.salvarConclusao(descricao, orientacoes);
-      this.router.navigate(['/employee-home']);
+    if (confirm('Quer concluir esta manutenção?')) {
+      this.solicitacaoService.efetuarManutencao(this.solicitacao!.id, descricao, orientacoes, this.nomeFuncionarioLogado);
+      this.router.navigate(['/employee-requests']);
     }
   }
 
@@ -47,13 +51,12 @@ export class ExecuteMaintenance {
       alert('Selecione um funcionário para o redirecionamento.');
       return;
     }
-
-    // alerta de confirmação
-    const confirmou = confirm('Deseja redirecionar esta manutenção para outro funcionário?');
-
-    if (confirmou) {
-      this.maintenanceService.redirecionar(funcionarioId);
-      this.router.navigate(['/employee-home']);
+    if (confirm('Quer redirecionar esta manutenção para outro funcionário?')) {
+      const funcionarioDestino = this.userService.buscarPorId(Number(funcionarioId));
+      if(funcionarioDestino) {
+          this.solicitacaoService.redirecionarManutencao(this.solicitacao!.id, this.nomeFuncionarioLogado, funcionarioDestino.nome);
+      }
+      this.router.navigate(['/employee-requests']);
     }
   }
 
@@ -63,6 +66,6 @@ export class ExecuteMaintenance {
   }
 
   cancelar(): void {
-    this.router.navigate(['/employee-home']);
+    this.router.navigate(['/employee-requests']);
   }
 }
