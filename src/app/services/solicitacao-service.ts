@@ -142,8 +142,52 @@ export class SolicitacaoService {
             dataHoraPagamento: null,
             funcionarioResponsavel: null,
             funcionarioRedirecionado: null
+        },
+        {
+            id: 7,
+            dataHora: '15/09/2026 09:20',
+            descricaoEquipamento: 'Notebook Acer Aspire 5',
+            categoria: 'Notebook',
+            descricaoDefeito: 'Bateria nao carrega e o equipamento desliga fora da tomada.',
+            estado: 'PAGA',
+            cliente: 'Ana Martins',
+            valorOrcamento: 280,
+            dataHoraOrcamento: '15/09/2026 10:00',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: '15/09/2026 14:30',
+            historico: [
+                { dataHora: '15/09/2026 09:20', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '15/09/2026 10:00', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '15/09/2026 11:15', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '15/09/2026 13:40', estadoAnterior: 'APROVADA', estadoNovo: 'ARRUMADA', funcionario: 'Temporario' },
+                { dataHora: '15/09/2026 14:30', estadoAnterior: 'ARRUMADA', estadoNovo: 'PAGA', funcionario: null }
+            ],
+            funcionarioResponsavel: 'Temporario',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 8,
+            dataHora: '15/09/2026 08:45',
+            descricaoEquipamento: 'Impressora Epson EcoTank',
+            categoria: 'Impressora',
+            descricaoDefeito: 'Imprime com falhas e apresenta manchas nas folhas.',
+            estado: 'REDIRECIONADA',
+            cliente: 'Bruno Alves',
+            valorOrcamento: 195,
+            dataHoraOrcamento: '15/09/2026 09:30',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '15/09/2026 08:45', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '15/09/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '15/09/2026 10:20', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '15/09/2026 11:00', estadoAnterior: 'APROVADA', estadoNovo: 'REDIRECIONADA', funcionario: 'Maria', observacao: 'Solicitacao redirecionada para outro funcionario.' }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: 'Temporario'
         }
-        
     ];
 
     buscarPorId(id : number) : Solicitacao | undefined {

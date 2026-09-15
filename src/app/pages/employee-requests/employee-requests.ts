@@ -45,6 +45,7 @@ export class EmployeeRequests implements OnInit {
           && data.getMonth() === hoje.getMonth()
           && data.getFullYear() === hoje.getFullYear();
       });
+      this.solicitacoesFiltradas = this.ordenarPorData(this.solicitacoesFiltradas);
       return;
     }
 
@@ -58,10 +59,17 @@ export class EmployeeRequests implements OnInit {
         if (fim && data > fim) return false;
         return true;
       });
+      this.solicitacoesFiltradas = this.ordenarPorData(this.solicitacoesFiltradas);
       return;
     }
 
-    this.solicitacoesFiltradas = [...this.todasSolicitacoes];
+    this.solicitacoesFiltradas = this.ordenarPorData(this.todasSolicitacoes);
+  }
+
+  private ordenarPorData(solicitacoes: Solicitacao[]): Solicitacao[] {
+    return [...solicitacoes].sort((a, b) =>
+      this.parseDataHora(b.dataHora).getTime() - this.parseDataHora(a.dataHora).getTime()
+    );
   }
 
   private parseDataHora(dataHora: string): Date {
