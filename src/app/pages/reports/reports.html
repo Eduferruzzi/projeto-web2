@@ -17,14 +17,25 @@
             @if (mostrarDatas) {
               <div>
                 <label for="dataInicial">Data inicial</label>
-                <input type="date" id="dataInicial" name="dataInicial">
+                <input type="date" id="dataInicial" name="dataInicial" #dataInicial>
 
                 <label for="dataFinal">Data final</label>
-                <input type="date" id="dataFinal" name="dataFinal">
+                <input type="date" id="dataFinal" name="dataFinal" #dataFinal>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="baixarRelatorio('data', dataInicial.value, dataFinal.value)"
+                >
+                  Baixar PDF
+                </button>
               </div>
             }
 
-            <button type="button" class="btn btn-outline-primary btn-lg">
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-lg"
+              (click)="baixarRelatorio('categoria')"
+            >
               Relatorio por categoria
             </button>
           </div>
