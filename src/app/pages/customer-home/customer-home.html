@@ -11,92 +11,31 @@
 
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h2 class="h4 mb-0">Suas solicitações</h2>
-        <span class="text-secondary small">6 solicitações</span>
+        <span class="text-secondary small">{{ solicitacoes.length }} solicitações</span>
     </div>
 
     <div class="row g-3">
-        <div class="col-12 col-lg-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column gap-3">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div>
-                            <p class="text-secondary small mb-1">20/08/26 às 14:14</p>
-                            <h3 class="h5 mb-0">Notebook Samsung S20</h3>
+        @for(solicitacao of solicitacoes; track solicitacao.id){
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between gap-3">
+                            <div>
+                                <p class="text-secondary small mb-1">20/08/26 às 14:14</p>
+                                <h3 class="h5 mb-0">Notebook Samsung S20</h3>
+                            </div>
+                            <span class="badge text-bg-warning align-self-start">Orçada</span>
                         </div>
-                        <span class="badge text-bg-warning align-self-start">Orçada</span>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2 mt-auto">
-                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 1]">Visualizar solicitação</a>
-                        <a class="btn btn-primary btn-sm" [routerLink]="['/quote', 1]">Aprovar ou rejeitar</a>
+                        <div class="d-flex flex-wrap gap-2 mt-auto">
+                            <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 1]">Visualizar solicitação</a>
+                            <a class="btn btn-primary btn-sm" [routerLink]="['/quote', 1]">Aprovar ou rejeitar</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column gap-3">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div>
-                            <p class="text-secondary small mb-1">18/08/26 às 15:34</p>
-                            <h3 class="h5 mb-0">Desktop Dell Optiplex</h3>
-                        </div>
-                        <span class="badge text-bg-info align-self-start">Aprovada</span>
-                    </div>
-                    <div class="mt-auto">
-                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 3]">Visualizar solicitação</a>
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <p><span>09:12</span> | <span>17/08/26</span></p>
-                        <p>Teclado mecanico Logitech</p>
-                        <p>REJEITADA</p>
-                        <a class="btn btn-primary" [routerLink]="['/service', 4]">Visualizar Solicitação</a>
-                        <a class="btn btn-primary" [routerLink]="['/service', 4]">Resgatar Serviço</a>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2 mt-auto">
-                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 4]">Visualizar solicitação</a>
-                        <a class="btn btn-primary btn-sm">Resgatar serviço</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column gap-3">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div>
-                            <p class="text-secondary small mb-1">16/08/26 às 08:40</p>
-                            <h3 class="h5 mb-0">Notebook Lenovo Ideapad</h3>
-                        </div>
-                        <span class="badge text-bg-success align-self-start">Arrumada</span>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2 mt-auto">
-                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 5]">Visualizar solicitação</a>
-                        <a class="btn btn-primary btn-sm" [routerLink]="['/payment', 5]">Pagar serviço</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column gap-3">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div>
-                            <p class="text-secondary small mb-1">19/08/26 às 15:34</p>
-                            <h3 class="h5 mb-0">Impressora HP 2700</h3>
-                        </div>
-                        <span class="badge text-bg-warning align-self-start">Orçada</span>
-                    </div>
-                    <div class="d-flex flex-wrap gap-2 mt-auto">
-                        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/service', 2]">Visualizar solicitação</a>
-                        <a class="btn btn-primary btn-sm" [routerLink]="['/quote', 2]">Aprovar ou rejeitar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
+        @empty {
+            <p>Você ainda não tem solicitações</p>
+        }
     </div>
 </div>
