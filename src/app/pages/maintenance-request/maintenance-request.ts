@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { CatEquipService } from '../../services';
+import { CatEquip } from '../../models/cat-equip';
 
 @Component({
   selector: 'app-maintenance-request',
@@ -8,20 +10,20 @@ import { RouterLink } from '@angular/router';
   templateUrl: './maintenance-request.html',
   styleUrl: './maintenance-request.css',
 })
-export class MaintenanceRequest {
+export class MaintenanceRequest implements OnInit {
+  private catEquipService = inject(CatEquipService);
+  private router = inject(Router);
+
   descricaoEquipamento = '';
   categoria = '';
   descricaoDefeito = '';
 
   solicitacaoEnviada = false;
+  categorias: CatEquip[] = [];
 
-  categorias = [
-    'Notebooks',
-    'Desktop',
-    'Impressora',
-    'Mouse',
-    'Teclado',
-  ];
+  ngOnInit(): void {
+    this.categorias = this.catEquipService.listar();
+  }
 
   cadastrarSolicitacao(formulario: NgForm) {
     if (formulario.invalid) {
@@ -39,5 +41,6 @@ export class MaintenanceRequest {
 
     this.solicitacaoEnviada = true;
     formulario.resetForm();
+    this.router.navigate(['/user-home'])
   }
 }

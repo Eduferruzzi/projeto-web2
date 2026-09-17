@@ -30,6 +30,21 @@
               <label for="categoria" class="form-label">
                 Categoria do equipamento
               </label>
+
+              <select
+                id="categoria"
+                name="categoria"
+                class="form-select"
+                [(ngModel)]="categoria"
+                required
+              >
+                <option value="" disabled>Selecione uma categoria</option>
+                @for (categoriaEquipamento of categorias; track categoriaEquipamento.id) {
+                  <option [value]="categoriaEquipamento.nome">
+                    {{ categoriaEquipamento.nome }}
+                  </option>
+                }
+              </select>
             </div>
 
             <div class="mb-4">
@@ -47,8 +62,6 @@
                 required
               ></textarea>
             </div>
-
-            <select name="" id=""></select>
 
             <div class="d-flex justify-content-end gap-2">
               <a
