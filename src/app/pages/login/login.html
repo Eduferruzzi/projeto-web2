@@ -19,7 +19,7 @@
                 </div>
 
                 <!-- tipo de usuario -->
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                     <label class="form-label d-block">Entrar como:</label>
                     
                     <div class="form-check form-check-inline">
@@ -35,14 +35,25 @@
                             Trabalhador
                         </label>
                     </div>
-                </div>
+                </div> -->
+
+                <!-- botao entrar -->
+                <!-- <div class="d-grid gap-2 mb-4">
+                    <button 
+                        type="button" 
+                        class="btn btn-primary"
+                        (click)="fazerLogin(emailInput.value, senhaInput.value, tipoCliente.checked ? 'cliente' : 'trabalhador')"
+                    >
+                        Entrar
+                    </button>
+                </div> -->
 
                 <!-- botao entrar -->
                 <div class="d-grid gap-2 mb-4">
                     <button 
                         type="button" 
                         class="btn btn-primary"
-                        (click)="fazerLogin(emailInput.value, senhaInput.value, tipoCliente.checked ? 'cliente' : 'trabalhador')"
+                        (click)="fazerLogin(emailInput.value, senhaInput.value)"
                     >
                         Entrar
                     </button>

@@ -5,61 +5,29 @@
             LEDAJA Manutenções
         </a>
 
-        <div class="collapse navbar-collapse" id="menuNavbar">
+        <button
+            class="navbar-toggler"
+            type="button"
+            aria-controls="menuNavbar"
+            [attr.aria-expanded]="menuAberto"
+            aria-label="Abrir menu"
+            (click)="alternarMenu()"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <div class="collapse navbar-collapse" id="menuNavbar" [class.show]="menuAberto">
             <ul class="navbar-nav mx-auto">
-
                 <li class="nav-item">
                     <a
                         class="nav-link"
-                        routerLink="/employee-home"
+                        routerLink="/user-home"
                         routerLinkActive="active"
                         [routerLinkActiveOptions]="{ exact: true }"
                     >
                         Início
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        routerLink="/employee-crud"
-                        routerLinkActive="active"
-                    >
-                        Funcionários
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        routerLink="/employee-requests"
-                        routerLinkActive="active"
-                    >
-                        Solicitações
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        routerLink="/execute-maintenance"
-                        routerLinkActive="active"
-                    >
-                        Manutenções
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link"
-                        routerLink="/categories"
-                        routerLinkActive="active"
-                    >
-                        Relatórios
-                    </a>
-                </li>
-
             </ul>
 
             <div class="d-flex align-items-center gap-3">
