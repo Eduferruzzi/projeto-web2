@@ -187,6 +187,28 @@ export class SolicitacaoService {
             ],
             funcionarioResponsavel: null,
             funcionarioRedirecionado: 'Temporario'
+        },
+        {
+            id: 9,
+            dataHora: '16/09/2026 10:45',
+            descricaoEquipamento: 'Impressora HP',
+            categoria: 'Impressora',
+            descricaoDefeito: 'Imprime com falhas e apresenta manchas nas folhas.',
+            estado: 'FINALIZADA',
+            cliente: 'Bruno Alves',
+            valorOrcamento: 195,
+            dataHoraOrcamento: '15/09/2026 09:30',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '15/09/2026 08:45', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '15/09/2026 09:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '15/09/2026 10:20', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '15/09/2026 11:00', estadoAnterior: 'APROVADA', estadoNovo: 'REDIRECIONADA', funcionario: 'Maria', observacao: 'Solicitacao redirecionada para outro funcionario.' }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: 'Temporario'
         }
     ];
 

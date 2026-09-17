@@ -1,0 +1,31 @@
+.status-aberta {
+  background-color: #676767 !important;
+}
+
+.status-orcada {
+  background-color: #895129 !important;
+}
+
+.status-rejeitada {
+  background-color: #ff2c2c !important;
+}
+
+.status-aprovada {
+  background-color: #ffde21 !important;
+}
+
+.status-redirecionada {
+  background-color: #9D00FF !important;
+}
+
+.status-arrumada {
+  background-color: #1883ff !important;
+}
+
+.status-paga {
+  background-color: #ff5c00 !important;
+}
+
+.status-finalizada {
+  background-color: #00ff00 !important;
+}
