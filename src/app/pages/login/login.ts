@@ -12,7 +12,30 @@ export class Login {
   private router = inject(Router);
 
   
-  fazerLogin(email: string, senha: string, tipoUsuario: string): void {
+  // fazerLogin(email: string, senha: string, tipoUsuario: string): void {
+  //   // valida a senha
+  //   const senhaValida = /^\d{4}$/.test(senha);
+  //   if (!senhaValida) {
+  //     alert('A senha deve conter exatamente 4 números.');
+  //     return;
+  //   }
+
+  //   // valida o email
+  //   const emailValido = /^[^\s@]+@[^\s@]+$/.test(email);
+  //   if (!emailValido) {
+  //     alert('Por favor, insira um e-mail válido.');
+  //     return;
+  //   }
+
+  //   // redireciona com base no tipo de usuario da radiobox
+  //   if (tipoUsuario === 'cliente') {
+  //     this.router.navigate(['/user-home']);
+  //   } else {
+  //     this.router.navigate(['/employee-home']);
+  //   }
+  // }
+
+  fazerLogin(email: string, senha: string): void {
     // valida a senha
     const senhaValida = /^\d{4}$/.test(senha);
     if (!senhaValida) {
@@ -28,10 +51,13 @@ export class Login {
     }
 
     // redireciona com base no tipo de usuario da radiobox
-    if (tipoUsuario === 'cliente') {
+    if (email === 'cliente@gmail.com') {
       this.router.navigate(['/user-home']);
-    } else {
+    } else if(email === 'funcionario@gmail.com'){
       this.router.navigate(['/employee-home']);
+    }
+    else{
+      alert('Dados não existentes no sistema.');
     }
   }
 

@@ -8,16 +8,15 @@
 		<button
 			class="navbar-toggler"
 			type="button"
-			data-bs-toggle="collapse"
-			data-bs-target="#menuNavbarEmployee"
 			aria-controls="menuNavbarEmployee"
-			aria-expanded="false"
+			[attr.aria-expanded]="menuAberto"
 			aria-label="Abrir menu"
+			(click)="alternarMenu()"
 		>
 			<span class="navbar-toggler-icon"></span>
 		</button>
 
-		<div class="collapse navbar-collapse" id="menuNavbarEmployee">
+		<div class="collapse navbar-collapse" id="menuNavbarEmployee" [class.show]="menuAberto">
 
 			<ul class="navbar-nav mx-auto">
 
@@ -35,7 +34,7 @@
 				<li class="nav-item">
 					<a
 						class="nav-link"
-						routerLink="/execute-maintenance"
+						routerLink="/employee-requests"
 						routerLinkActive="active"
 					>
 						Solicitações
@@ -46,15 +45,35 @@
 					<a
 						class="nav-link"
 						routerLinkActive="active"
+						routerLink="/employee-crud"
 					>
 						Funcionários
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a
+						class="nav-link"
+						routerLinkActive="active"
+						routerLink="/categories"
+					>
+						Equipamentos
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a
+						class="nav-link"
+						routerLinkActive="active"
+						routerLink="/reports"
+					>
+						Relatórios
 					</a>
 				</li>
 
 			</ul>
 
 			<div class="d-flex align-items-center gap-3">
-
 				<span class="usuario">
 					Funcionário
 				</span>
@@ -62,7 +81,6 @@
 				<button class="btn btn-outline-secondary btn-sm" routerLink="/login">
 					Sair
 				</button>
-
 			</div>
 
 		</div>

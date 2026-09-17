@@ -7,4 +7,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar-employee.html',
   styleUrl: './navbar-employee.css',
 })
-export class NavbarEmployee {}
+export class NavbarEmployee {
+  menuAberto = false;
+
+  alternarMenu(): void {
+    this.menuAberto = !this.menuAberto;
+  }
+}
