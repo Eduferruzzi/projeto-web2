@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
-import { CatEquipService } from '../../services';
-import { CatEquip } from '../../models/cat-equip';
+import { Router, RouterLink } from '@angular/router';
+import { CatEquipService } from '../../services'
+import { CatEquip } from '../../models/cat-equip'
 
 @Component({
   selector: 'app-maintenance-request',
