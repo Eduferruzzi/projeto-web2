@@ -53,11 +53,11 @@ export class Login {
     // redireciona com base no tipo de usuario da radiobox
     if (email === 'cliente@gmail.com' && senha === '1234') {
       this.router.navigate(['/user-home']);
-    } else if(email === 'funcionario@gmail.com' && senha === '1234'){
+    } else if(email === 'funcionario@gmail.com' && senha === '4321'){
       this.router.navigate(['/employee-home']);
     }
     else{
-      alert('Dados não existentes no sistema.');
+      alert('Email ou senha incorretos');
     }
   }
 

@@ -27,7 +27,7 @@ export class CustomerHome implements OnInit{
 
   private ordenarPorData(solicitacoes: Solicitacao[]): Solicitacao[] {
     return [...solicitacoes].sort((a, b) =>
-      this.parseDataHora(b.dataHora).getTime() - this.parseDataHora(a.dataHora).getTime()
+      this.parseDataHora(a.dataHora).getTime() - this.parseDataHora(b.dataHora).getTime()
     );
   }
 
