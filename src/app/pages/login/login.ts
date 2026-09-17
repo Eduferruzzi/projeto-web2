@@ -51,9 +51,9 @@ export class Login {
     }
 
     // redireciona com base no tipo de usuario da radiobox
-    if (email === 'cliente@gmail.com') {
+    if (email === 'cliente@gmail.com' && senha === '1234') {
       this.router.navigate(['/user-home']);
-    } else if(email === 'funcionario@gmail.com'){
+    } else if(email === 'funcionario@gmail.com' && senha === '1234'){
       this.router.navigate(['/employee-home']);
     }
     else{
