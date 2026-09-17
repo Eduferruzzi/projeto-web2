@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SolicitacaoService } from '../../services'
-import { Solicitacao } from '../../models/Solicitacao'
+import { Solicitacao, EstadoSolicitacao } from '../../models/Solicitacao'
 import { CommonModule } from '@angular/common'
 
 @Component({
@@ -15,6 +15,20 @@ export class CustomerHome implements OnInit{
   solicitacoes: Solicitacao[] = []
 
   ngOnInit(): void {
-    this.solicitacoes = this.solicitacaoService.listar()
+    this.solicitacoes = this.ordenarPorData(this.solicitacaoService.listar())
   }
+
+  private parseDataHora(dataHora: string): Date {
+    const [data, hora] = dataHora.split(' ');
+    const [dia, mes, ano] = data.split('/');
+    const [horaNum, minuto] = hora.split(':');
+    return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(horaNum), Number(minuto));
+  }
+
+  private ordenarPorData(solicitacoes: Solicitacao[]): Solicitacao[] {
+    return [...solicitacoes].sort((a, b) =>
+      this.parseDataHora(b.dataHora).getTime() - this.parseDataHora(a.dataHora).getTime()
+    );
+  }
+
 }

@@ -33,35 +33,35 @@
 }
 
 .status-aberta {
-  background-color: #ffecb3 !important;
+  background-color: #676767 !important;
 }
 
 .status-orcada {
-  background-color: #d1ecf1 !important;
+  background-color: #895129 !important;
 }
 
 .status-rejeitada {
-  background-color: #f8d7da !important;
+  background-color: #ff2c2c !important;
 }
 
 .status-aprovada {
-  background-color: #d4edda !important;
+  background-color: #ffde21 !important;
 }
 
 .status-redirecionada {
-  background-color: #fff3cd !important;
+  background-color: #9D00FF !important;
 }
 
 .status-arrumada {
-  background-color: #cce5ff !important;
+  background-color: #1883ff !important;
 }
 
 .status-paga {
-  background-color: #d1f0c4 !important;
+  background-color: #ff5c00 !important;
 }
 
 .status-finalizada {
-  background-color: #e2e3e5 !important;
+  background-color: #00ff00 !important;
 }
 
 .btn-acao {
