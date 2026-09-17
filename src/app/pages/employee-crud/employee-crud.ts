@@ -7,7 +7,7 @@ import { UserService } from '../../services';
 
 @Component({
   selector: 'app-crudemployee',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employee-crud.html',
   styleUrl: './employee-crud.css',
 })
