@@ -40,7 +40,7 @@
 
                     <div class="mb-3 col-12 col-md-6">
                         <label class="form-label">Senha</label>
-                        <input type="password" class="form-control" placeholder="Senha" [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel">
+                        <input type="password" class="form-control" placeholder="Senha" [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel" numerico>
                         @if (senhaCampo.invalid && formCadastro.submitted) {
                             <div class="text-danger mt-1">
                                 Senha obrigatória com no mínimo 4 caracteres.
@@ -50,7 +50,7 @@
 
                     <div class="mb-3 col-12 col-md-6">
                         <label class="form-label">Confirmar Senha</label>
-                        <input type="password" class="form-control" placeholder="Confirmar Senha" [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4" #confirmarSenhaCampo="ngModel">
+                        <input type="password" class="form-control" placeholder="Confirmar Senha" [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4" #confirmarSenhaCampo="ngModel" numerico>
                         @if (confirmarSenhaCampo.invalid && formCadastro.submitted) {
                             <div class="text-danger mt-1">
                                 Confirmação da senha é obrigatória.

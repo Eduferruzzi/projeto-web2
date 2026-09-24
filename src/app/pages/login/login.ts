@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { Numerico } from '../../shared';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Numerico],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
