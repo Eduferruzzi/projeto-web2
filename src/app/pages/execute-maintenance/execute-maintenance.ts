@@ -18,15 +18,19 @@ export class ExecuteMaintenance implements OnInit {
   private solicitacaoService = inject(SolicitacaoService); 
   private userService = inject(UserService);
 
+  // variaveis de estado do componente
   solicitacao: Solicitacao | undefined; 
   funcionariosSelect: User[] = [];
   
   // só um mock (peguei o mesmo do q tava no requests)
   nomeFuncionarioLogado = 'Eduardo'; 
 
+
+  // flag p controle de exibição
   exibirRedirecionamento: boolean = false;
   exibirFormConclusao: boolean = true;
 
+  // busca a solicitacao com base no id da url p inicializar os dados
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.solicitacao = this.solicitacaoService.buscarPorId(id);
@@ -35,6 +39,7 @@ export class ExecuteMaintenance implements OnInit {
     this.funcionariosSelect = this.userService.listarTodos().filter(f => f.nome !== this.nomeFuncionarioLogado);
   }
 
+  // valida campos, confirma e grava
   concluirManutencao(descricao: string, orientacoes: string): void {
     if (!descricao || !orientacoes) {
       alert('Por favor, preencha todos os campos da manutenção.');
@@ -46,6 +51,7 @@ export class ExecuteMaintenance implements OnInit {
     }
   }
 
+  // valida seleção, confirma e grava
   redirecionarManutencao(funcionarioId: string): void {
     if (!funcionarioId) {
       alert('Selecione um funcionário para o redirecionamento.');
@@ -60,11 +66,14 @@ export class ExecuteMaintenance implements OnInit {
     }
   }
 
+  // alterna a exibicao de redirecionamento/conclusao
   alternarRedirecionamento(mostrar: boolean): void {
     this.exibirRedirecionamento = mostrar;
     this.exibirFormConclusao = !mostrar;
   }
 
+
+  // cancela a operação e volta pra tela de solicitações
   cancelar(): void {
     this.router.navigate(['/employee-requests']);
   }
