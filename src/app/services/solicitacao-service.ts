@@ -209,6 +209,88 @@ export class SolicitacaoService {
             ],
             funcionarioResponsavel: null,
             funcionarioRedirecionado: 'Temporario'
+        },
+        {
+            id: 10,
+            dataHora: '18/09/2026 07:50',
+            descricaoEquipamento: 'Tablet Samsung Galaxy Tab',
+            categoria: 'Tablet',
+            descricaoDefeito: 'Nao reconhece o carregador e desliga apos poucos minutos.',
+            estado: 'ABERTA',
+            cliente: 'Mariana Costa',
+            valorOrcamento: null,
+            dataHoraOrcamento: null,
+            funcionarioOrcamento: null,
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '18/09/2026 07:50', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 11,
+            dataHora: '21/09/2026 13:25',
+            descricaoEquipamento: 'Monitor LG Ultrawide',
+            categoria: 'Monitor',
+            descricaoDefeito: 'Apresenta linhas horizontais e oscila a imagem.',
+            estado: 'ORCADA',
+            cliente: 'Rafael Mendes',
+            valorOrcamento: 410,
+            dataHoraOrcamento: '21/09/2026 15:10',
+            funcionarioOrcamento: 'Mario',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '21/09/2026 13:25', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '21/09/2026 15:10', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 12,
+            dataHora: '24/09/2026 08:15',
+            descricaoEquipamento: 'Console PlayStation 5',
+            categoria: 'Console',
+            descricaoDefeito: 'Superaquece e desliga durante os jogos.',
+            estado: 'APROVADA',
+            cliente: 'Lucas Oliveira',
+            valorOrcamento: 360,
+            dataHoraOrcamento: '24/09/2026 09:00',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '24/09/2026 08:15', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '24/09/2026 09:00', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '24/09/2026 10:30', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 13,
+            dataHora: '27/09/2026 16:40',
+            descricaoEquipamento: 'Smartphone Xiaomi Redmi Note 12',
+            categoria: 'Celular',
+            descricaoDefeito: 'Microfone falha durante chamadas e gravacoes.',
+            estado: 'ARRUMADA',
+            cliente: 'Beatriz Nunes',
+            valorOrcamento: 145,
+            dataHoraOrcamento: '27/09/2026 17:20',
+            funcionarioOrcamento: 'Mario',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '27/09/2026 16:40', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '27/09/2026 17:20', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' },
+                { dataHora: '27/09/2026 18:00', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                { dataHora: '28/09/2026 11:45', estadoAnterior: 'APROVADA', estadoNovo: 'ARRUMADA', funcionario: 'Temporario' }
+            ],
+            funcionarioResponsavel: 'Temporario',
+            funcionarioRedirecionado: null
         }
     ];
 
