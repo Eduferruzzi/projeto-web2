@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { User } from '../../models/user';
 import { UserService } from '../../services';
-import { Numerico } from '../../shared/directives';
+import { Numerico } from '../../shared';
 
 @Component({
   selector: 'app-crudemployee',

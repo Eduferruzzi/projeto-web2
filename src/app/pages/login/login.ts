@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { Numerico } from '../../shared/directives/numerico';
+import { Numerico } from '../../shared';
 
 @Component({
   selector: 'app-login',
