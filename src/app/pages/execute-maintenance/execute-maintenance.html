@@ -32,6 +32,59 @@
             </div>
           </div>
         </div>
+
+        <!-- historico da solicitacao -->
+        <div class="card mb-4">
+          
+          <div class="card-header bg-info text-white">
+
+            <i class="bi bi-clock-history"></i> <strong>Histórico da solicitação</strong>
+
+          </div>
+
+          <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+              <table class="table table-striped table-hover mb-0">
+
+                <thead class="table-light">
+                  <tr>
+                    <th>Data/Hora</th>
+                    <th>Estado Novo</th>
+                    <th>Funcionário</th>
+                    <th>Observação</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <tr *ngFor="let hist of solicitacao.historico">
+
+                    <td>{{ hist.dataHora }}</td>
+
+                    <td>
+
+                      <span class="badge bg-secondary">{{ hist.estadoNovo }}</span>
+
+                    </td>
+
+                    <td>{{ hist.funcionario || 'Samuel Lino' }}</td>
+
+                    <td>{{ hist.observacao || '-' }}</td>
+
+                  </tr>
+                  
+                </tbody>
+
+              </table>
+            
+            </div>
+          
+          </div>
+        
+        </div>
+      
       </div>
 
   <!-- form de conclusao -->
