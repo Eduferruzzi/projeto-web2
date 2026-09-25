@@ -17,7 +17,7 @@ export class MaintenanceRequest implements OnInit {
   descricaoEquipamento = '';
   categoria = '';
   descricaoDefeito = '';
-
+  
   solicitacaoEnviada = false;
   categorias: CatEquip[] = [];
 
