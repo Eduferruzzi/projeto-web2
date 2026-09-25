@@ -1,32 +1,60 @@
-<h1>Categorias de Equipamentos</h1>
+<div class="container py-4 py-md-5">
+    <div class="border-bottom pb-4 mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+            <p class="text-primary text-uppercase small fw-bold mb-2">Cadastro</p>
+            <h1 class="h2 mb-1">Categorias de equipamentos</h1>
+            <p class="text-secondary mb-0">Organize os tipos de equipamento usados nas solicitações.</p>
+        </div>
+        <a [routerLink]="['/categories/new']" title="Cadastrar nova categoria" class="btn btn-primary">
+            <i class="fa fa-plus me-1" aria-hidden="true"></i> Nova categoria
+        </a>
+    </div>
 
-<table class="table table-striped table-bordered table-hover">
-    <tbody>
-        <tr>
-            <th>Nome</th>
-            <th class="text-center">
-                <a [routerLink]="['/categories/new']" href="#" title="Novo" alt="Novo" class="btn btn-xs btn-success">
-                    <i class="fa fa-plus" aria-hidden="true"></i> Novo
+    <section class="card shadow-sm border-0" aria-labelledby="category-list-title">
+        <div class="card-header bg-white p-4 d-flex align-items-center justify-content-between gap-3">
+            <h2 id="category-list-title" class="h4 mb-0">Categorias cadastradas</h2>
+            <span class="text-secondary small text-nowrap">{{ categories.length }} {{ categories.length === 1 ? 'categoria' : 'categorias' }}</span>
+        </div>
+
+        @if (categories.length > 0) {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Nome</th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase text-md-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (category of categories; track category.id){
+                            <tr>
+                                <td class="px-4 py-3 fw-semibold">
+                                    {{ category.nome }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                                    <a [routerLink]="['/categories/edit', category.id]" title="Editar categoria" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-edit me-1" aria-hidden="true"></i> Editar
+                                    </a>
+                                    <a href="#" title="Remover categoria" class="btn btn-sm btn-outline-danger" (click)="remover($event, category)">
+                                        <i class="fa fa-times me-1" aria-hidden="true"></i> Remover
+                                    </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        } @else {
+            <div class="text-center p-5">
+                <i class="fa fa-folder-open-o fs-1 text-secondary mb-3" aria-hidden="true"></i>
+                <h3 class="h5">Nenhuma categoria cadastrada</h3>
+                <p class="text-secondary mb-3">Cadastre uma categoria para começar a organizar os equipamentos.</p>
+                <a [routerLink]="['/categories/new']" class="btn btn-outline-primary">
+                    <i class="fa fa-plus me-1" aria-hidden="true"></i> Cadastrar categoria
                 </a>
-            </th>
-        </tr>
-        @for (category of categories; track category.id){
-            <tr>
-                <td>{{ category.nome }}</td>
-                <td class="text-center" style="width: 300px">
-                    <a [routerLink]="['/categories/edit', category.id]" href="#" title="Editar" alt="Editar" class="btn btn-xs btn-info">
-                        <i class="fa fa-edit" aria-hidden="true"></i> Editar
-                    </a>
-                    <a href="#" title="Remover" alt="Remover" class="btn btn-xs btn-danger" (click)="remover($event, category)">
-                        <i class="fa fa-times" aria-hidden="true"></i> Remover
-                    </a>
-                </td>
-            </tr>
+            </div>
         }
-        @empty {
-            <tr>
-                <td colspan="2">Nenhuma categoria cadastrada</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    </section>
+</div>
