@@ -11,12 +11,20 @@ import { formatarMoedaBr } from '../../shared';
 export class Reports {
   private solicitacaoService = inject(SolicitacaoService);
   mostrarDatas = false;
+  erroPeriodo = '';
 
   exibirDatas(): void {
     this.mostrarDatas = true;
   }
 
   async baixarRelatorio(tipo: 'data' | 'categoria', inicio = '', fim = ''): Promise<void> {
+    this.erroPeriodo = '';
+
+    if (tipo === 'data' && inicio && fim && inicio > fim) {
+      this.erroPeriodo = 'A data inicial não pode ser posterior à data final.';
+      return;
+    }
+
     const { jsPDF } = await import('jspdf');
     const receitas: Record<string, number> = {};
     let total = 0;

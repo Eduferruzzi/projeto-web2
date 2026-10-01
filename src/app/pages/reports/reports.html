@@ -21,6 +21,11 @@
 
                 <label for="dataFinal">Data final</label>
                 <input type="date" id="dataFinal" name="dataFinal" #dataFinal>
+
+                @if (erroPeriodo) {
+                  <div class="text-danger">{{ erroPeriodo }}</div>
+                }
+
                 <button
                   type="button"
                   class="btn btn-primary"

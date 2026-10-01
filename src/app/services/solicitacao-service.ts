@@ -371,7 +371,12 @@ export class SolicitacaoService {
         this.alterarEstado(id, 'PAGA', `Pagamento confirmado em ${solicitacao.dataHoraPagamento}.`);
     }
 
-    private alterarEstado(id : number, novoEstado : EstadoSolicitacao, observacao? : string) {
+    private alterarEstado(
+        id: number,
+        novoEstado: EstadoSolicitacao,
+        observacao?: string,
+        funcionario: string | null = null
+    ) {
         const solicitacao = this.buscarPorId(id);
         if (!solicitacao) {
             return;
@@ -380,7 +385,7 @@ export class SolicitacaoService {
             dataHora: dataHoraAtual(),
             estadoAnterior: solicitacao.estado,
             estadoNovo: novoEstado,
-            funcionario: null,
+            funcionario,
             observacao: observacao
         });
         solicitacao.estado = novoEstado;
@@ -400,7 +405,7 @@ export class SolicitacaoService {
         solicitacao.valorOrcamento = valor;
         solicitacao.dataHoraOrcamento = new Date().toLocaleDateString('pt-BR');
         solicitacao.funcionarioOrcamento = funcionario;
-        this.alterarEstado(id, "ORCADA");
+        this.alterarEstado(id, "ORCADA", undefined, funcionario);
 
     }
 
