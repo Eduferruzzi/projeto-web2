@@ -302,6 +302,41 @@ export class SolicitacaoService {
         return this.solicitacoes;
     }
 
+    cadastrar(
+        descricaoEquipamento: string,
+        categoria: string,
+        descricaoDefeito: string
+    ): Solicitacao {
+        const dataHora = dataHoraAtual();
+        const proximoId = Math.max(...this.solicitacoes.map(s => s.id), 0) + 1;
+
+        const solicitacao: Solicitacao = {
+            id: proximoId,
+            dataHora,
+            descricaoEquipamento,
+            categoria,
+            descricaoDefeito,
+            estado: 'ABERTA',
+            cliente: 'Cliente',
+            valorOrcamento: null,
+            dataHoraOrcamento: null,
+            funcionarioOrcamento: null,
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [{
+                dataHora,
+                estadoAnterior: null,
+                estadoNovo: 'ABERTA',
+                funcionario: null
+            }],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        };
+
+        this.solicitacoes.push(solicitacao);
+        return solicitacao;
+    }
+
     // RF006 - Aprovar Servico
     aprovar(id : number) {
         this.alterarEstado(id, 'APROVADA');
