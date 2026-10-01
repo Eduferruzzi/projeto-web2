@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CatEquipService } from '../../services'
+import { CatEquipService, SolicitacaoService } from '../../services'
 import { CatEquip } from '../../models/cat-equip'
 
 @Component({
@@ -12,6 +12,7 @@ import { CatEquip } from '../../models/cat-equip'
 })
 export class MaintenanceRequest implements OnInit {
   private catEquipService = inject(CatEquipService);
+  private solicitacaoService = inject(SolicitacaoService);
   private router = inject(Router);
 
   descricaoEquipamento = '';
@@ -30,14 +31,11 @@ export class MaintenanceRequest implements OnInit {
       return;
     }
 
-    const solicitacao = {
-      descricaoEquipamento: this.descricaoEquipamento,
-      categoria: this.categoria,
-      descricaoDefeito: this.descricaoDefeito,
-      dataHora: new Date(),
-      estado: 'ABERTA',
-    };
-
+    this.solicitacaoService.cadastrar(
+      this.descricaoEquipamento,
+      this.categoria,
+      this.descricaoDefeito
+    );
 
     this.solicitacaoEnviada = true;
     formulario.resetForm();
