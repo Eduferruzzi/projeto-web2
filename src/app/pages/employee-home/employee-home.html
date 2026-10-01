@@ -10,12 +10,15 @@
                 </tr>
             </thead>
 
-            <tbody id="tabela-solicitacoes">
+              <!-- solicitacoes é preenchido pelo SolicitacaoService; s representa cada item
+                  do modelo Solicitacao e suas propriedades são exibidas por interpolação. -->
+              <tbody id="tabela-solicitacoes">
                 <tr *ngFor="let s of solicitacoes">
                     <td class="text-center">{{ s.dataHora }}</td>
                     <td>{{ s.cliente }}</td>
                     <td>{{ verif(s.descricaoDefeito) }}</td>
                     <td class="text-center">
+                        <!-- RouterLink envia o id da solicitação na URL da tela de orçamento. -->
                         <a [routerLink]="['/employee-quote', s.id]" class="btn btn-outline-dark btn-sm btn-orcar">Orçar</a>
                     </td>
                 </tr>

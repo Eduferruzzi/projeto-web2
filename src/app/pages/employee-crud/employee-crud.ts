@@ -5,6 +5,8 @@ import { User } from '../../models/user';
 import { UserService } from '../../services';
 import { Numerico } from '../../shared';
 
+// Tela de cadastro, edição e remoção de funcionários. CommonModule disponibiliza diretivas
+// usadas no template; FormsModule habilita ngForm/ngModel; Numerico é uma diretiva local.
 @Component({
   selector: 'app-crudemployee',
   imports: [CommonModule, FormsModule, Numerico],
@@ -12,21 +14,27 @@ import { Numerico } from '../../shared';
   styleUrl: './employee-crud.css',
 })
 export class CRUDemployee implements OnInit {
+  // Lista exibida no template e identificador usado para distinguir edição de novo cadastro.
   funcionarios: User[] = [];
   funcionarioEditandoId: number | null = null;
 
+  // Campos vinculados por [(ngModel)] ao formulário employee-crud.html.
   nome = '';
   email = '';
   dataNascimento = '';
   senha = '';
   confirmarSenha = '';
 
+  // UserService é injetado pelo Angular e mantém os dados de usuários usados por esta tela.
   constructor(private userService: UserService) {}
 
+  // Carrega a lista inicial quando o componente é iniciado.
   ngOnInit(): void {
     this.funcionarios = this.userService.listarTodos();
   }
 
+  // Valida o formulário, insere um User novo ou atualiza o funcionário em edição.
+  // NgForm é opcional para permitir chamadas sem referência ao formulário do template.
   adicionarFuncionario(formulario?: NgForm): void {
     if (formulario && formulario.invalid) {
       return;
@@ -69,6 +77,7 @@ export class CRUDemployee implements OnInit {
     this.limparFormulario();
   }
 
+  // Copia os dados do funcionário selecionado para os campos ligados ao formulário.
   editarFuncionario(funcionario: User): void {
     this.funcionarioEditandoId = funcionario.id;
     this.nome = funcionario.nome;
@@ -78,6 +87,7 @@ export class CRUDemployee implements OnInit {
     this.confirmarSenha = funcionario.senha;
   }
 
+  // Confirma a remoção no navegador e limpa a edição caso ela seja do mesmo funcionário.
   excluirFuncionario(id: number): void {
     const alvo = this.funcionarios.find((funcionario) => funcionario.id === id);
     if (!alvo) {
@@ -96,6 +106,7 @@ export class CRUDemployee implements OnInit {
     }
   }
 
+  // Restaura os campos e o identificador para o estado de cadastro novo.
   limparFormulario(): void {
     this.funcionarioEditandoId = null;
     this.nome = '';

@@ -1,7 +1,9 @@
 <div class="container-fluid px-4 mt-4">
     <div class="card shadow-sm mb-5">
         <div class="card-body">
-            <form class="form" #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
+              <!-- ngForm reúne a validação; ngSubmit chama adicionarFuncionario() no componente.
+                  Cada ngModel sincroniza o campo com a propriedade correspondente no TypeScript. -->
+              <form class="form" #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
                 <div class="row g-3">
                     <div class="mb-3 col-12 col-md-6">
                         <label class="form-label">Nome</label>
@@ -87,7 +89,9 @@
                 </tr>
             </thead>
 
-            <tbody>
+              <!-- funcionarios vem do UserService. O *ngFor cria uma linha por User; os botões
+                  enviam o item ou seu id aos métodos de edição e exclusão do componente. -->
+              <tbody>
                 <tr *ngFor="let funcionario of funcionarios">
                     <td>{{ funcionario.nome }}</td>
                     <td>{{ funcionario.email }}</td>
