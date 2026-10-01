@@ -1,9 +1,11 @@
 <div class="container mb-4 mt-5">
 
+    <!-- solicitacao é carregada pelo componente a partir do id da rota; se não existir, mostra o aviso. -->
     <div class="alert alert-warning " *ngIf="!solicitacao">
         Solicitacao nao encontrada
     </div>
 
+    <!-- O restante só aparece quando há uma solicitação; as interpolações leem os dados do modelo. -->
     <div *ngIf="solicitacao">
         <!-- dados solicitacao -->
         <h2 class="mb-4 text-center">Efetuar orcamento - Solicitacao #{{solicitacao.id}}</h2>
@@ -51,7 +53,9 @@
             <div class="card-body">
                 <div class="mb-3" style="max-width: 320px;">
                     <label for="valor" class="form-label fw-bold">Valor do orcamento</label>
+                    <!-- ngModel sincroniza o número digitado com ValorOrcamento no componente. -->
                     <input id="valor" name="valor" type="number" class="form-control" [(ngModel)]="ValorOrcamento" min="0" step="0.01" placeholder="0.00">
+                    <!-- erroValor é preenchido pela validação de confirmarOrcamento(). -->
                     <div class="text-danger mt-1" *ngIf="erroValor">{{erroValor}}</div> 
                 </div>
 
@@ -60,6 +64,7 @@
                 </p>
 
                 <div class="d-flex gap-3">
+                    <!-- Os cliques delegam a confirmação ou o cancelamento aos métodos do componente. -->
                     <button type="button" class="btn btn-primary fw-bold" (click)="confirmarOrcamento()">Confirmar Orcamento</button>
                     <button type="button" class="btn btn-primary fw-bold" (click)="cancelar()">Cancelar</button>
                 </div>
