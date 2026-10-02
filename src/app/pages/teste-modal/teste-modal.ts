@@ -5,12 +5,12 @@ import { HistoricoSolicitacao, Solicitacao } from '../../models/Solicitacao'
 import { SolicitacaoService } from '../../services'
 
 @Component({
-  selector: 'app-service-details',
+  selector: 'app-teste-modal',
   imports: [FormsModule, RouterLink],
-  templateUrl: './service-details.html',
-  styleUrl: './service-details.css',
+  templateUrl: './teste-modal.html',
+  styleUrl: './teste-modal.css',
 })
-export class ServiceDetails {
+export class TesteModal {
   private route = inject(ActivatedRoute);
   private solicitacaoService = inject(SolicitacaoService);
 
