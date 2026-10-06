@@ -54,6 +54,41 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Backend Spring Boot e MySQL
+
+O backend Java fica isolado em `backend/`, separado do frontend Angular. Ele usa Maven (to pesquisando pra ver se vamos usar isso mesmo, esperando opiniao de voces tmb) e Spring Boot 4.1.1 com os starters Web MVC, Spring Data JPA e testes, o driver MySQL e carregado em tempo de execucao.
+
+### Requisitos
+
+- Java 17 ou superior
+- Maven 3.6.3 ou superior
+- MySQL em execucao
+
+### Banco de dados
+
+Executar o script dos DDL`s antes de iniciar a API de fato.
+
+### Iniciar o backend no PowerShell
+
+Ainda testando, nunca fiz isso desse jeito, mas aqui funcionou normal, pelo menos pros testes
+
+Na raiz do repositorio, configure as variaveis para a conexao local:
+
+```powershell
+$env:DB_URL = "jdbc:mysql://localhost:3306/manutencao_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+$env:DB_USERNAME = "root"
+$env:DB_PASSWORD = "senha-de-vcs"
+```
+
+Depois inicie a aplicacao:
+
+```powershell
+cd backend
+mvn spring-boot:run
+```
+
+A configuracao de conexao fica em `backend/src/main/resources/application.properties`. As credenciais sao fornecidas pelo ambiente e nao devem ser adicionadas ao Git. O backend estabelece a estrutura e as dependencias; controllers, entidades e endpoints de negocio ainda precisam ser implementados.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
