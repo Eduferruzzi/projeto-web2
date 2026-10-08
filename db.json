@@ -1,0 +1,53 @@
+{
+    "usuarios": [
+        {
+            "id": 1,
+            "nome": "Admin",
+            "login": "admin",
+            "senha": "admin",
+            "perfil": "ADMIN"
+        },
+        {
+            "id": 2,
+            "nome": "Gerente",
+            "login": "gerente",
+            "senha": "gerente",
+            "perfil": "GERENTE"
+        },
+        {
+            "id": 3,
+            "nome": "Func",
+            "login": "func",
+            "senha": "func",
+            "perfil": "FUNC"
+        },
+        {
+            "id": 4,
+            "nome": "Eduardo",
+            "login": "admin",
+            "senha": "admin",
+            "perfil": "ADMIN"
+        },
+        {
+            "id": 5,
+            "nome": "Antonio",
+            "login": "gerente",
+            "senha": "gerente",
+            "perfil": "GERENTE"
+        },
+        {
+            "id": 6,
+            "nome": "Lucas",
+            "login": "func",
+            "senha": "func",
+            "perfil": "FUNC"
+        },
+        {
+            "id": 7,
+            "nome": "Douglas",
+            "login": "func",
+            "senha": "func",
+            "perfil": "FUNC"
+        }
+    ]
+}
