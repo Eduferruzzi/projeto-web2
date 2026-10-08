@@ -1,25 +1,37 @@
-<div class="container-fluid px-4 mt-4">
-    <div class="card shadow-sm mb-5">
-        <div class="card-body">
-              <!-- ngForm reúne a validação; ngSubmit chama adicionarFuncionario() no componente.
-                  Cada ngModel sincroniza o campo com a propriedade correspondente no TypeScript. -->
-              <form class="form" #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
-                <div class="row g-3">
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Nome</label>
-                        <input type="text" class="form-control" placeholder="Nome" [(ngModel)]="nome" name="nome" required minlength="2" #nomeCampo="ngModel">
+<div class="container py-4 py-md-5">
+    <div class="border-bottom pb-4 mb-4">
+        <p class="text-primary text-uppercase small fw-bold mb-2">Cadastro</p>
+        <h1 class="h2 mb-1">Funcionários</h1>
+        <p class="text-secondary mb-0">Cadastre e gerencie os funcionários do sistema.</p>
+    </div>
+
+    <section class="card shadow-sm border-0 mb-4" aria-labelledby="employee-form-title">
+        <div class="card-header bg-white p-4">
+            <h2 id="employee-form-title" class="h4 mb-1">Novo funcionário</h2>
+            <p class="text-secondary mb-0">Preencha os dados para adicionar um funcionário.</p>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <form #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
+                <div class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <label for="nome" class="form-label fw-semibold">Nome</label>
+                        <input type="text" class="form-control" id="nome" placeholder="Digite o nome completo"
+                            [(ngModel)]="nome" name="nome" required minlength="2" #nomeCampo="ngModel">
                         @if (nomeCampo.invalid && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Nome é obrigatório.
                             </div>
                         }
                     </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" placeholder="Email" [(ngModel)]="email" name="email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" #emailCampo="ngModel">
+                    <div class="col-12 col-md-6">
+                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="nome@exemplo.com"
+                            [(ngModel)]="email" name="email"
+                            required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                            #emailCampo="ngModel">
                         @if (emailCampo.invalid && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 @if (emailCampo.errors?.['required']) {
                                     Email é obrigatório.
                                 }
@@ -30,79 +42,100 @@
                         }
                     </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Data de Nascimento</label>
-                        <input type="date" class="form-control" placeholder="Data de Nascimento" [(ngModel)]="dataNascimento" name="dataNascimento" required #dataNascimentoCampo="ngModel">
+                    <div class="col-12 col-md-6">
+                        <label for="dataNascimento" class="form-label fw-semibold">Data de nascimento</label>
+                        <input type="date" class="form-control" id="dataNascimento"
+                            [(ngModel)]="dataNascimento" name="dataNascimento" required #dataNascimentoCampo="ngModel">
                         @if (dataNascimentoCampo.invalid && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Data de nascimento é obrigatória.
                             </div>
                         }
                     </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Senha</label>
-                        <input type="password" class="form-control" placeholder="Senha" [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel" numerico>
+                    <div class="col-12 col-md-6">
+                        <label for="senha" class="form-label fw-semibold">Senha</label>
+                        <input type="password" class="form-control" id="senha" placeholder="Mínimo de 4 caracteres"
+                            [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel" numerico>
                         @if (senhaCampo.invalid && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Senha obrigatória com no mínimo 4 caracteres.
                             </div>
                         }
                     </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Confirmar Senha</label>
-                        <input type="password" class="form-control" placeholder="Confirmar Senha" [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4" #confirmarSenhaCampo="ngModel" numerico>
+                    <div class="col-12 col-md-6">
+                        <label for="confirmarSenha" class="form-label fw-semibold">Confirmar senha</label>
+                        <input type="password" class="form-control" id="confirmarSenha" placeholder="Repita a senha"
+                            [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4"
+                            #confirmarSenhaCampo="ngModel" numerico>
                         @if (confirmarSenhaCampo.invalid && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Confirmação da senha é obrigatória.
                             </div>
                         }
                         @if (senha && confirmarSenha && senha !== confirmarSenha && formCadastro.submitted) {
-                            <div class="text-danger mt-1">
+                            <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 As senhas devem coincidir.
                             </div>
                         }
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    <button type="button" class="btn btn-danger px-4" (click)="limparFormulario()">APAGAR</button>
-                    <button type="submit" class="btn btn-success px-4">ADD</button>
+                <div class="d-flex flex-column-reverse flex-sm-row justify-content-sm-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline-secondary" (click)="limparFormulario()">
+                        Limpar formulário
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Adicionar funcionário
+                    </button>
                 </div>
             </form>
         </div>
-    </div>
-</div>
+    </section>
 
-<div class="card shadow-sm mb-5">
-    <div class="card-body">
-        <table class="table table-striped table-hover align-middle">
-            <caption class="text-center fw-bold">LISTA DE FUNCIONARIOS</caption>
+    <section class="card shadow-sm border-0" aria-labelledby="employee-list-title">
+        <div class="card-header bg-white p-4 d-flex align-items-center justify-content-between gap-3">
+            <h2 id="employee-list-title" class="h4 mb-0">Funcionários cadastrados</h2>
+            <span class="text-secondary small text-nowrap">{{ funcionarios.length }}
+                {{ funcionarios.length === 1 ? 'funcionário' : 'funcionários' }}</span>
+        </div>
 
-            <thead class="table-info">
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-
-              <!-- funcionarios vem do UserService. O *ngFor cria uma linha por User; os botões
-                  enviam o item ou seu id aos métodos de edição e exclusão do componente. -->
-              <tbody>
-                <tr *ngFor="let funcionario of funcionarios">
-                    <td>{{ funcionario.nome }}</td>
-                    <td>{{ funcionario.email }}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-primary" title="Editar" (click)="editarFuncionario(funcionario)">E</button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-danger" title="Excluir" (click)="excluirFuncionario(funcionario.id)">X</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        @if (funcionarios.length > 0) {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Nome</th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Email</th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase text-md-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let funcionario of funcionarios">
+                            <td class="px-4 py-3 fw-semibold">{{ funcionario.nome }}</td>
+                            <td class="px-4 py-3">{{ funcionario.email }}</td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                        title="Editar funcionário" (click)="editarFuncionario(funcionario)">
+                                        Editar
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        title="Excluir funcionário" (click)="excluirFuncionario(funcionario.id)">
+                                        Excluir
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        } @else {
+            <div class="text-center p-5">
+                <h3 class="h5">Nenhum funcionário cadastrado</h3>
+                <p class="text-secondary mb-0">Adicione um funcionário para começar a gerenciar os acessos.</p>
+            </div>
+        }
+    </section>
 </div>
