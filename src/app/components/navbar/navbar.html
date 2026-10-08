@@ -32,11 +32,17 @@
 
             <div class="d-flex align-items-center gap-3">
 
+                @if(usuarioLogado) {
+                <span class="usuario">
+                    {{ usuarioLogado.nome }}
+                </span>
+                } @else {
                 <span class="usuario">
                     Usuário
                 </span>
+                }
 
-                <a class="btn btn-outline-secondary btn-sm" routerLink="/login">
+                <a class="btn btn-outline-secondary btn-sm" href="#" (click)="logout()">
                     Sair
                 </a>
 

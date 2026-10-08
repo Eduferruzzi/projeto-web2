@@ -4,58 +4,50 @@
             <h2 class="mb-4 text-center">Login</h2>
 
             
-            <form>
+            @if (message) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            }
+            
+            <form #formLogin="ngForm">
                 
                 <!-- email -->
                 <div class="mb-4">
                     <label for="email" class="form-label">E-mail:</label>
-                    <input #emailInput type="email" id="email" name="email" class="form-control" placeholder="email@gmail.com">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="email@gmail.com" [(ngModel)]="login.login" #email="ngModel" required>
+                    @if (email.errors && (email.dirty || email.touched)) {
+                        <div class="alert alert-danger mt-2">
+                            <div [hidden]="!email.errors['required']"> 
+                                Digite o e-mail.
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 <!-- senha -->
                 <div class="mb-4">
                     <label for="senha" class="form-label">Senha:</label>
-                    <input #senhaInput type="password" id="senha" name="senha" class="form-control" placeholder="Sua senha" maxlength="4" numerico>
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Sua senha" maxlength="4" numerico [(ngModel)]="login.senha" #senha="ngModel" required>
+                    @if (senha.errors && (senha.dirty || senha.touched)) {
+                        <div class="alert alert-danger mt-2">
+                            <div [hidden]="!senha.errors['required']"> 
+                                Digite a senha.
+                            </div>
+                        </div>
+                    }
                 </div>
-
-                <!-- tipo de usuario -->
-                <!-- <div class="mb-4">
-                    <label class="form-label d-block">Entrar como:</label>
-                    
-                    <div class="form-check form-check-inline">
-                        <input #tipoCliente class="form-check-input" type="radio" name="tipoUsuario" id="tipoCliente" value="cliente" checked>
-                        <label class="form-check-label" for="tipoCliente">
-                            Cliente
-                        </label>
-                    </div>
-                    
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoTrabalhador" value="trabalhador">
-                        <label class="form-check-label" for="tipoTrabalhador">
-                            Trabalhador
-                        </label>
-                    </div>
-                </div> -->
-
-                <!-- botao entrar -->
-                <!-- <div class="d-grid gap-2 mb-4">
-                    <button 
-                        type="button" 
-                        class="btn btn-primary"
-                        (click)="fazerLogin(emailInput.value, senhaInput.value, tipoCliente.checked ? 'cliente' : 'trabalhador')"
-                    >
-                        Entrar
-                    </button>
-                </div> -->
 
                 <!-- botao entrar -->
                 <div class="d-grid gap-2 mb-4">
                     <button 
                         type="button" 
                         class="btn btn-primary"
-                        (click)="fazerLogin(emailInput.value, senhaInput.value)"
+                        (click)="fazerLogin()"
+                        [disabled]="!formLogin.form.valid"
                     >
-                        Entrar
+                        <i class="fa fa-save" aria-hidden="true"></i> Entrar
                     </button>
                 </div>
 
