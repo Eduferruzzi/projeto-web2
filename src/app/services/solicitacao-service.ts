@@ -291,7 +291,235 @@ export class SolicitacaoService {
             ],
             funcionarioResponsavel: 'Temporario',
             funcionarioRedirecionado: null
-        }
+        },
+        {
+            id: 14,
+            dataHora: '03/08/2026 08:20',
+            descricaoEquipamento: 'Mouse Logitech MX Master 3',
+            categoria: 'Mouse',
+            descricaoDefeito: 'Scroll trava e o clique esquerdo repete sozinho.',
+            estado: 'ABERTA',
+            cliente: 'Joaquina Lima',
+            valorOrcamento: null,
+            dataHoraOrcamento: null,
+            funcionarioOrcamento: null,
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '03/08/2026 08:20', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 15,
+            dataHora: '13/08/2026 17:45',
+            descricaoEquipamento: 'Mouse Razer DeathAdder',
+            categoria: 'Mouse',
+            descricaoDefeito: 'Botao lateral sem resposta.',
+            estado: 'REJEITADA',
+            cliente: 'Joao da Silva',
+            valorOrcamento: 120,
+            dataHoraOrcamento: '14/08/2026 10:20',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: 'Vou tentar o reparo na garantia do fabricante.',
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '13/08/2026 17:45', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '14/08/2026 10:20', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                {
+                    dataHora: '14/08/2026 16:55',
+                    estadoAnterior: 'ORCADA',
+                    estadoNovo: 'REJEITADA',
+                    funcionario: null,
+                    observacao: 'Vou tentar o reparo na garantia do fabricante.'
+                }
+            ],
+            funcionarioResponsavel: null,
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 16,
+            dataHora: '24/08/2026 09:50',
+            descricaoEquipamento: 'Teclado Logitech K380',
+            categoria: 'Teclado',
+            descricaoDefeito: 'Nao pareia por bluetooth com nenhum aparelho.',
+            estado: 'ARRUMADA',
+            cliente: 'Jose Pereira',
+            valorOrcamento: 95,
+            dataHoraOrcamento: '24/08/2026 11:30',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: null,
+            historico: [
+                { dataHora: '24/08/2026 09:50', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '24/08/2026 11:30', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '24/08/2026 17:15', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '25/08/2026 10:40',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Maria',
+                    observacao: 'Troca do modulo bluetooth e atualizacao do firmware.'
+                }
+            ],
+            funcionarioResponsavel: 'Maria',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 17,
+            dataHora: '01/09/2026 10:15',
+            descricaoEquipamento: 'Notebook Acer Aspire 5',
+            categoria: 'Notebook',
+            descricaoDefeito: 'Bateria nao carrega acima de vinte por cento.',
+            estado: 'PAGA',
+            cliente: 'Joana Souza',
+            valorOrcamento: 380,
+            dataHoraOrcamento: '01/09/2026 13:25',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: '04/09/2026 09:30',
+            historico: [
+                { dataHora: '01/09/2026 10:15', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '01/09/2026 13:25', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '02/09/2026 08:40', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '03/09/2026 15:10',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Maria',
+                    observacao: 'Substituicao da bateria e calibracao do controlador de carga.'
+                },
+                {
+                    dataHora: '04/09/2026 09:30',
+                    estadoAnterior: 'ARRUMADA',
+                    estadoNovo: 'PAGA',
+                    funcionario: null,
+                    observacao: 'Pagamento confirmado em 04/09/2026 09:30.'
+                }
+            ],
+            funcionarioResponsavel: 'Maria',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 18,
+            dataHora: '08/09/2026 11:00',
+            descricaoEquipamento: 'Desktop Positivo Master',
+            categoria: 'Desktop',
+            descricaoDefeito: 'Nao da video na inicializacao, apenas bipes.',
+            estado: 'FINALIZADA',
+            cliente: 'Joao da Silva',
+            valorOrcamento: 410,
+            dataHoraOrcamento: '08/09/2026 14:20',
+            funcionarioOrcamento: 'Mario',
+            motivoRejeicao: null,
+            dataHoraPagamento: '11/09/2026 16:45',
+            historico: [
+                { dataHora: '08/09/2026 11:00', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '08/09/2026 14:20', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' },
+                { dataHora: '09/09/2026 09:05', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '10/09/2026 14:30',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Mario',
+                    observacao: 'Troca dos modulos de memoria e limpeza dos contatos.'
+                },
+                {
+                    dataHora: '11/09/2026 16:45',
+                    estadoAnterior: 'ARRUMADA',
+                    estadoNovo: 'PAGA',
+                    funcionario: null,
+                    observacao: 'Pagamento confirmado em 11/09/2026 16:45.'
+                },
+                {
+                    dataHora: '12/09/2026 08:15',
+                    estadoAnterior: 'PAGA',
+                    estadoNovo: 'FINALIZADA',
+                    funcionario: 'Mario',
+                    observacao: 'Equipamento entregue ao cliente.'
+                }
+            ],
+            funcionarioResponsavel: 'Mario',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 19,
+            dataHora: '15/09/2026 15:25',
+            descricaoEquipamento: 'Impressora Brother DCP-1617',
+            categoria: 'Impressora',
+            descricaoDefeito: 'Atola papel na bandeja a cada duas paginas.',
+            estado: 'FINALIZADA',
+            cliente: 'Joaquina Lima',
+            valorOrcamento: 175,
+            dataHoraOrcamento: '16/09/2026 09:05',
+            funcionarioOrcamento: 'Mario',
+            motivoRejeicao: null,
+            dataHoraPagamento: '18/09/2026 11:20',
+            historico: [
+                { dataHora: '15/09/2026 15:25', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '16/09/2026 09:05', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Mario' },
+                { dataHora: '16/09/2026 14:50', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '17/09/2026 10:35',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Maria',
+                    observacao: 'Troca do rolete de tracao e limpeza do caminho do papel.'
+                },
+                {
+                    dataHora: '18/09/2026 11:20',
+                    estadoAnterior: 'ARRUMADA',
+                    estadoNovo: 'PAGA',
+                    funcionario: null,
+                    observacao: 'Pagamento confirmado em 18/09/2026 11:20.'
+                },
+                {
+                    dataHora: '18/09/2026 17:00',
+                    estadoAnterior: 'PAGA',
+                    estadoNovo: 'FINALIZADA',
+                    funcionario: 'Maria',
+                    observacao: 'Equipamento retirado pela cliente.'
+                }
+            ],
+            funcionarioResponsavel: 'Maria',
+            funcionarioRedirecionado: null
+        },
+        {
+            id: 20,
+            dataHora: '22/09/2026 08:40',
+            descricaoEquipamento: 'Mouse Dell MS116',
+            categoria: 'Mouse',
+            descricaoDefeito: 'Clique duplo involuntario em um clique simples.',
+            estado: 'PAGA',
+            cliente: 'Jose Pereira',
+            valorOrcamento: 70,
+            dataHoraOrcamento: '22/09/2026 10:15',
+            funcionarioOrcamento: 'Maria',
+            motivoRejeicao: null,
+            dataHoraPagamento: '24/09/2026 14:05',
+            historico: [
+                { dataHora: '22/09/2026 08:40', estadoAnterior: null, estadoNovo: 'ABERTA', funcionario: null },
+                { dataHora: '22/09/2026 10:15', estadoAnterior: 'ABERTA', estadoNovo: 'ORCADA', funcionario: 'Maria' },
+                { dataHora: '22/09/2026 16:30', estadoAnterior: 'ORCADA', estadoNovo: 'APROVADA', funcionario: null },
+                {
+                    dataHora: '23/09/2026 13:50',
+                    estadoAnterior: 'APROVADA',
+                    estadoNovo: 'ARRUMADA',
+                    funcionario: 'Maria',
+                    observacao: 'Troca do switch do botao esquerdo.'
+                },
+                {
+                    dataHora: '24/09/2026 14:05',
+                    estadoAnterior: 'ARRUMADA',
+                    estadoNovo: 'PAGA',
+                    funcionario: null,
+                    observacao: 'Pagamento confirmado em 24/09/2026 14:05.'
+                }
+            ],
+            funcionarioResponsavel: 'Maria',
+            funcionarioRedirecionado: null
+        },
     ];
 
     buscarPorId(id : number) : Solicitacao | undefined {
