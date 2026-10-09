@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { LoginService } from '../../services';
 
 @Component({
   selector: 'app-navbar-employee',
@@ -8,9 +9,17 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './navbar-employee.css',
 })
 export class NavbarEmployee {
+  private loginService = inject(LoginService);
+  private router = inject(Router);
+
   menuAberto = false;
 
   alternarMenu(): void {
     this.menuAberto = !this.menuAberto;
+  }
+
+  logout(): void {
+    this.loginService.logout();
+    this.router.navigate(['/login']);
   }
 }

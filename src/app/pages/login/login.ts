@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Numerico } from '../../shared';
+import { LoginService } from '../../services';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +12,7 @@ import { Numerico } from '../../shared';
 })
 export class Login {
   private router = inject(Router);
+  private loginService = inject(LoginService);
 
   
   // fazerLogin(email: string, senha: string, tipoUsuario: string): void {
@@ -51,15 +53,20 @@ export class Login {
       return;
     }
 
-    // redireciona com base no tipo de usuario da radiobox
-    if (email === 'cliente@gmail.com' && senha === '1234') {
-      this.router.navigate(['/user-home']);
-    } else if(email === 'funcionario@gmail.com' && senha === '4321'){
-      this.router.navigate(['/employee-home']);
-    }
-    else{
-      alert('Email ou senha incorretos');
-    }
+    this.loginService.login(email, senha).subscribe(usuario => {
+      if (!usuario) {
+        alert('Email ou senha incorretos');
+        return;
+      }
+
+      this.loginService.usuarioLogado = usuario;
+
+      const paginaInicial = usuario.perfil === 'FUNCIONARIO'
+        ? '/employee-home'
+        : '/user-home';
+
+      this.router.navigate([paginaInicial]);
+    });
   }
 
   // alerta simples
