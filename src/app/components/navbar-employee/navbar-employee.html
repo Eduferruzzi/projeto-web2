@@ -74,11 +74,18 @@
 			</ul>
 
 			<div class="d-flex align-items-center gap-3">
+				
+				@if(usuarioLogado) {
+				<span class="usuario">
+					{{ usuarioLogado.nome }}
+				</span>
+				} @else {
 				<span class="usuario">
 					Funcionário
 				</span>
+				}
 
-				<button class="btn btn-outline-secondary btn-sm" routerLink="/login" (click)="logout()">
+				<button class="btn btn-outline-secondary btn-sm" (click)="logout()">
 					Sair
 				</button>
 			</div>

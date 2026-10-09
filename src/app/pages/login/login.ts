@@ -1,75 +1,64 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Numerico } from '../../shared';
+import { FormsModule, NgForm } from '@angular/forms';
 import { LoginService } from '../../services';
+import { Login as LoginModel } from '../../shared/models';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterModule, Numerico],
+  imports: [CommonModule, RouterModule, Numerico, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
+  @ViewChild('formLogin') formLogin! : NgForm;
+  login: LoginModel = new LoginModel();
+  loading: boolean = false;
+  message!: string;
+
   private router = inject(Router);
   private loginService = inject(LoginService);
+  private route = inject(ActivatedRoute);
 
-  
-  // fazerLogin(email: string, senha: string, tipoUsuario: string): void {
-  //   // valida a senha
-  //   const senhaValida = /^\d{4}$/.test(senha);
-  //   if (!senhaValida) {
-  //     alert('A senha deve conter exatamente 4 números.');
-  //     return;
-  //   }
-
-  //   // valida o email
-  //   const emailValido = /^[^\s@]+@[^\s@]+$/.test(email);
-  //   if (!emailValido) {
-  //     alert('Por favor, insira um e-mail válido.');
-  //     return;
-  //   }
-
-  //   // redireciona com base no tipo de usuario da radiobox
-  //   if (tipoUsuario === 'cliente') {
-  //     this.router.navigate(['/user-home']);
-  //   } else {
-  //     this.router.navigate(['/employee-home']);
-  //   }
-  // }
-
-  fazerLogin(email: string, senha: string): void {
-    // valida a senha
-    const senhaValida = /^\d{4}$/.test(senha);
-    if (!senhaValida) {
-      alert('A senha deve conter exatamente 4 números.');
-      return;
-    }
-
-    // valida o email
-    const emailValido = /^[^\s@]+@[^\s@]+$/.test(email);
-    if (!emailValido) {
-      alert('Por favor, insira um e-mail válido.');
-      return;
-    }
-
-    this.loginService.login(email, senha).subscribe(usuario => {
-      if (!usuario) {
-        alert('Email ou senha incorretos');
-        return;
+  ngOnInit(): void {
+    if (this.loginService.usuarioLogado) {
+      let usu = this.loginService.usuarioLogado;
+      if (usu.perfil === 'FUNCIONARIO') {
+        this.router.navigate(['/employee-home']);
+      } else {
+        this.router.navigate(['/user-home']);
       }
-
-      this.loginService.usuarioLogado = usuario;
-
-      const paginaInicial = usuario.perfil === 'FUNCIONARIO'
-        ? '/employee-home'
-        : '/user-home';
-
-      this.router.navigate([paginaInicial]);
-    });
+    } else {
+      this.route.queryParams.subscribe(params => {
+        if(params['error']) {
+          this.message = params['error'];
+        }
+      });
+    }
   }
 
-  // alerta simples
+  fazerLogin(): void {
+    this.loading = true;
+    if (this.formLogin.form.valid) {
+      this.loginService.login(this.login).subscribe((usu) => {
+        if (usu != null) {
+          this.loginService.usuarioLogado = usu;
+          this.loading = false;
+          if (usu.perfil === 'FUNCIONARIO') {
+            this.router.navigate(['/employee-home']);
+          } else {
+            this.router.navigate(['/user-home']);
+          }
+        } else {
+          this.loading = false;
+          this.message = "E-mail ou senha incorretos.";
+        }
+      });
+    }
+  }
+
   esqueciSenha(event: Event): void {
     event.preventDefault();
     alert('Um e-mail com as instruções para redefinição de senha foi enviado.');
