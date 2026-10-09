@@ -63,4 +63,4 @@ export class Login implements OnInit {
     event.preventDefault();
     alert('Um e-mail com as instruções para redefinição de senha foi enviado.');
   }
-}
+}

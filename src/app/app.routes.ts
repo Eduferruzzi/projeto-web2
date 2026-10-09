@@ -14,6 +14,7 @@ import { Budget } from './pages/employee-quote'
 import { CreateCategories, EditCategories, ListCategories } from './pages/category-crud'
 import { EmployeeRequests } from './pages/employee-requests'
 import { Reports } from './pages/reports'
+import { authGuard } from './auth/auth-guard'
 
 export const routes: Routes = [
     {
@@ -34,71 +35,85 @@ export const routes: Routes = [
     {
         path: 'employee-crud',
         component: CRUDemployee,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'user-home',
         component: CustomerHome,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'CLIENTE', showNavbar: true }
     },
     {
         path: 'payment/:id',
         component: Payment,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'CLIENTE', showNavbar: true }
     },
     {
         path: 'maintenance-request',
         component: MaintenanceRequest,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'CLIENTE', showNavbar: true }
     },
     {
         path: 'service/:id',
         component: ServiceDetails,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'CLIENTE', showNavbar: true }
     },
     {
         path: 'quote/:id',
         component: Quote,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'CLIENTE', showNavbar: true }
     },
     {
         path: 'employee-home',
         component: EmployeeHome,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'execute-maintenance/:id',
         component: ExecuteMaintenance,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'employee-quote/:id',
         component: Budget,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'categories',
         component: ListCategories,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'categories/new',
         component: CreateCategories,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'categories/edit/:id',
         component: EditCategories,
-        data: { showNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'reports',
         component: Reports,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     },
     {
         path: 'employee-requests',
         component: EmployeeRequests,
-        data: { showEmployeeNavbar: true }
+        canActivate: [authGuard],
+        data: { role: 'FUNCIONARIO', showEmployeeNavbar: true }
     }
 ];
