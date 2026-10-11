@@ -34,12 +34,10 @@ export class LoginService {
       return of(usu);
     } 
     else if (login.login === 'funcionario@gmail.com' && login.senha === '4321') {
-      usu.perfil = "FUNCIONARIO";
-      return of(usu);
+      return of(new Usuario(2, "Funcionário", login.login, login.senha, "FUNCIONARIO"));
     }
     else {
       return of(null);
     }
   }
 }
-
