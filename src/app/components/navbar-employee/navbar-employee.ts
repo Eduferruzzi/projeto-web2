@@ -10,9 +10,6 @@ import { Usuario } from '../../shared/models';
   styleUrl: './navbar-employee.css',
 })
 export class NavbarEmployee {
-  private loginService = inject(LoginService);
-  private router = inject(Router);
-
   menuAberto = false;
 
   private loginService = inject(LoginService);
@@ -29,10 +26,5 @@ export class NavbarEmployee {
 
   alternarMenu(): void {
     this.menuAberto = !this.menuAberto;
-  }
-
-  logout(): void {
-    this.loginService.logout();
-    this.router.navigate(['/login']);
   }
 }
