@@ -15,9 +15,6 @@ export class Navbar {
 
   menuAberto = false;
 
-  private loginService = inject(LoginService);
-  private router = inject(Router);
-
   get usuarioLogado(): Usuario | null {
     return this.loginService.usuarioLogado;
   }
@@ -29,10 +26,5 @@ export class Navbar {
 
   alternarMenu(): void {
     this.menuAberto = !this.menuAberto;
-  }
-
-  logout(): void {
-    this.loginService.logout();
-    this.router.navigate(['/login']);
   }
 }

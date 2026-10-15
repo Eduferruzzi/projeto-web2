@@ -1,28 +1,51 @@
-<div class="container-fluid px-4 mt-4">
-    <div class="table-responsive">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr class="text-white" style="background-color: #0d47a1;">
-                    <th class="text-center py-3" style="color: white;">DATA/HORA</th>
-                    <th class="text-center py-3" style="color: white;">CLIENTE</th>
-                    <th class="text-center py-3" style="color: white;">DESCRICAO</th>
-                    <th class="text-center py-3" style="color: white;">ACOES</th>
-                </tr>
-            </thead>
+<div class="employee-home-page">
+    <div class="container py-4 py-md-5">
+        <header class="border-bottom pb-4 mb-4">
+            <p class="text-primary text-uppercase small fw-bold mb-2">Painel do funcionário</p>
+            <h1 class="h2 mb-1">Solicitações abertas</h1>
+            <p class="text-secondary mb-0">Analise as solicitações e prepare um orçamento para o cliente.</p>
+        </header>
 
-              <!-- solicitacoes é preenchido pelo SolicitacaoService; s representa cada item
-                  do modelo Solicitacao e suas propriedades são exibidas por interpolação. -->
-              <tbody id="tabela-solicitacoes">
-                <tr *ngFor="let s of solicitacoes">
-                    <td class="text-center">{{ s.dataHora }}</td>
-                    <td>{{ s.cliente }}</td>
-                    <td>{{ verif(s.descricaoDefeito) }}</td>
-                    <td class="text-center">
-                        <!-- RouterLink envia o id da solicitação na URL da tela de orçamento. -->
-                        <a [routerLink]="['/employee-quote', s.id]" class="btn btn-outline-dark btn-sm btn-orcar">Orçar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <section class="card shadow-sm border-0" aria-labelledby="requests-title">
+            <div class="card-header bg-white p-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <h2 id="requests-title" class="h4 mb-0">Aguardando orçamento</h2>
+                <span class="text-secondary small">
+                    {{ solicitacoes.length }}
+                    {{ solicitacoes.length === 1 ? 'solicitação' : 'solicitações' }}
+                </span>
+            </div>
+
+            @if (solicitacoes.length > 0) {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Data/hora</th>
+                                <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Cliente</th>
+                                <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Descrição</th>
+                                <th scope="col" class="px-4 py-3 text-secondary small text-uppercase text-md-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let s of solicitacoes">
+                                <td class="px-4 py-3 text-nowrap">{{ s.dataHora }}</td>
+                                <td class="px-4 py-3 fw-semibold">{{ s.cliente }}</td>
+                                <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
+                                <td class="px-4 py-3 text-md-end">
+                                    <a [routerLink]="['/employee-quote', s.id]" class="btn btn-sm btn-outline-primary">
+                                        Efetuar orçamento
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            } @else {
+                <div class="text-center p-5">
+                    <h3 class="h5">Nenhuma solicitação aguardando orçamento</h3>
+                    <p class="text-secondary mb-0">Quando houver novas solicitações, elas aparecerão aqui.</p>
+                </div>
+            }
+        </section>
     </div>
 </div>
