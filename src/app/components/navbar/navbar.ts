@@ -10,9 +10,6 @@ import { Usuario } from '../../shared/models';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  private loginService = inject(LoginService);
-  private router = inject(Router);
-
   menuAberto = false;
 
   get usuarioLogado(): Usuario | null {
