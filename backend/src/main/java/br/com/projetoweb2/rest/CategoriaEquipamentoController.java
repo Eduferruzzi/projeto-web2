@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.projetoweb2.model.CategoriaEquipamento;
 import br.com.projetoweb2.repository.CategoriaEquipamentoRepository;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RestController
 @RequestMapping("/api/categorias")
 public class CategoriaEquipamentoController {
