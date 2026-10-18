@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 import { User } from '../../models/user';
-import { UserService } from '../../services';
+import { FuncionarioInput, FuncionarioService } from '../../services/funcionario-service';
 import { Numerico } from '../../shared';
 
 // Tela de cadastro, edição e remoção de funcionários. CommonModule disponibiliza diretivas
@@ -14,80 +16,84 @@ import { Numerico } from '../../shared';
   styleUrl: './employee-crud.css',
 })
 export class CRUDemployee implements OnInit {
-  // Lista exibida no template e identificador usado para distinguir edição de novo cadastro.
   funcionarios: User[] = [];
   funcionarioEditandoId: number | null = null;
-
-  // Campos vinculados por [(ngModel)] ao formulário employee-crud.html.
   nome = '';
   email = '';
   dataNascimento = '';
   senha = '';
   confirmarSenha = '';
+  carregando = false;
+  salvando = false;
+  erro = '';
+  mensagem = '';
 
-  // UserService é injetado pelo Angular e mantém os dados de usuários usados por esta tela.
-  constructor(private userService: UserService) {}
+  constructor(private funcionarioService: FuncionarioService) {}
 
-  // Carrega a lista inicial quando o componente é iniciado.
   ngOnInit(): void {
-    this.funcionarios = this.userService.listarTodos();
+    this.carregarFuncionarios();
   }
 
-  // Valida o formulário, insere um User novo ou atualiza o funcionário em edição.
-  // NgForm é opcional para permitir chamadas sem referência ao formulário do template.
+  carregarFuncionarios(): void {
+    this.carregando = true;
+    this.erro = '';
+    this.funcionarioService.listar()
+      .pipe(finalize(() => this.carregando = false))
+      .subscribe({
+        next: funcionarios => this.funcionarios = funcionarios,
+        error: error => this.erro = this.mensagemErro(error)
+      });
+  }
+
   adicionarFuncionario(formulario?: NgForm): void {
     if (formulario && formulario.invalid) {
       return;
     }
 
-    if (!this.nome.trim()) {
+    if (this.senha !== this.confirmarSenha) {
+      this.erro = 'As senhas devem coincidir.';
       return;
     }
 
-    if (this.senha.trim() && this.senha !== this.confirmarSenha) {
-      return;
-    }
+    const funcionario: FuncionarioInput = {
+      nome: this.nome.trim(),
+      email: this.email.trim(),
+      dataNascimento: this.dataNascimento,
+      senha: this.senha
+    };
+    const idEmEdicao = this.funcionarioEditandoId;
+    const requisicao = idEmEdicao === null
+      ? this.funcionarioService.criar(funcionario)
+      : this.funcionarioService.atualizar(idEmEdicao, funcionario);
 
-    if (this.funcionarioEditandoId !== null) {
-      const usuario = this.userService.buscarPorId(this.funcionarioEditandoId);
-      if (!usuario) {
-        return;
-      }
-
-      usuario.nome = this.nome.trim();
-      usuario.email = this.email.trim();
-      usuario.dataNascimento = this.dataNascimento;
-      if (this.senha.trim()) {
-        usuario.senha = this.senha;
-      }
-
-      this.userService.atualizar(usuario);
-    } else {
-      const usuario = new User(
-        Date.now(),
-        this.nome.trim(),
-        this.email.trim(),
-        this.dataNascimento,
-        this.senha
-      );
-      this.userService.inserir(usuario);
-    }
-
-    this.funcionarios = this.userService.listarTodos();
-    this.limparFormulario();
+    this.erro = '';
+    this.mensagem = '';
+    this.salvando = true;
+    requisicao.pipe(finalize(() => this.salvando = false)).subscribe({
+      next: () => {
+        if (idEmEdicao === null) {
+          this.mensagem = 'Funcionário cadastrado com sucesso.';
+        } else {
+          this.mensagem = 'Funcionário atualizado com sucesso.';
+        }
+        this.limparFormulario();
+        this.carregarFuncionarios();
+      },
+      error: error => this.erro = this.mensagemErro(error)
+    });
   }
 
-  // Copia os dados do funcionário selecionado para os campos ligados ao formulário.
   editarFuncionario(funcionario: User): void {
     this.funcionarioEditandoId = funcionario.id;
     this.nome = funcionario.nome;
     this.email = funcionario.email;
     this.dataNascimento = funcionario.dataNascimento;
-    this.senha = funcionario.senha;
-    this.confirmarSenha = funcionario.senha;
+    this.senha = '';
+    this.confirmarSenha = '';
+    this.erro = '';
+    this.mensagem = '';
   }
 
-  // Confirma a remoção no navegador e limpa a edição caso ela seja do mesmo funcionário.
   excluirFuncionario(id: number): void {
     const alvo = this.funcionarios.find((funcionario) => funcionario.id === id);
     if (!alvo) {
@@ -98,15 +104,20 @@ export class CRUDemployee implements OnInit {
       return;
     }
 
-    this.userService.remover(id);
-    this.funcionarios = this.userService.listarTodos();
-
-    if (this.funcionarioEditandoId === id) {
-      this.limparFormulario();
-    }
+    this.erro = '';
+    this.mensagem = '';
+    this.funcionarioService.desativar(id).subscribe({
+      next: () => {
+        this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== id);
+        this.mensagem = 'Funcionário removido com sucesso.';
+        if (this.funcionarioEditandoId === id) {
+          this.limparFormulario();
+        }
+      },
+      error: error => this.erro = this.mensagemErro(error)
+    });
   }
 
-  // Restaura os campos e o identificador para o estado de cadastro novo.
   limparFormulario(): void {
     this.funcionarioEditandoId = null;
     this.nome = '';
@@ -114,5 +125,20 @@ export class CRUDemployee implements OnInit {
     this.dataNascimento = '';
     this.senha = '';
     this.confirmarSenha = '';
+  }
+
+  private mensagemErro(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return 'Não foi possível conectar à API. Verifique se o backend está em execução na porta 8081.';
+      }
+      if (error.status === 409) {
+        return 'Já existe um funcionário cadastrado com este e-mail.';
+      }
+      if (error.status === 400) {
+        return 'Confira os dados informados e tente novamente.';
+      }
+    }
+    return 'Não foi possível concluir a operação. Tente novamente.';
   }
 }

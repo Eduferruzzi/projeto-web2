@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { CRUDemployee } from './employee-crud';
+import { FuncionarioService } from '../../services/funcionario-service';
 
 describe('CRUDemployee', () => {
   let component: CRUDemployee;
@@ -8,7 +10,16 @@ describe('CRUDemployee', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CRUDemployee]
+      imports: [CRUDemployee],
+      providers: [{
+        provide: FuncionarioService,
+        useValue: {
+          listar: () => of([]),
+          criar: () => of({ id: 1, nome: 'Teste', email: 'teste@example.com', dataNascimento: '1990-01-01' }),
+          atualizar: () => of({ id: 1, nome: 'Teste', email: 'teste@example.com', dataNascimento: '1990-01-01' }),
+          desativar: () => of(undefined)
+        }
+      }]
     })
     .compileComponents();
 
