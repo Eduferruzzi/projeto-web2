@@ -17,6 +17,9 @@ public class Solicitacao {
     
     private String descricaoDefeito;
     
+
+    private Boolean Ativo;
+
     
     public Integer getId() {
         return id;
@@ -40,5 +43,13 @@ public class Solicitacao {
 
     public void setDescricaoDefeito(String descricaoDefeito) {
         this.descricaoDefeito = descricaoDefeito;
+    }
+
+    public Boolean getAtivo() {
+        return Ativo;
+    }
+    
+    public void setAtivo(Boolean ativo) {
+        Ativo = ativo;
     }
 }
