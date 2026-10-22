@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { CepService } from '../../services'
+import { CepService, RegistroService } from '../../services'
 import { NgForm } from '@angular/forms'
 import { NgxMaskDirective } from 'ngx-mask'
 import { Router, RouterLink } from '@angular/router'
+import { catchError } from 'rxjs/operators'
+import { of } from 'rxjs'
 
 @Component({
   selector: 'app-user-auto-register',
@@ -15,6 +17,8 @@ export class UserAutoRegister {
   nome = '';
   CPF = '';
   email = '';
+  senha = '';
+  confirmarSenha = '';
   telefone = '';
 
   CEP = '';
@@ -26,8 +30,11 @@ export class UserAutoRegister {
   estado = '';
 
   mensagemSucesso = '';
+  mensagemErro = '';
+  cadastrando = false;
 
   private cepService = inject(CepService); //injetando o cepservice;
+  private registroService = inject(RegistroService);
   private router = inject(Router);
 
   buscarCep() {
@@ -46,40 +53,48 @@ export class UserAutoRegister {
   }
 
   cadastrar(form: NgForm) {
-    try {
-      if (form.invalid) {
-        return;
+    this.mensagemErro = '';
+    this.mensagemSucesso = '';
+    if (form.invalid || this.senha !== this.confirmarSenha) {
+      if (this.senha !== this.confirmarSenha) {
+        this.mensagemErro = 'As senhas não coincidem.';
       }
-      const usuario = {
-        CPF: this.CPF,
+      return;
+    }
+
+    this.cadastrando = true;
+    const usuario = {
+        cpf: this.CPF,
         nome: this.nome,
         email: this.email,
+        senha: this.senha,
         telefone: this.telefone,
-        CEP: this.CEP,
+        cep: this.CEP,
         logradouro: this.logradouro,
         numero: this.numero,
         complemento: this.complemento,
         bairro: this.bairro,
         cidade: this.cidade,
         estado: this.estado
-      };
+    };
 
-      const json = JSON.stringify(usuario);
-      console.log(json);
-
+    this.registroService.registrar(usuario).pipe(
+      catchError((error: { status?: number; error?: { mensagem?: string } }) => {
+        this.mensagemErro = error.status === 409
+          ? (error.error?.mensagem ?? 'E-mail ou CPF já cadastrado.')
+          : 'Não foi possível realizar o cadastro. Tente novamente.';
+        this.cadastrando = false;
+        return of(null);
+      })
+    ).subscribe(resposta => {
+      if (!resposta) {
+        return;
+      }
       this.mensagemSucesso = 'Cadastro realizado com sucesso!';
-
+      this.cadastrando = false;
       form.resetForm();
-
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 1000);
-    }
-    catch (error) {
-      console.error('Erro ao cadastrar usuário:', error);
-      this.mensagemSucesso = 'Ocorreu um erro ao cadastrar o usuário. Por favor, tente novamente.';
-    }
-
+      setTimeout(() => this.router.navigate(['/login']), 1000);
+    });
   }
 
 }

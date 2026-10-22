@@ -12,6 +12,9 @@ import { Usuario } from '../../shared/models';
 export class Navbar {
   menuAberto = false;
 
+  private router = inject(Router);
+  private loginService = inject(LoginService);
+
   get usuarioLogado(): Usuario | null {
     return this.loginService.usuarioLogado;
   }
