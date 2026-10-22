@@ -7,10 +7,20 @@
 
     <section class="card shadow-sm border-0 mb-4" aria-labelledby="employee-form-title">
         <div class="card-header bg-white p-4">
-            <h2 id="employee-form-title" class="h4 mb-1">Novo funcionário</h2>
-            <p class="text-secondary mb-0">Preencha os dados para adicionar um funcionário.</p>
+            <h2 id="employee-form-title" class="h4 mb-1">
+                {{ funcionarioEditandoId === null ? 'Novo funcionário' : 'Editar funcionário' }}
+            </h2>
+            <p class="text-secondary mb-0">
+                {{ funcionarioEditandoId === null ? 'Preencha os dados para adicionar um funcionário.' : 'Atualize os dados do funcionário.' }}
+            </p>
         </div>
         <div class="card-body p-4 p-md-5">
+            @if (erro) {
+                <div class="alert alert-danger" role="alert">{{ erro }}</div>
+            }
+            @if (mensagem) {
+                <div class="alert alert-success" role="status">{{ mensagem }}</div>
+            }
             <form #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
                 <div class="row g-4">
                     <div class="col-12 col-md-6">
@@ -55,11 +65,13 @@
 
                     <div class="col-12 col-md-6">
                         <label for="senha" class="form-label fw-semibold">Senha</label>
-                        <input type="password" class="form-control" id="senha" placeholder="Mínimo de 4 caracteres"
-                            [(ngModel)]="senha" name="senha" required minlength="4" #senhaCampo="ngModel" numerico>
+                        <input type="password" class="form-control" id="senha"
+                            [placeholder]="funcionarioEditandoId === null ? 'Mínimo de 4 caracteres' : 'Deixe em branco para manter a senha atual'"
+                            [(ngModel)]="senha" name="senha" [required]="funcionarioEditandoId === null"
+                            minlength="4" #senhaCampo="ngModel" numerico>
                         @if (senhaCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
-                                Senha obrigatória com no mínimo 4 caracteres.
+                                Informe uma senha com no mínimo 4 caracteres.
                             </div>
                         }
                     </div>
@@ -67,7 +79,8 @@
                     <div class="col-12 col-md-6">
                         <label for="confirmarSenha" class="form-label fw-semibold">Confirmar senha</label>
                         <input type="password" class="form-control" id="confirmarSenha" placeholder="Repita a senha"
-                            [(ngModel)]="confirmarSenha" name="confirmarSenha" required minlength="4"
+                            [(ngModel)]="confirmarSenha" name="confirmarSenha"
+                            [required]="funcionarioEditandoId === null" minlength="4"
                             #confirmarSenhaCampo="ngModel" numerico>
                         @if (confirmarSenhaCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
@@ -86,8 +99,8 @@
                     <button type="button" class="btn btn-outline-secondary" (click)="limparFormulario()">
                         Limpar formulário
                     </button>
-                    <button type="submit" class="btn btn-primary">
-                        Adicionar funcionário
+                    <button type="submit" class="btn btn-primary" [disabled]="salvando">
+                        {{ salvando ? 'Salvando...' : (funcionarioEditandoId === null ? 'Adicionar funcionário' : 'Salvar alterações') }}
                     </button>
                 </div>
             </form>
@@ -101,7 +114,9 @@
                 {{ funcionarios.length === 1 ? 'funcionário' : 'funcionários' }}</span>
         </div>
 
-        @if (funcionarios.length > 0) {
+        @if (carregando) {
+            <div class="text-center p-5" role="status">Carregando funcionários...</div>
+        } @else if (funcionarios.length > 0) {
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">

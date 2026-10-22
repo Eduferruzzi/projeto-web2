@@ -71,8 +71,7 @@ Executar o script dos DDL`s antes de iniciar a API de fato.
 ### Iniciar o backend no PowerShell
 
 Ainda testando, nunca fiz isso desse jeito, mas aqui funcionou normal, pelo menos pros testes
-
-Na raiz do repositorio, configure as variaveis para a conexao local:
+Melhor configurar no arquivo application.properties mesmo
 
 ```powershell
 $env:DB_URL = "jdbc:mysql://localhost:3306/manutencao_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
@@ -87,8 +86,7 @@ cd backend
 mvn spring-boot:run
 ```
 
-A configuracao de conexao fica em `backend/src/main/resources/application.properties`. As credenciais sao fornecidas pelo ambiente e nao devem ser adicionadas ao Git. O backend estabelece a estrutura e as dependencias; controllers, entidades e endpoints de negocio ainda precisam ser implementados.
-
+back em um terminal, aplicacao em outro e se quiser, consultas sql em outro terminal.
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
