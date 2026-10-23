@@ -1,5 +1,6 @@
 package br.com.projetoweb2.model;
 
+import br.com.projetoweb2.enums.SolicitacaoStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +18,13 @@ public class Solicitacao {
     
     private String descricaoDefeito;
     
+
+    private Boolean ativo;
+
+
+    private SolicitacaoStatus status;
     
+
     public Integer getId() {
         return id;
     }
@@ -40,5 +47,13 @@ public class Solicitacao {
 
     public void setDescricaoDefeito(String descricaoDefeito) {
         this.descricaoDefeito = descricaoDefeito;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+    
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }
