@@ -75,4 +75,10 @@ export class FuncionarioService {
       funcionario.dataNascimento
     );
   }
+
+  buscarPorId(id: number): Observable<User> {
+    return this.http.get<FuncionarioApi>(`${API_URL}/${id}`).pipe(
+      map(funcionario => this.paraUser(funcionario))
+    );
+  }
 }

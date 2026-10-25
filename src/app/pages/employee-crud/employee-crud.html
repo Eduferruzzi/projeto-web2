@@ -1,3 +1,4 @@
+
 <div class="container py-4 py-md-5">
     <div class="border-bottom pb-4 mb-4">
         <p class="text-primary text-uppercase small fw-bold mb-2">Cadastro</p>
@@ -14,19 +15,26 @@
                 {{ funcionarioEditandoId === null ? 'Preencha os dados para adicionar um funcionário.' : 'Atualize os dados do funcionário.' }}
             </p>
         </div>
+
         <div class="card-body p-4 p-md-5">
-            @if (erro) {
-                <div class="alert alert-danger" role="alert">{{ erro }}</div>
+
+            @if (erro()) {
+                <div class="alert alert-danger" role="alert">{{ erro() }}</div>
             }
-            @if (mensagem) {
-                <div class="alert alert-success" role="status">{{ mensagem }}</div>
+            @if (mensagem()) {
+                <div class="alert alert-success" role="status">{{ mensagem() }}</div>
             }
+
             <form #formCadastro="ngForm" (ngSubmit)="adicionarFuncionario(formCadastro)">
                 <div class="row g-4">
+
                     <div class="col-12 col-md-6">
                         <label for="nome" class="form-label fw-semibold">Nome</label>
-                        <input type="text" class="form-control" id="nome" placeholder="Digite o nome completo"
-                            [(ngModel)]="nome" name="nome" required minlength="2" #nomeCampo="ngModel">
+                        <input type="text" class="form-control" id="nome"
+                            placeholder="Digite o nome completo"
+                            [(ngModel)]="nome" name="nome" required
+                            minlength="2" maxlength="150" #nomeCampo="ngModel">
+
                         @if (nomeCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Nome é obrigatório.
@@ -36,10 +44,13 @@
 
                     <div class="col-12 col-md-6">
                         <label for="email" class="form-label fw-semibold">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="nome@exemplo.com"
+                        <input type="email" class="form-control" id="email"
+                            maxlength="150" placeholder="nome@exemplo.com"
                             [(ngModel)]="email" name="email"
-                            required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                            required
+                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                             #emailCampo="ngModel">
+
                         @if (emailCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 @if (emailCampo.errors?.['required']) {
@@ -53,9 +64,13 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label for="dataNascimento" class="form-label fw-semibold">Data de nascimento</label>
+                        <label for="dataNascimento" class="form-label fw-semibold">
+                            Data de nascimento
+                        </label>
                         <input type="date" class="form-control" id="dataNascimento"
-                            [(ngModel)]="dataNascimento" name="dataNascimento" required #dataNascimentoCampo="ngModel">
+                            [(ngModel)]="dataNascimento" name="dataNascimento"
+                            required #dataNascimentoCampo="ngModel">
+
                         @if (dataNascimentoCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Data de nascimento é obrigatória.
@@ -66,27 +81,36 @@
                     <div class="col-12 col-md-6">
                         <label for="senha" class="form-label fw-semibold">Senha</label>
                         <input type="password" class="form-control" id="senha"
-                            [placeholder]="funcionarioEditandoId === null ? 'Mínimo de 4 caracteres' : 'Deixe em branco para manter a senha atual'"
-                            [(ngModel)]="senha" name="senha" [required]="funcionarioEditandoId === null"
-                            minlength="4" #senhaCampo="ngModel" numerico>
+                            [placeholder]="funcionarioEditandoId === null
+                                ? 'Mínimo de 8 caracteres'
+                                : 'Deixe em branco para manter a senha atual'"
+                            [(ngModel)]="senha" name="senha"
+                            [required]="funcionarioEditandoId === null"
+                            minlength="8" #senhaCampo="ngModel">
+
                         @if (senhaCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
-                                Informe uma senha com no mínimo 4 caracteres.
+                                Informe uma senha com no mínimo 8 caracteres.
                             </div>
                         }
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label for="confirmarSenha" class="form-label fw-semibold">Confirmar senha</label>
-                        <input type="password" class="form-control" id="confirmarSenha" placeholder="Repita a senha"
+                        <label for="confirmarSenha" class="form-label fw-semibold">
+                            Confirmar senha
+                        </label>
+                        <input type="password" class="form-control"
+                            id="confirmarSenha" placeholder="Repita a senha"
                             [(ngModel)]="confirmarSenha" name="confirmarSenha"
-                            [required]="funcionarioEditandoId === null" minlength="4"
-                            #confirmarSenhaCampo="ngModel" numerico>
+                            [required]="funcionarioEditandoId === null"
+                            minlength="8" #confirmarSenhaCampo="ngModel">
+
                         @if (confirmarSenhaCampo.invalid && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 Confirmação da senha é obrigatória.
                             </div>
                         }
+
                         @if (senha && confirmarSenha && senha !== confirmarSenha && formCadastro.submitted) {
                             <div class="alert alert-danger mt-2 mb-0" role="alert">
                                 As senhas devem coincidir.
@@ -96,11 +120,16 @@
                 </div>
 
                 <div class="d-flex flex-column-reverse flex-sm-row justify-content-sm-end gap-2 mt-4">
-                    <button type="button" class="btn btn-outline-secondary" (click)="limparFormulario()">
+                    <button type="button" class="btn btn-outline-secondary"
+                        (click)="limparFormulario()">
                         Limpar formulário
                     </button>
-                    <button type="submit" class="btn btn-primary" [disabled]="salvando">
-                        {{ salvando ? 'Salvando...' : (funcionarioEditandoId === null ? 'Adicionar funcionário' : 'Salvar alterações') }}
+
+                    <button type="submit" class="btn btn-primary" [disabled]="salvando()">
+                        {{ salvando() ? 'Salvando...' :
+                            (funcionarioEditandoId === null
+                                ? 'Adicionar funcionário'
+                                : 'Salvar alterações') }}
                     </button>
                 </div>
             </form>
@@ -109,35 +138,57 @@
 
     <section class="card shadow-sm border-0" aria-labelledby="employee-list-title">
         <div class="card-header bg-white p-4 d-flex align-items-center justify-content-between gap-3">
-            <h2 id="employee-list-title" class="h4 mb-0">Funcionários cadastrados</h2>
-            <span class="text-secondary small text-nowrap">{{ funcionarios.length }}
-                {{ funcionarios.length === 1 ? 'funcionário' : 'funcionários' }}</span>
+            <h2 id="employee-list-title" class="h4 mb-0">
+                Funcionários cadastrados
+            </h2>
+
+            <span class="text-secondary small text-nowrap">
+                {{ funcionarios().length }}
+                {{ funcionarios().length === 1 ? 'funcionário' : 'funcionários' }}
+            </span>
         </div>
 
-        @if (carregando) {
-            <div class="text-center p-5" role="status">Carregando funcionários...</div>
-        } @else if (funcionarios.length > 0) {
+        @if (carregando() && funcionarios().length === 0) {
+            <div class="text-center p-5" role="status">
+                Carregando funcionários...
+            </div>
+        } @else if (funcionarios().length > 0) {
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Nome</th>
-                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">Email</th>
-                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase text-md-end">Ações</th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">
+                                Nome
+                            </th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase">
+                                Email
+                            </th>
+                            <th scope="col" class="px-4 py-3 text-secondary small text-uppercase text-md-end">
+                                Ações
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let funcionario of funcionarios">
-                            <td class="px-4 py-3 fw-semibold">{{ funcionario.nome }}</td>
-                            <td class="px-4 py-3">{{ funcionario.email }}</td>
+                        <tr *ngFor="let funcionario of funcionarios()">
+                            <td class="px-4 py-3 fw-semibold">
+                                {{ funcionario.nome }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {{ funcionario.email }}
+                            </td>
                             <td class="px-4 py-3">
                                 <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary"
-                                        title="Editar funcionário" (click)="editarFuncionario(funcionario)">
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-primary"
+                                        title="Editar funcionário"
+                                        (click)="editarFuncionario(funcionario)">
                                         Editar
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
-                                        title="Excluir funcionário" (click)="excluirFuncionario(funcionario.id)">
+
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Excluir funcionário"
+                                        (click)="excluirFuncionario(funcionario.id)">
                                         Excluir
                                     </button>
                                 </div>
@@ -149,7 +200,9 @@
         } @else {
             <div class="text-center p-5">
                 <h3 class="h5">Nenhum funcionário cadastrado</h3>
-                <p class="text-secondary mb-0">Adicione um funcionário para começar a gerenciar os acessos.</p>
+                <p class="text-secondary mb-0">
+                    Adicione um funcionário para começar a gerenciar os acessos.
+                </p>
             </div>
         }
     </section>
