@@ -67,7 +67,7 @@ public class SolicitacaoREST {
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Solicitacao> alterar(@PathVariable("id") int id, @RequestBody Solicitacao solicitacao) {
         Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
                                     .findAny().orElse(null);
@@ -78,7 +78,7 @@ public class SolicitacaoREST {
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id) {
         Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
                                     .findAny().orElse(null);
