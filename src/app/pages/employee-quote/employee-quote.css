@@ -1,0 +1,13 @@
+:host {
+    display: block;
+    min-height: calc(100vh - 72px);
+}
+
+.employee-quote-page {
+    min-height: inherit;
+    background-color: #f8f9fa;
+}
+
+.quote-value {
+    max-width: 320px;
+}

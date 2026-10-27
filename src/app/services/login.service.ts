@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { catchError, map, Observable, of } from 'rxjs';
 import { Usuario, Login } from '../shared/models';
 
 const LS_CHAVE: string = "usuarioLogado";
+const API_URL = 'http://localhost:8081/login';
 
 @Injectable({
   providedIn: 'root'
@@ -10,36 +12,30 @@ const LS_CHAVE: string = "usuarioLogado";
 export class LoginService {
 
   public get usuarioLogado(): Usuario | null {
-    let usu = localStorage[LS_CHAVE];
-    return (usu ? JSON.parse(localStorage[LS_CHAVE]) : null);
+    const usuario = localStorage.getItem(LS_CHAVE);
+    return usuario ? JSON.parse(usuario) : null;
   }
 
   public set usuarioLogado(usuario: Usuario | null) {
     if (usuario) {
-      localStorage[LS_CHAVE] = JSON.stringify(usuario);
+      localStorage.setItem(LS_CHAVE, JSON.stringify(usuario));
     } else {
-      delete localStorage[LS_CHAVE];
+      localStorage.removeItem(LS_CHAVE);
     }
   }
 
-  logout() {
-    delete localStorage[LS_CHAVE];
+  logout(): void {
+    localStorage.removeItem(LS_CHAVE);
   }
+
+  private http = inject(HttpClient);
 
   login(login: Login): Observable<Usuario | null> {
-    let usu = new Usuario(1, "Usuário", login.login, login.senha, "CLIENTE");
-
-    if (login.login === 'cliente@gmail.com' && login.senha === '1234') {
-      usu.perfil = "CLIENTE";
-      return of(usu);
-    } 
-    else if (login.login === 'funcionario@gmail.com' && login.senha === '4321') {
-      usu.perfil = "FUNCIONARIO";
-      return of(usu);
-    }
-    else {
-      return of(null);
-    }
+    return this.http
+      .post<Usuario>(API_URL, login, { observe: 'response' })
+      .pipe(
+        map((resp: HttpResponse<Usuario>) => (resp.status === 200 ? resp.body : null)),
+        catchError(() => of(null))
+      );
   }
 }
-
