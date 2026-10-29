@@ -1,0 +1,11 @@
+meta {
+  name: desativarSolicitacao
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/solicitacoes/1
+  body: none
+  auth: inherit
+}
