@@ -26,7 +26,7 @@ export interface RegistroClienteResponse {
 @Injectable({ providedIn: 'root' })
 export class RegistroService {
   private http = inject(HttpClient);
-  private readonly url = 'http://localhost:8080/api/usuarios/registro';
+  private readonly url = 'http://localhost:8081/api/usuarios/registro';
 
   registrar(dados: RegistroCliente) {
     return this.http.post<RegistroClienteResponse>(this.url, dados);
