@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CatEquipService, SolicitacaoService } from '../../services'
+import { CatEquipService, SolicitacaoService, LoginService } from '../../services'
 import { CatEquip } from '../../models/cat-equip'
 
 @Component({
@@ -13,6 +13,7 @@ import { CatEquip } from '../../models/cat-equip'
 export class MaintenanceRequest implements OnInit {
   private catEquipService = inject(CatEquipService);
   private solicitacaoService = inject(SolicitacaoService);
+  private loginService = inject(LoginService);
   private router = inject(Router);
 
   descricaoEquipamento = '';
@@ -42,10 +43,18 @@ export class MaintenanceRequest implements OnInit {
       return;
     }
 
+    const cliente = this.loginService.usuarioLogado;
+    if (!cliente || cliente.perfil !== 'CLIENTE' || !Number.isInteger(cliente.id) || cliente.id <= 0) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.solicitacaoService.cadastrar(
       this.descricaoEquipamento,
       this.categoria,
-      this.descricaoDefeito
+      this.descricaoDefeito,
+      cliente.id,
+      cliente.nome
     );
 
     this.solicitacaoEnviada = true;
