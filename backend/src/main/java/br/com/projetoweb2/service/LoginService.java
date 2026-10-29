@@ -2,7 +2,6 @@ package br.com.projetoweb2.service;
 
 import java.util.Optional;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +13,11 @@ import br.com.projetoweb2.repository.UsuarioRepository;
 public class LoginService {
 
     private final UsuarioRepository usuarioRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final PasswordService passwordService;
 
-    public LoginService(UsuarioRepository usuarioRepository) {
+    public LoginService(UsuarioRepository usuarioRepository, PasswordService passwordService) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordService = passwordService;
     }
 
     @Transactional(readOnly = true)
@@ -28,7 +28,7 @@ public class LoginService {
         }
 
         return usuarioRepository.findByEmailIgnoreCaseAndAtivoTrue(dados.login().trim())
-                .filter(usuario -> encoder.matches(dados.senha(), usuario.getSenha()))
+                .filter(usuario -> passwordService.matches(dados.senha(), usuario.getSenha()))
                 .map(LoginResponseDTO::de);
     }
 }

@@ -100,26 +100,26 @@
                     <div class="text-danger mt-1">
                         Telefone invalido.
                     </div>
+                }
+            </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Senha</label>
-                        <input type="password" class="form-control" [(ngModel)]="senha" name="senha"
-                            minlength="8" required #senhaCampo="ngModel">
-                        @if(senhaCampo.invalid && formCadastro.submitted)
-                        {
-                            <div class="text-danger mt-1">A senha deve ter ao menos 8 caracteres.</div>
-                        }
-                    </div>
+            <div class="mb-3 col-12 col-md-6">
+                <label class="form-label">Senha</label>
+                <input type="password" class="form-control" [(ngModel)]="senha" name="senha"
+                    minlength="8" required #senhaCampo="ngModel">
+                @if(senhaCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">A senha deve ter ao menos 8 caracteres.</div>
+                }
+            </div>
 
-                    <div class="mb-3 col-12 col-md-6">
-                        <label class="form-label">Confirmar senha</label>
-                        <input type="password" class="form-control" [(ngModel)]="confirmarSenha"
-                            name="confirmarSenha" required #confirmarSenhaCampo="ngModel">
-                        @if(confirmarSenhaCampo.invalid && formCadastro.submitted)
-                        {
-                            <div class="text-danger mt-1">Confirme sua senha.</div>
-                        }
-                    </div>
+            <div class="mb-3 col-12 col-md-6">
+                <label class="form-label">Confirmar senha</label>
+                <input type="password" class="form-control" [(ngModel)]="confirmarSenha"
+                    name="confirmarSenha" required #confirmarSenhaCampo="ngModel">
+                @if(confirmarSenhaCampo.invalid && formCadastro.submitted)
+                {
+                    <div class="text-danger mt-1">Confirme sua senha.</div>
                 }
             </div>
             

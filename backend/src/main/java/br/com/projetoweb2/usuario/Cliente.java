@@ -1,54 +1,82 @@
 package br.com.projetoweb2.usuario;
 
+import br.com.projetoweb2.model.Usuario;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "cliente")
 public class Cliente {
-    private Long id;
-    private String nome;
-    private String email;
-    private String senha;
+    @Id
+    @Column(name = "usuario_id")
+    private Integer id;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, optional = false)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
+    @Column(nullable = false, length = 20)
     private String telefone;
+    @Column(nullable = false, length = 9)
     private String cep;
+    @Column(nullable = false, length = 150)
     private String logradouro;
+    @Column(nullable = false, length = 10)
     private String numero;
+    @Column(length = 50)
     private String complemento;
+    @Column(nullable = false, length = 100)
     private String bairro;
+    @Column(nullable = false, length = 100)
     private String cidade;
+    @Column(nullable = false, length = 2)
     private String estado;
 
     public Cliente() {
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getNome() {
+        return usuario != null ? usuario.getNome() : null;
     }
 
     public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+        return usuario != null ? usuario.getEmail() : null;
     }
 
     public String getSenha() {
-        return senha;
+        return usuario != null ? usuario.getSenha() : null;
     }
 
     public void setSenha(String senha) {
-        this.senha = senha;
+        if (usuario != null) {
+            usuario.setSenha(senha);
+        }
     }
 
     public String getCpf() {

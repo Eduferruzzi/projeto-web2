@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,14 +23,15 @@ public class FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
     private final UsuarioRepository usuarioRepository;
-    private final BCryptPasswordEncoder encoder =
-            new BCryptPasswordEncoder();
+    private final PasswordService passwordService;
 
     public FuncionarioService(
             FuncionarioRepository funcionarioRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            PasswordService passwordService) {
         this.funcionarioRepository = funcionarioRepository;
         this.usuarioRepository = usuarioRepository;
+        this.passwordService = passwordService;
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +64,7 @@ public class FuncionarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(dados.usuario().nome().trim());
         usuario.setEmail(email);
-        usuario.setSenha(encoder.encode(dados.usuario().senha()));
+        usuario.setSenha(passwordService.hash(dados.usuario().senha()));
         usuario.setPerfil("FUNCIONARIO");
         usuario.setAtivo(true);
 
@@ -102,7 +102,7 @@ public class FuncionarioService {
         String novaSenha = dados.usuario().senha();
 
         if (novaSenha != null && !novaSenha.isBlank()) {
-            usuario.setSenha(encoder.encode(novaSenha));
+            usuario.setSenha(passwordService.hash(novaSenha));
         }
 
         funcionario.setDataNascimento(dados.dataNascimento());
