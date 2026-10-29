@@ -49,7 +49,7 @@ export class MaintenanceRequest implements OnInit {
       return;
     }
 
-    this.solicitacaoService.cadastrar(
+    const solicitacao = this.solicitacaoService.cadastrar(
       this.descricaoEquipamento,
       this.categoria,
       this.descricaoDefeito,
@@ -59,6 +59,6 @@ export class MaintenanceRequest implements OnInit {
 
     this.solicitacaoEnviada = true;
     formulario.resetForm();
-    this.router.navigate(['/user-home'])
+    this.router.navigate(['/user-home'], { state: { solicitacaoId: solicitacao.id } })
   }
 }
