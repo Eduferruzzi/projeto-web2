@@ -14,7 +14,8 @@ export class NavbarEmployee {
   private readonly router = inject(Router);
 
   menuAberto = false;
-  
+
+
   get usuarioLogado(): Usuario | null {
     return this.loginService.usuarioLogado;
   }
