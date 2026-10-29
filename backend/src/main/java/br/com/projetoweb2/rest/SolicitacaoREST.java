@@ -20,7 +20,7 @@ import br.com.projetoweb2.repository.SolicitacaoRepository;
 
 @CrossOrigin 
 @RestController
-@RequestMapping("/api/solicitacoes")
+@RequestMapping("/solicitacoes")
 public class SolicitacaoREST {
 
     private final SolicitacaoRepository solicitacaoRepository;

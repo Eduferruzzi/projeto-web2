@@ -12,7 +12,7 @@ import br.com.projetoweb2.DTO.FuncionarioResponseDTO;
 import br.com.projetoweb2.service.FuncionarioService;
 
 @RestController
-@RequestMapping("/api/funcionarios")
+@RequestMapping("/funcionarios")
 @CrossOrigin(origins = "http://localhost:4200")
 public class FuncionarioREST {
 

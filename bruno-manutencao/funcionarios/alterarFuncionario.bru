@@ -1,0 +1,26 @@
+meta {
+  name: alterarFuncionario
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/funcionarios/6
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "dataNascimento": "1994-10-20",
+    "usuario": {
+      "nome": "João Silva Alterado",
+      "email": "joao.silva@email.com",
+      "senha": "12345678"
+    }
+  }
+}
