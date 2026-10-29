@@ -1,10 +1,18 @@
-import { Service } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { CatEquip } from '../models/cat-equip'
 
 const LS_CHAVE = 'catequips'
 
-@Service()
+@Injectable({ providedIn: 'root' })
 export class CatEquipService {
+    private http = inject(HttpClient);
+
+    listarNoBanco(): Observable<CatEquip[]> {
+        return this.http.get<CatEquip[]>('http://localhost:8081/api/categorias');
+    }
+
     listar(): CatEquip[]{
         const catEquips = localStorage[LS_CHAVE]
 

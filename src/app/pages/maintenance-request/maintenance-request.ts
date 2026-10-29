@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CatEquipService, SolicitacaoService } from '../../services'
@@ -20,10 +20,21 @@ export class MaintenanceRequest implements OnInit {
   descricaoDefeito = '';
   
   solicitacaoEnviada = false;
-  categorias: CatEquip[] = [];
+  categorias = signal<CatEquip[]>([]);
+  carregandoCategorias = signal(true);
+  erroCategorias = signal('');
 
   ngOnInit(): void {
-    this.categorias = this.catEquipService.listar();
+    this.catEquipService.listarNoBanco().subscribe({
+      next: categorias => {
+        this.categorias.set(categorias);
+        this.carregandoCategorias.set(false);
+      },
+      error: () => {
+        this.erroCategorias.set('Não foi possível carregar as categorias. Tente novamente mais tarde.');
+        this.carregandoCategorias.set(false);
+      }
+    });
   }
 
   cadastrarSolicitacao(formulario: NgForm) {

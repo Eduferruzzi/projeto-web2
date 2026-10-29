@@ -39,12 +39,19 @@
                 required
               >
                 <option value="" disabled>Selecione uma categoria</option>
-                @for (categoriaEquipamento of categorias; track categoriaEquipamento.id) {
+                @for (categoriaEquipamento of categorias(); track categoriaEquipamento.id) {
                   <option [value]="categoriaEquipamento.nome">
                     {{ categoriaEquipamento.nome }}
                   </option>
                 }
               </select>
+              @if (carregandoCategorias()) {
+                <p class="text-muted mt-2" role="status">Carregando categorias...</p>
+              } @else if (erroCategorias()) {
+                <p class="text-danger mt-2" role="alert">{{ erroCategorias() }}</p>
+              } @else if (categorias().length === 0) {
+                <p class="text-muted mt-2">Nenhuma categoria disponível.</p>
+              }
             </div>
 
             <div class="mb-4">
@@ -74,7 +81,7 @@
               <button
                 type="submit"
                 class="btn btn-primary"
-                [disabled]="formulario.invalid"
+                [disabled]="formulario.invalid || carregandoCategorias() || categorias().length === 0"
               >
                 Cadastrar solicitacao
               </button>
