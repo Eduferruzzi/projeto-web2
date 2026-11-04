@@ -4,4 +4,5 @@ export interface CEP{
     bairro : string;
     localidade : string;
     estado : string;
+    uf : string;
 }

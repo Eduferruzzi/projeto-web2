@@ -21,13 +21,22 @@
                     name="nome" 
                     placeholder="Digite seu nome completo"
                     required
-                    #nomeCampo="ngModel" 
+                    minlength="2"
+                    #nomeCampo="ngModel"
                 > <!-- esse "Campo" dps de todos os #, é pq se for só o nome da propridade, tipo #nome="ngModel" puxa o nome do
                 TS e fica com um objeto vazio no campo object[Object] -->
                 @if(nomeCampo.invalid && formCadastro.submitted)
                 {
                     <div class="text-danger mt-1">
-                        Nome é obrigatório.
+                        @if(nomeCampo.errors?.['required'])
+                        {
+                            Nome é obrigatório.
+                        }
+
+                        @if(nomeCampo.errors?.['minlength'])
+                        {
+                            Nome deve ter ao menos 2 caracteres.
+                        }
                     </div>
                 }
             </div>
@@ -247,7 +256,8 @@
                     class="form-control" 
                     [(ngModel)]="estado" 
                     name="estado" 
-                    placeholder="Digite seu estado"
+                    placeholder="UF (ex.: PR)"
+                    maxlength="2"
                     required
                     #estadoCampo="ngModel" 
                 >
@@ -261,20 +271,20 @@
         
         </div>
 
-        @if(mensagemSucesso)
+        @if(mensagemSucesso())
         {
             <div class="alert alert-success mt-3" role="alert">
-                {{mensagemSucesso}}
+                {{mensagemSucesso()}}
 
             </div>
         }
-        @if(mensagemErro)
+        @if(mensagemErro())
         {
-            <div class="alert alert-danger mt-3" role="alert">{{mensagemErro}}</div>
+            <div class="alert alert-danger mt-3" role="alert">{{mensagemErro()}}</div>
         }
         <div class="d-flex justify-content-end mt-3">
-            <button type="submit" class="btn btn-primary mt-3" [disabled]="cadastrando">
-                {{ cadastrando ? 'Cadastrando...' : 'Cadastrar' }}
+            <button type="submit" class="btn btn-primary mt-3" [disabled]="cadastrando()">
+                {{ cadastrando() ? 'Cadastrando...' : 'Cadastrar' }}
             </button>
         </div>
 
