@@ -23,6 +23,7 @@ export interface Solicitacao {
     categoria : string;
     descricaoDefeito : string;
     estado : EstadoSolicitacao;
+    clienteId? : number;
     cliente : string;
     valorOrcamento : number | null;
     dataHoraOrcamento : string | null;

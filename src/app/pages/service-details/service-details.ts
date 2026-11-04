@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import { HistoricoSolicitacao, Solicitacao } from '../../models/Solicitacao'
+import { Solicitacao } from '../../models/Solicitacao'
 import { SolicitacaoService } from '../../services'
+import { RequestHistory } from '../../components/request-history'
 
 @Component({
   selector: 'app-service-details',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, RequestHistory],
   templateUrl: './service-details.html',
   styleUrl: './service-details.css',
 })
@@ -94,11 +95,4 @@ export class ServiceDetails {
     });
   }
 
-  descreverPasso(passo: HistoricoSolicitacao): string {
-    if (passo.estadoAnterior === null) {
-      return `Solicitação criada como ${passo.estadoNovo}`;
-    }
-
-    return `${passo.estadoAnterior} para ${passo.estadoNovo}`;
-  }
 }

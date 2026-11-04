@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { SolicitacaoService } from '../../services'
+import { Router, RouterLink } from '@angular/router';
+import { SolicitacaoService, LoginService } from '../../services'
 import { Solicitacao, EstadoSolicitacao } from '../../models/Solicitacao'
 import { CommonModule } from '@angular/common'
 
@@ -12,10 +12,20 @@ import { CommonModule } from '@angular/common'
 })
 export class CustomerHome implements OnInit{
   private solicitacaoService = inject(SolicitacaoService)
+  private loginService = inject(LoginService)
+  private router = inject(Router)
+  private solicitacaoCadastradaId = this.router.currentNavigation()?.extras.state?.['solicitacaoId']
+  solicitacaoCadastrada = false
   solicitacoes: Solicitacao[] = []
 
   ngOnInit(): void {
-    this.solicitacoes = this.ordenarPorData(this.solicitacaoService.listar())
+    const cliente = this.loginService.usuarioLogado
+    if (cliente && cliente.perfil === 'CLIENTE' && cliente.id > 0) {
+      this.solicitacoes = this.ordenarPorData(
+        this.solicitacaoService.listar().filter(solicitacao => solicitacao.clienteId === cliente.id)
+      )
+      this.solicitacaoCadastrada = this.solicitacoes.some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
+    }
   }
 
   private parseDataHora(dataHora: string): Date {

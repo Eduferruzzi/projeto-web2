@@ -10,10 +10,10 @@ import { Usuario } from '../../shared/models';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  menuAberto = false;
+  private readonly loginService = inject(LoginService);
+  private readonly router = inject(Router);
 
-  private loginService = inject(LoginService);
-  private router = inject(Router);
+  menuAberto = false;
 
   get usuarioLogado(): Usuario | null {
     return this.loginService.usuarioLogado;

@@ -1,112 +1,163 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize } from 'rxjs';
 import { User } from '../../models/user';
-import { UserService } from '../../services';
-import { Numerico } from '../../shared';
+import { FuncionarioInput, FuncionarioService } from '../../services/funcionario-service';
 
-// Tela de cadastro, edição e remoção de funcionários. CommonModule disponibiliza diretivas
-// usadas no template; FormsModule habilita ngForm/ngModel; Numerico é uma diretiva local.
 @Component({
   selector: 'app-crudemployee',
-  imports: [CommonModule, FormsModule, Numerico],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employee-crud.html',
   styleUrl: './employee-crud.css',
 })
 export class CRUDemployee implements OnInit {
-  // Lista exibida no template e identificador usado para distinguir edição de novo cadastro.
-  funcionarios: User[] = [];
+  funcionarios = signal<User[]>([]);
   funcionarioEditandoId: number | null = null;
-
-  // Campos vinculados por [(ngModel)] ao formulário employee-crud.html.
   nome = '';
   email = '';
   dataNascimento = '';
   senha = '';
   confirmarSenha = '';
+  carregando = signal(false);
+  salvando = signal(false);
+  erro = signal('');
+  mensagem = signal('');
 
-  // UserService é injetado pelo Angular e mantém os dados de usuários usados por esta tela.
-  constructor(private userService: UserService) {}
+  constructor(private funcionarioService: FuncionarioService) {}
 
-  // Carrega a lista inicial quando o componente é iniciado.
   ngOnInit(): void {
-    this.funcionarios = this.userService.listarTodos();
+    this.carregarFuncionarios();
   }
 
-  // Valida o formulário, insere um User novo ou atualiza o funcionário em edição.
-  // NgForm é opcional para permitir chamadas sem referência ao formulário do template.
+  carregarFuncionarios(): void {
+    this.carregando.set(true);
+    this.erro.set('');
+    this.funcionarioService.listar()
+      .pipe(finalize(() => this.carregando.set(false)))
+      .subscribe({
+        next: funcionarios => {
+          this.funcionarios.set(funcionarios);
+        },
+        error: error => {
+          this.erro.set(this.mensagemErro(error));
+        }
+      });
+  }
+
   adicionarFuncionario(formulario?: NgForm): void {
     if (formulario && formulario.invalid) {
       return;
     }
 
-    if (!this.nome.trim()) {
+    if (this.salvando()) {
       return;
     }
 
-    if (this.senha.trim() && this.senha !== this.confirmarSenha) {
+    if (this.senha !== this.confirmarSenha) {
+      this.erro.set('As senhas devem coincidir.');
       return;
     }
 
-    if (this.funcionarioEditandoId !== null) {
-      const usuario = this.userService.buscarPorId(this.funcionarioEditandoId);
-      if (!usuario) {
-        return;
-      }
+    const funcionario: FuncionarioInput = {
+      nome: this.nome.trim(),
+      email: this.email.trim(),
+      dataNascimento: this.dataNascimento,
+      senha: this.senha
+    };
 
-      usuario.nome = this.nome.trim();
-      usuario.email = this.email.trim();
-      usuario.dataNascimento = this.dataNascimento;
-      if (this.senha.trim()) {
-        usuario.senha = this.senha;
-      }
+    const idEmEdicao = this.funcionarioEditandoId;
 
-      this.userService.atualizar(usuario);
-    } else {
-      const usuario = new User(
-        Date.now(),
-        this.nome.trim(),
-        this.email.trim(),
-        this.dataNascimento,
-        this.senha
-      );
-      this.userService.inserir(usuario);
-    }
+    const requisicao = idEmEdicao === null
+      ? this.funcionarioService.criar(funcionario)
+      : this.funcionarioService.atualizar(idEmEdicao, funcionario);
 
-    this.funcionarios = this.userService.listarTodos();
-    this.limparFormulario();
+    this.erro.set('');
+    this.mensagem.set('');
+    this.salvando.set(true);
+
+    requisicao
+      .pipe(finalize(() => this.salvando.set(false)))
+      .subscribe({
+        next: (funcionarioSalvo: User) => {
+          if (idEmEdicao === null) {
+            this.funcionarios.update(lista => [
+              ...lista,
+              funcionarioSalvo
+            ]);
+
+            this.mensagem.set('Funcionário cadastrado com sucesso.');
+
+          } else {
+            this.funcionarios.update(lista =>
+              lista.map(funcionario =>
+                funcionario.id === idEmEdicao
+                  ? funcionarioSalvo
+                  : funcionario
+              )
+            );
+
+            this.mensagem.set('Funcionário atualizado com sucesso.');
+          }
+
+          this.limparFormulario();
+          formulario?.resetForm();
+        },
+
+        error: error => {
+          this.erro.set(this.mensagemErro(error));
+        }
+      });
   }
 
-  // Copia os dados do funcionário selecionado para os campos ligados ao formulário.
   editarFuncionario(funcionario: User): void {
     this.funcionarioEditandoId = funcionario.id;
     this.nome = funcionario.nome;
     this.email = funcionario.email;
     this.dataNascimento = funcionario.dataNascimento;
-    this.senha = funcionario.senha;
-    this.confirmarSenha = funcionario.senha;
+    this.senha = '';
+    this.confirmarSenha = '';
+    this.erro.set('');
+    this.mensagem.set('');
   }
 
-  // Confirma a remoção no navegador e limpa a edição caso ela seja do mesmo funcionário.
   excluirFuncionario(id: number): void {
-    const alvo = this.funcionarios.find((funcionario) => funcionario.id === id);
+    const alvo = this.funcionarios().find(
+      funcionario => funcionario.id === id
+    );
+
     if (!alvo) {
       return;
     }
 
-    if (!window.confirm(`Deseja realmente remover ${alvo.nome} do cadastro?`)) {
+    if (!window.confirm(
+      `Deseja realmente remover ${alvo.nome} do cadastro?`
+    )) {
       return;
     }
+    this.erro.set('');
+    this.mensagem.set('');
+    this.funcionarioService.desativar(id).subscribe({
+      next: () => {
+        this.funcionarios.update(lista =>
+          lista.filter(funcionario => funcionario.id !== id)
+        );
 
-    this.userService.remover(id);
-    this.funcionarios = this.userService.listarTodos();
+        this.mensagem.set('Funcionário removido com sucesso.');
 
-    if (this.funcionarioEditandoId === id) {
-      this.limparFormulario();
-    }
+        if (this.funcionarioEditandoId === id) {
+          this.limparFormulario();
+        }
+      },
+
+      error: error => {
+        this.erro.set(this.mensagemErro(error));
+      }
+    });
   }
 
-  // Restaura os campos e o identificador para o estado de cadastro novo.
   limparFormulario(): void {
     this.funcionarioEditandoId = null;
     this.nome = '';
@@ -114,5 +165,21 @@ export class CRUDemployee implements OnInit {
     this.dataNascimento = '';
     this.senha = '';
     this.confirmarSenha = '';
+  }
+
+  private mensagemErro(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return 'Não foi possível conectar à API. Verifique se o backend está em execução na porta 8080.';
+      }
+      if (error.status === 409) {
+        return 'Já existe um funcionário cadastrado com este e-mail.';
+      }
+      if (error.status === 400) {
+        return 'Confira os dados informados e tente novamente.';
+      }
+    }
+
+    return 'Não foi possível concluir a operação. Tente novamente.';
   }
 }

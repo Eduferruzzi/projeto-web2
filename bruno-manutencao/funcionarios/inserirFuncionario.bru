@@ -1,0 +1,26 @@
+meta {
+  name: inserirFuncionario
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/funcionarios
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "dataNascimento": "1994-10-20",
+    "usuario": {
+      "nome": "João Silva",
+      "email": "joao.silva@email.com",
+      "senha": "12345678"
+    }
+  }
+}

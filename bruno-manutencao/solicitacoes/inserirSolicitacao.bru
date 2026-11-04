@@ -1,0 +1,15 @@
+meta {
+  name: inserirSolicitacao
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/solicitacoes
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}

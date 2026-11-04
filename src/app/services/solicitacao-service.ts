@@ -533,7 +533,9 @@ export class SolicitacaoService {
     cadastrar(
         descricaoEquipamento: string,
         categoria: string,
-        descricaoDefeito: string
+        descricaoDefeito: string,
+        clienteId: number,
+        cliente: string
     ): Solicitacao {
         const dataHora = dataHoraAtual();
         const proximoId = Math.max(...this.solicitacoes.map(s => s.id), 0) + 1;
@@ -545,7 +547,8 @@ export class SolicitacaoService {
             categoria,
             descricaoDefeito,
             estado: 'ABERTA',
-            cliente: 'Cliente',
+            clienteId,
+            cliente,
             valorOrcamento: null,
             dataHoraOrcamento: null,
             funcionarioOrcamento: null,

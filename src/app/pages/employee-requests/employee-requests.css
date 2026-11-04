@@ -1,15 +1,21 @@
+:host {
+  display: block;
+  min-height: calc(100vh - 72px);
+}
+
 .employee-requests-page {
-  background: #f8f9fa;
+  min-height: inherit;
+  background-color: #f8f9fa;
 }
 
-.table-scroll-wrapper {
-  max-height: 420px;
-  overflow-y: auto;
+.requests-table-wrapper {
+  max-height: 520px;
 }
 
-.table thead th {
-  background: #0d47a1;
-  color: #fff;
+.requests-table-wrapper thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .legend-item {
@@ -17,11 +23,7 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-}
-
-.legend-label {
-  display: inline-block;
-  line-height: 1.2;
+  color: #6c757d;
 }
 
 .legend-dot {
@@ -30,6 +32,11 @@
   border-radius: 50%;
   display: inline-block;
   flex: 0 0 auto;
+}
+
+.status-badge {
+  color: #fff;
+  font-weight: 600;
 }
 
 .status-aberta {
@@ -41,15 +48,19 @@
 }
 
 .status-rejeitada {
-  background-color: #ff2c2c !important;
+  background-color: #dc3545 !important;
 }
 
 .status-aprovada {
   background-color: #ffde21 !important;
 }
 
+.status-badge.status-aprovada {
+  color: #212529;
+}
+
 .status-redirecionada {
-  background-color: #9D00FF !important;
+  background-color: #7b2cbf !important;
 }
 
 .status-arrumada {
@@ -57,13 +68,13 @@
 }
 
 .status-paga {
-  background-color: #ff5c00 !important;
+  background-color: #e8590c !important;
 }
 
 .status-finalizada {
-  background-color: #00ff00 !important;
+  background-color: #198754 !important;
 }
 
 .btn-acao {
-  min-width: 120px;
+  min-width: 132px;
 }

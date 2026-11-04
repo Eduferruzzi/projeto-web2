@@ -1,0 +1,15 @@
+meta {
+  name: alterarSolicitacao
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/solicitacoes/1
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
