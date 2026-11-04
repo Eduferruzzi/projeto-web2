@@ -10,7 +10,7 @@ export interface FuncionarioInput {
   senha: string;
 }
 
-const API_URL = 'http://localhost:8081/api/funcionarios';
+const API_URL = 'http://localhost:8080/api/funcionarios';
 
 interface FuncionarioApi {
   id: number;

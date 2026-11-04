@@ -170,7 +170,7 @@ export class CRUDemployee implements OnInit {
   private mensagemErro(error: unknown): string {
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) {
-        return 'Não foi possível conectar à API. Verifique se o backend está em execução na porta 8081.';
+        return 'Não foi possível conectar à API. Verifique se o backend está em execução na porta 8080.';
       }
       if (error.status === 409) {
         return 'Já existe um funcionário cadastrado com este e-mail.';
