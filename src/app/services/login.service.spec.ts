@@ -26,7 +26,7 @@ describe('LoginService', () => {
     let resultado: unknown;
 
     service.login({ login: 'funcionario@gmail.com', senha: '4321' }).subscribe((u) => (resultado = u));
-    http.expectOne('http://localhost:8081/login').flush(usuario);
+    http.expectOne('http://localhost:8080/login').flush(usuario);
 
     expect(resultado).toEqual(usuario);
   });
@@ -35,7 +35,7 @@ describe('LoginService', () => {
     let resultado: unknown = 'pendente';
 
     service.login({ login: 'funcionario@gmail.com', senha: 'errada' }).subscribe((u) => (resultado = u));
-    http.expectOne('http://localhost:8081/login').flush(null, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('http://localhost:8080/login').flush(null, { status: 401, statusText: 'Unauthorized' });
 
     expect(resultado).toBeNull();
   });

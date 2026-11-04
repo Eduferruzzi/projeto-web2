@@ -10,7 +10,7 @@ export class CatEquipService {
     private http = inject(HttpClient);
 
     listarNoBanco(): Observable<CatEquip[]> {
-        return this.http.get<CatEquip[]>('http://localhost:8081/api/categorias');
+        return this.http.get<CatEquip[]>('http://localhost:8080/api/categorias');
     }
 
     listar(): CatEquip[]{

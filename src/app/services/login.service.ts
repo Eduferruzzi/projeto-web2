@@ -4,7 +4,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { Usuario, Login } from '../shared/models';
 
 const LS_CHAVE: string = "usuarioLogado";
-const API_URL = 'http://localhost:8081/login';
+const API_URL = 'http://localhost:8080/login';
 
 @Injectable({
   providedIn: 'root'
