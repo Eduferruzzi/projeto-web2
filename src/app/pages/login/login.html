@@ -4,10 +4,10 @@
             <h2 class="mb-4 text-center">Login</h2>
 
             
-            @if (message) {
+            @if (message()) {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{message()}}
+                <button type="button" class="btn-close" aria-label="Close" (click)="fecharMensagem()"></button>
             </div>
             }
             
@@ -29,7 +29,7 @@
                 <!-- senha -->
                 <div class="mb-4">
                     <label for="senha" class="form-label">Senha:</label>
-                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Sua senha" maxlength="4" numerico [(ngModel)]="login.senha" #senha="ngModel" required>
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Sua senha" [(ngModel)]="login.senha" #senha="ngModel" required>
                     @if (senha.errors && (senha.dirty || senha.touched)) {
                         <div class="alert alert-danger mt-2">
                             <div [hidden]="!senha.errors['required']"> 
@@ -45,9 +45,10 @@
                         type="button" 
                         class="btn btn-primary"
                         (click)="fazerLogin()"
-                        [disabled]="!formLogin.form.valid"
+                        [disabled]="!formLogin.form.valid || loading()"
                     >
-                        <i aria-hidden="true"></i> Entrar
+                        <i class="fas" [class.fa-spinner]="loading()" [class.fa-spin]="loading()" [class.fa-sign-in-alt]="!loading()" aria-hidden="true"></i>
+                        {{ loading() ? 'Entrando...' : 'Entrar' }}
                     </button>
                 </div>
 

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CepService, RegistroService } from '../../services'
 import { NgForm } from '@angular/forms'
@@ -22,16 +22,16 @@ export class UserAutoRegister {
   telefone = '';
 
   CEP = '';
-  logradouro = '';
+  logradouro = signal('');
   numero = '';
   complemento = '';
-  bairro = '';
-  cidade = '';
-  estado = '';
+  bairro = signal('');
+  cidade = signal('');
+  estado = signal('');
 
-  mensagemSucesso = '';
-  mensagemErro = '';
-  cadastrando = false;
+  mensagemSucesso = signal('');
+  mensagemErro = signal('');
+  cadastrando = signal(false);
 
   private cepService = inject(CepService); //injetando o cepservice;
   private registroService = inject(RegistroService);
@@ -39,10 +39,10 @@ export class UserAutoRegister {
 
   buscarCep() {
     this.cepService.buscarCep(this.CEP).subscribe(resposta => {
-      this.logradouro = resposta.logradouro;
-      this.bairro = resposta.bairro;
-      this.cidade = resposta.localidade;
-      this.estado = resposta.estado;
+      this.logradouro.set(resposta.logradouro);
+      this.bairro.set(resposta.bairro);
+      this.cidade.set(resposta.localidade);
+      this.estado.set(resposta.uf);
     });
   }
 
@@ -53,16 +53,16 @@ export class UserAutoRegister {
   }
 
   cadastrar(form: NgForm) {
-    this.mensagemErro = '';
-    this.mensagemSucesso = '';
+    this.mensagemErro.set('');
+    this.mensagemSucesso.set('');
     if (form.invalid || this.senha !== this.confirmarSenha) {
       if (this.senha !== this.confirmarSenha) {
-        this.mensagemErro = 'As senhas não coincidem.';
+        this.mensagemErro.set('As senhas não coincidem.');
       }
       return;
     }
 
-    this.cadastrando = true;
+    this.cadastrando.set(true);
     const usuario = {
         cpf: this.CPF,
         nome: this.nome,
@@ -70,28 +70,28 @@ export class UserAutoRegister {
         senha: this.senha,
         telefone: this.telefone,
         cep: this.CEP,
-        logradouro: this.logradouro,
+        logradouro: this.logradouro(),
         numero: this.numero,
         complemento: this.complemento,
-        bairro: this.bairro,
-        cidade: this.cidade,
-        estado: this.estado
+        bairro: this.bairro(),
+        cidade: this.cidade(),
+        estado: this.estado()
     };
 
     this.registroService.registrar(usuario).pipe(
       catchError((error: { status?: number; error?: { mensagem?: string } }) => {
-        this.mensagemErro = error.status === 409
+        this.mensagemErro.set(error.status === 409
           ? (error.error?.mensagem ?? 'E-mail ou CPF já cadastrado.')
-          : 'Não foi possível realizar o cadastro. Tente novamente.';
-        this.cadastrando = false;
+          : 'Não foi possível realizar o cadastro. Tente novamente.');
+        this.cadastrando.set(false);
         return of(null);
       })
     ).subscribe(resposta => {
       if (!resposta) {
         return;
       }
-      this.mensagemSucesso = 'Cadastro realizado com sucesso!';
-      this.cadastrando = false;
+      this.mensagemSucesso.set('Cadastro realizado com sucesso!');
+      this.cadastrando.set(false);
       form.resetForm();
       setTimeout(() => this.router.navigate(['/login']), 1000);
     });
