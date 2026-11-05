@@ -18,6 +18,10 @@ public class PasswordService {
         return toHex(salt) + "$" + toHex(digest(senha, salt));
     }
 
+    public String gerarSenhaInicial() {
+        return String.format("%04d", secureRandom.nextInt(1000, 10000));
+    }
+
     public boolean matches(String senha, String armazenada) {
         if (senha == null || armazenada == null) {
             return false;
