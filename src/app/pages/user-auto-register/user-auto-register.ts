@@ -17,8 +17,6 @@ export class UserAutoRegister {
   nome = '';
   CPF = '';
   email = '';
-  senha = '';
-  confirmarSenha = '';
   telefone = '';
 
   CEP = '';
@@ -55,10 +53,7 @@ export class UserAutoRegister {
   cadastrar(form: NgForm) {
     this.mensagemErro.set('');
     this.mensagemSucesso.set('');
-    if (form.invalid || this.senha !== this.confirmarSenha) {
-      if (this.senha !== this.confirmarSenha) {
-        this.mensagemErro.set('As senhas não coincidem.');
-      }
+    if (form.invalid) {
       return;
     }
 
@@ -67,7 +62,6 @@ export class UserAutoRegister {
         cpf: this.CPF,
         nome: this.nome,
         email: this.email,
-        senha: this.senha,
         telefone: this.telefone,
         cep: this.CEP,
         logradouro: this.logradouro(),
@@ -90,7 +84,7 @@ export class UserAutoRegister {
       if (!resposta) {
         return;
       }
-      this.mensagemSucesso.set('Cadastro realizado com sucesso!');
+      this.mensagemSucesso.set('Cadastro realizado! Confira sua senha de 4 dígitos no e-mail.');
       this.cadastrando.set(false);
       form.resetForm();
       setTimeout(() => this.router.navigate(['/login']), 1000);

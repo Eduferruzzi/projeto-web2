@@ -19,14 +19,17 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordService passwordService;
+    private final MailService mailService;
 
     public ClienteService(
             ClienteRepository clienteRepository,
             UsuarioRepository usuarioRepository,
-            PasswordService passwordService) {
+            PasswordService passwordService,
+            MailService mailService) {
         this.clienteRepository = clienteRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordService = passwordService;
+        this.mailService = mailService;
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +59,8 @@ public class ClienteService {
         Usuario usuario = new Usuario();
         usuario.setNome(dados.nome().trim());
         usuario.setEmail(email);
-        usuario.setSenha(passwordService.hash(dados.senha()));
+        String senha = passwordService.gerarSenhaInicial();
+        usuario.setSenha(passwordService.hash(senha));
         usuario.setPerfil("CLIENTE");
         usuario.setAtivo(true);
 
@@ -72,7 +76,9 @@ public class ClienteService {
         cliente.setCidade(dados.cidade().trim());
         cliente.setEstado(dados.estado().trim().toUpperCase(Locale.ROOT));
 
-        return ClienteResponseDTO.de(clienteRepository.save(cliente));
+        Cliente salvo = clienteRepository.save(cliente);
+        mailService.enviarSenhaInicial(email, dados.nome().trim(), senha);
+        return ClienteResponseDTO.de(salvo);
     }
 
     @Transactional
@@ -88,7 +94,7 @@ public class ClienteService {
 
     private void validar(ClienteRequestDTO dados) {
         if (dados == null
-                || vazio(dados.nome()) || vazio(dados.email()) || vazio(dados.senha())
+                || vazio(dados.nome()) || vazio(dados.email())
                 || vazio(dados.cpf()) || vazio(dados.telefone()) || vazio(dados.cep())
                 || vazio(dados.logradouro()) || vazio(dados.numero()) || vazio(dados.bairro())
                 || vazio(dados.cidade()) || vazio(dados.estado())) {
@@ -100,9 +106,6 @@ public class ClienteService {
         if (dados.email().trim().length() > 150
                 || !dados.email().trim().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-mail inválido.");
-        }
-        if (dados.senha().length() < 8) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha deve ter pelo menos 8 caracteres.");
         }
         if (dados.estado().trim().length() != 2) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado inválido.");
@@ -120,4 +123,5 @@ public class ClienteService {
     private String vazioParaNull(String valor) {
         return vazio(valor) ? null : valor.trim();
     }
+
 }

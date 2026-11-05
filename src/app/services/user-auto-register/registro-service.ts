@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 export interface RegistroCliente {
   nome: string;
   email: string;
-  senha: string;
   cpf: string;
   telefone: string;
   cep: string;
