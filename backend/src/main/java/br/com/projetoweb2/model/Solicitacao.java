@@ -5,7 +5,6 @@ import br.com.projetoweb2.enums.SolicitacaoStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import br.com.projetoweb2.enums.SolicitacaoStatus;
 import br.com.projetoweb2.usuario.Cliente;
 
 import jakarta.persistence.*;

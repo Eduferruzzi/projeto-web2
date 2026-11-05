@@ -1,6 +1,5 @@
 package br.com.projetoweb2.rest;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.projetoweb2.model.Solicitacao;
 import br.com.projetoweb2.repository.SolicitacaoRepository;
+import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
+import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
+import br.com.projetoweb2.service.SolicitacaoService;
 
 @CrossOrigin 
 @RestController
@@ -24,9 +26,11 @@ import br.com.projetoweb2.repository.SolicitacaoRepository;
 public class SolicitacaoREST {
 
     private final SolicitacaoRepository solicitacaoRepository;
+    private final SolicitacaoService solicitacaoService;
 
-    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository){
+    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository, SolicitacaoService solicitacaoService){
         this.solicitacaoRepository = solicitacaoRepository;
+        this.solicitacaoService = solicitacaoService;
     }
 
     public List<Solicitacao> listar() {
@@ -51,20 +55,8 @@ public class SolicitacaoREST {
     }
 
     @PostMapping
-    public ResponseEntity<Solicitacao> inserir(@RequestBody Solicitacao solicitacao) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(solicitacao.getId()))
-                                    .findAny().orElse(null);
-        if(s != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        s = this.listar().stream().max(Comparator.comparing(Solicitacao::getId))
-                            .orElse(null);
-        if (s == null)
-            solicitacao.setId(1);
-        else
-            solicitacao.setId(s.getId() + 1);
-        solicitacaoRepository.save(s);
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
+    public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoService.criar(dados));
     }
 
     @PutMapping("/{id}")

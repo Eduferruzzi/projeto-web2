@@ -46,8 +46,10 @@ CREATE TABLE solicitacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     categoria_id INT NOT NULL,
-    descricao_equipamento VARCHAR(30) NOT NULL,
+    descricao_equipamento TEXT NOT NULL,
     descricao_defeito TEXT NOT NULL,
+    data_hora_abertura DATETIME NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
     estado_atual ENUM('ABERTA', 'ORCADA', 'APROVADA', 'REJEITADA', 'REDIRECIONADA', 'ARRUMADA', 'PAGA', 'FINALIZADA') DEFAULT 'ABERTA',
     
     -- Dados de Orçamento (RF012)
