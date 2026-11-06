@@ -10,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.projetoweb2.DTO.RejeicaoRequestDTO;
+import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.enums.SolicitacaoStatus;
 import br.com.projetoweb2.model.Solicitacao;
 import br.com.projetoweb2.repository.SolicitacaoClienteRepository;
+import br.com.projetoweb2.repository.ClienteRepository;
+import br.com.projetoweb2.repository.CategoriaEquipamentoRepository;
 
 @Service
 public class SolicitacaoService {
@@ -21,9 +24,47 @@ public class SolicitacaoService {
     private static final int TAMANHO_MINIMO_MOTIVO = 5;
 
     private final SolicitacaoClienteRepository solicitacaoRepository;
+    private final ClienteRepository clienteRepository;
+    private final CategoriaEquipamentoRepository categoriaRepository;
 
-    public SolicitacaoService(SolicitacaoClienteRepository solicitacaoRepository) {
+    public SolicitacaoService(SolicitacaoClienteRepository solicitacaoRepository,
+            ClienteRepository clienteRepository, CategoriaEquipamentoRepository categoriaRepository) {
         this.solicitacaoRepository = solicitacaoRepository;
+        this.clienteRepository = clienteRepository;
+        this.categoriaRepository = categoriaRepository;
+    }
+
+    @Transactional
+    public SolicitacaoResponseDTO criar(SolicitacaoRequestDTO dados) {
+        validarCadastro(dados);
+
+        var cliente = clienteRepository.findByIdAndUsuarioAtivoTrue(dados.clienteId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Cliente não encontrado."));
+        var categoria = categoriaRepository.findById(dados.categoriaId())
+                .filter(c -> Boolean.TRUE.equals(c.getAtivo()))
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Categoria não encontrada ou inativa."));
+
+        Solicitacao solicitacao = new Solicitacao();
+        solicitacao.setCliente(cliente);
+        solicitacao.setCategoria(categoria);
+        solicitacao.setDescricaoEquipamento(dados.descricaoEquipamento().trim());
+        solicitacao.setDescricaoDefeito(dados.descricaoDefeito().trim());
+        solicitacao.setDataHoraAbertura(LocalDateTime.now());
+        solicitacao.setStatus(SolicitacaoStatus.ABERTA);
+        solicitacao.setAtivo(true);
+
+        return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
+    }
+
+    private void validarCadastro(SolicitacaoRequestDTO dados) {
+        if (dados == null || dados.clienteId() == null || dados.clienteId() <= 0
+                || dados.categoriaId() == null || dados.categoriaId() <= 0
+                || dados.descricaoEquipamento() == null || dados.descricaoEquipamento().isBlank()
+                || dados.descricaoDefeito() == null || dados.descricaoDefeito().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Preencha todos os campos obrigatórios.");
+        }
     }
 
     @Transactional(readOnly = true)
