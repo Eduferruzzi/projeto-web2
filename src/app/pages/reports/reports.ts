@@ -63,9 +63,39 @@ export class Reports {
     }
 
     const pdf = new jsPDF();
-    pdf.setFontSize(16);
-    pdf.text(`Receitas por ${tipo}`, 20, 20);
-    pdf.setFontSize(12);
+    const larguraPagina = pdf.internal.pageSize.getWidth()
+    const centroX = larguraPagina/2
+
+    // Título
+    pdf.setFont('helvetica', 'bold')
+    pdf.setFontSize(20)
+    pdf.text(`Receitas por ${tipo}`, centroX, 20, {align: 'center'})
+    
+    // Subtítulo
+    const partesSubtitulo: string[] = []
+    if (inicio){
+      partesSubtitulo.push(`Apartir de ${this.formatarData(inicio)}`)
+    }
+
+    if (fim){
+      partesSubtitulo.push(`Até ${this.formatarData(fim)}`)
+    }
+    
+    // Só tem subtítulo se alguma data for informada
+    if(partesSubtitulo.length > 0){
+      const subtitulo = partesSubtitulo.join('. ')
+
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      pdf.text(subtitulo, centroX, 26, {align: 'center'})
+    }
+
+    // Linha decorativa
+    pdf.setDrawColor(220,224,230)
+    pdf.setLineWidth(0.5)
+    pdf.line(14, 32, 196, 32)
+    
+    pdf.setFontSize(12)
     const linhas: string[] = [];
     const grupos = Object.keys(receitas).sort();
 
