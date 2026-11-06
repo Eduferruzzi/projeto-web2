@@ -26,9 +26,9 @@ public class Solicitacao {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String descricaoDefeito;
 
-    // categoria do equipamento, que será usada para filtrar os funcionários que podem atender a solicitação,
-    @Column(name = "categoria_id")
-    private Integer categoriaId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private CategoriaEquipamento categoria;
 
 
     // cliente
@@ -119,12 +119,12 @@ public class Solicitacao {
         }
     }
 
-    public Integer getCategoriaId() {
-        return categoriaId;
+    public CategoriaEquipamento getCategoria() {
+        return categoria;
     }
 
-    public void setCategoriaId(Integer categoriaId) {
-        this.categoriaId = categoriaId;
+    public void setCategoria(CategoriaEquipamento categoria) {
+        this.categoria = categoria;
     }
 
     public Cliente getCliente() {
