@@ -30,6 +30,8 @@ export class EmployeeRequests implements OnInit {
   dataFim = signal('');
 
   private solicitacaoService = inject(SolicitacaoService);
+onFiltroChange: any;
+aplicarFiltro: any;
 
   ngOnInit(): void {
     this.carregarSolicitacoes();

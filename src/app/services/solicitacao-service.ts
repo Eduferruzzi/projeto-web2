@@ -546,8 +546,8 @@ export class SolicitacaoService {
         return this.solicitacoes.find(solicitacao => solicitacao.id === id);
     }
 
-    buscarPorIdAPI(id: number): Observable<Solicitacao> {
-        return this.http.get<Solicitacao>(`${API_URL}/${id}`);
+    buscarPorIdAPI(id: number): Observable<SolicitacaoAbertaAPI> {
+        return this.http.get<SolicitacaoAbertaAPI>(`${API_URL}/${id}`);
     }
 
     listar() : Solicitacao[] {
@@ -557,8 +557,13 @@ export class SolicitacaoService {
     listarAtivasAPI(): Observable<SolicitacaoAbertaAPI[]> {
         return this.http.get<SolicitacaoAbertaAPI[]>(
         `${API_URL}/ativas`
-    );
-}
+        );
+    }
+
+    registrarOrcamentoAPI(solicitacaoId: number, funcionarioId: number, valorOrcamento: number): Observable<void> {
+        return this.http.put<void>(`${API_URL}/${solicitacaoId}/orcamento/${funcionarioId}`,{ valorOrcamento }
+        );
+    }   
 
     cadastrar(
         descricaoEquipamento: string,

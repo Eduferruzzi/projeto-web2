@@ -162,13 +162,11 @@
                                     </td>
                                     <td class="px-4 py-3 text-md-end">
                                         @if (s.status === 'ABERTA') {
-                                            <button
-                                                type="button"
-                                                class="btn btn-outline-primary btn-sm btn-acao"
-                                                disabled
-                                                title="Aguardando integração do orçamento">
+                                            <a
+                                                [routerLink]="['/employee-quote', s.id]"
+                                                class="btn btn-outline-primary btn-sm btn-acao">
                                                 Efetuar orçamento
-                                            </button>
+                                            </a>
                                         } @else if (
                                             s.status === 'APROVADA' ||
                                             s.status === 'REDIRECIONADA'

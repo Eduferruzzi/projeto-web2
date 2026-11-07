@@ -1,66 +1,148 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SolicitacaoService } from '../../services';
-import { Solicitacao } from '../../models/Solicitacao';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
-// Tela de orçamento. CommonModule fornece diretivas estruturais do template e FormsModule
-// habilita o vínculo ngModel do valor informado pelo funcionário.
+import {
+  SolicitacaoService,
+  SolicitacaoAbertaAPI
+} from '../../services/solicitacao-service';
+
+import { LoginService } from '../../services/login.service';
+
 @Component({
   selector: 'app-budget',
   imports: [CommonModule, FormsModule],
   templateUrl: './employee-quote.html',
   styleUrl: './employee-quote.css',
 })
-export class Budget {
-  // APIs do Angular: ActivatedRoute lê o id enviado pela URL e Router realiza a navegação.
+export class Budget implements OnInit {
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  // Serviço local que consulta a solicitação e registra o orçamento no fluxo da aplicação.
+
   private solicitacaoService = inject(SolicitacaoService);
+  private loginService = inject(LoginService);
 
-  // undefined representa id inexistente ou solicitação não encontrada.
-  solicitacao : Solicitacao | undefined;
+  solicitacao = signal<SolicitacaoAbertaAPI | null>(null);
 
-  // null indica que o funcionário ainda não informou um valor; erroValor alimenta a mensagem
-  // de validação exibida no template.
+  carregando = signal(true);
+  salvando = signal(false);
+  erro = signal('');
+
   ValorOrcamento: number | null = null;
   erroValor = '';
 
-  // Nome temporário usado como responsável pelo orçamento até haver autenticação integrada.
-  FuncionarioLogado = 'Temporario';
-
-  // Obtém o parâmetro :id da rota, converte-o para number e procura a solicitação no serviço.
-  constructor(){
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.buscarPorId(id);
-  }
 
-  // Valida a existência da solicitação e o valor antes de registrar e voltar ao painel.
-  confirmarOrcamento(){
-    
-    if(!this.solicitacao){
+    if (!Number.isInteger(id) || id <= 0) {
+      this.erro.set('Identificador da solicitação inválido.');
+      this.carregando.set(false);
       return;
     }
 
-    if(this.ValorOrcamento === null || this.ValorOrcamento <=0){
-      this.erroValor = 'Informe um valor valido senhor por favor';
+    this.solicitacaoService.buscarPorIdAPI(id).subscribe({
+      next: (dados) => {
+
+        if (dados.status !== 'ABERTA') {
+          this.erro.set(
+            'Esta solicitação não está disponível para orçamento.'
+          );
+        } else {
+          this.solicitacao.set(dados);
+        }
+
+        this.carregando.set(false);
+      },
+
+      error: () => {
+        this.erro.set('Não foi possível carregar a solicitação.');
+        this.carregando.set(false);
+      }
+    });
+  }
+
+  confirmarOrcamento(): void {
+
+    const solicitacao = this.solicitacao();
+
+    if (!solicitacao || this.salvando()) {
       return;
     }
 
-    this.solicitacaoService.efetuarOrcamento(
-      this.solicitacao.id,
-      this.ValorOrcamento,
-      this.FuncionarioLogado
-    );
+    this.erroValor = '';
+    this.erro.set('');
+    const valor = this.ValorOrcamento;
 
-    this.router.navigate(['/employee-home']);
+    if (
+      valor === null ||
+      !Number.isFinite(valor) ||
+      valor <= 0 ||
+      valor > 99999999.99 ||
+      Math.abs(valor * 100 - Math.round(valor * 100)) > 0.000001
+    ) {
+      this.erroValor =
+        'Informe um valor positivo com até duas casas decimais.';
+      return;
+    }
 
+    const usuario = this.loginService.usuarioLogado;
+
+    if (
+      !usuario ||
+      usuario.perfil !== 'FUNCIONARIO' ||
+      !Number.isInteger(usuario.id) ||
+      usuario.id <= 0
+    ) {
+      this.erro.set(
+        'Funcionário não identificado. Faça login novamente.'
+      );
+      return;
+    }
+
+    this.salvando.set(true);
+
+    this.solicitacaoService.registrarOrcamentoAPI(
+      solicitacao.id,
+      usuario.id,
+      valor
+    ).subscribe({
+
+      next: () => {
+        this.salvando.set(false);
+        this.router.navigate(['/employee-requests']);
+      },
+
+      error: (erro: HttpErrorResponse) => {
+        this.salvando.set(false);
+
+        if (erro.status === 409) {
+          this.erro.set(
+            'Esta solicitação já foi alterada e não pode ser orçada.'
+          );
+          this.solicitacao.set(null);
+
+        } else if (erro.status === 400) {
+          this.erro.set('O valor informado é inválido.');
+
+        } else if (erro.status === 404) {
+          this.erro.set(
+            'Solicitação ou funcionário não encontrado.'
+          );
+
+        } else {
+          this.erro.set(
+            'Não foi possível registrar o orçamento.'
+          );
+        }
+      }
+
+    });
   }
 
-  // Cancela o fluxo sem alterar a solicitação e retorna ao painel do funcionário.
-  cancelar(){
-    this.router.navigate(['/employee-home']);
+  cancelar(): void {
+    this.router.navigate(['/employee-requests']);
   }
 }

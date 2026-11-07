@@ -41,13 +41,11 @@
                                     <td class="px-4 py-3 fw-semibold">Nao disponivel</td>
                                     <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
                                     <td class="px-4 py-3 text-md-end">
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-outline-primary"
-                                            disabled
-                                            title="Aguardando integração do orçamento com a API">
+                                        <a
+                                            [routerLink]="['/employee-quote', s.id]"
+                                            class="btn btn-sm btn-outline-primary">
                                             Efetuar orçamento
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             }
