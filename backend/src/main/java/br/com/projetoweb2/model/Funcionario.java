@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "funcionario")
@@ -21,6 +22,7 @@ public class Funcionario {
     private Integer id;
 
     @MapsId
+    @JsonIgnoreProperties ({"id", "perfil", "ativo"})
     @OneToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, optional = false)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

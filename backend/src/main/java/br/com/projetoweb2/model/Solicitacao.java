@@ -148,6 +148,10 @@ public class Solicitacao {
         this.status = status;
     }
 
+    public List<HistoricoSolicitacao> getHistorico() {
+    return historicoSolicitacoes;
+    }
+
     public List<HistoricoSolicitacao> getHistoricoSolicitacoes() {
         return historicoSolicitacoes;
     }

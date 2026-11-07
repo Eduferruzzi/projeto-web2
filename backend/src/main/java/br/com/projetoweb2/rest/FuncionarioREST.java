@@ -1,15 +1,11 @@
 
 package br.com.projetoweb2.rest;
-
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import br.com.projetoweb2.DTO.FuncionarioRequestDTO;
-import br.com.projetoweb2.DTO.FuncionarioResponseDTO;
 import br.com.projetoweb2.service.FuncionarioService;
+import br.com.projetoweb2.model.Funcionario;
 
 @RestController
 @RequestMapping("/funcionarios")
@@ -23,21 +19,21 @@ public class FuncionarioREST {
     }
 
     @GetMapping
-    public List<FuncionarioResponseDTO> listar() {
+    public List<Funcionario> listar() {
         return funcionarioService.listar();
     }
 
     @GetMapping("/{id}")
-    public FuncionarioResponseDTO buscarPorId(
+    public Funcionario buscarPorId(
             @PathVariable Integer id) {
         return funcionarioService.buscar(id);
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioResponseDTO> criar(
-            @RequestBody FuncionarioRequestDTO dados) {
+    public ResponseEntity<Funcionario> criar(
+            @RequestBody Funcionario dados) {
 
-        FuncionarioResponseDTO criado =
+        Funcionario criado =
                 funcionarioService.criar(dados);
 
         return ResponseEntity
@@ -46,9 +42,9 @@ public class FuncionarioREST {
     }
 
     @PutMapping("/{id}")
-    public FuncionarioResponseDTO atualizar(
+    public Funcionario atualizar(
             @PathVariable Integer id,
-            @RequestBody FuncionarioRequestDTO dados) {
+            @RequestBody Funcionario dados) {
 
         return funcionarioService.atualizar(id, dados);
     }
