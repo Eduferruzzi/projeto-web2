@@ -20,7 +20,7 @@ import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import br.com.projetoweb2.enums.SolicitacaoStatus;
 
 @CrossOrigin 
 @RestController
@@ -39,6 +39,21 @@ public class SolicitacaoREST {
     public ResponseEntity<List<Solicitacao>> listarTodos() {
         return ResponseEntity.ok(solicitacaoRepository.findAll());
     }   
+
+    @GetMapping("/abertas")
+    public ResponseEntity<List<Solicitacao>> listarAbertas() {
+        List<Solicitacao> solicitacoes = solicitacaoRepository.findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA);
+        return ResponseEntity.ok(solicitacoes);
+    }
+
+    @GetMapping("/ativas")
+    public ResponseEntity<List<Solicitacao>> listarAtivas() {
+        List<Solicitacao> solicitacoes =
+                solicitacaoRepository.findByAtivoTrueOrderByDataHoraAberturaAsc();
+
+        return ResponseEntity.ok(solicitacoes);
+}
+    
 
     @GetMapping("/{id}")
     public ResponseEntity<Solicitacao> buscarPorId(@PathVariable("id") int id) {
