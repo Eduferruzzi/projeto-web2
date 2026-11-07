@@ -10,6 +10,8 @@ import br.com.projetoweb2.usuario.Cliente;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.*;
+
 @Entity
 @Table(name = "solicitacao")
 public class Solicitacao {
@@ -47,6 +49,9 @@ public class Solicitacao {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SolicitacaoStatus status = SolicitacaoStatus.ABERTA;
+    @JsonIgnore 
+    @OneToMany(mappedBy = "solicitacao", cascade = CascadeType.ALL)
+    private List<HistoricoSolicitacao> historicoSolicitacoes = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime dataHoraAbertura;
@@ -141,6 +146,10 @@ public class Solicitacao {
 
     public void setStatus(SolicitacaoStatus status) {
         this.status = status;
+    }
+
+    public List<HistoricoSolicitacao> getHistoricoSolicitacoes() {
+        return historicoSolicitacoes;
     }
 
     public LocalDateTime getDataHoraAbertura() {
@@ -277,5 +286,23 @@ public class Solicitacao {
     
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public void registrarMudancaDeEstado(SolicitacaoStatus novoStatus, LocalDateTime dataHora, Funcionario funcionarioOrigem,
+        Funcionario funcionarioDestino, String observacao){
+       
+        HistoricoSolicitacao registro = new HistoricoSolicitacao();
+
+        registro.setSolicitacao(this);
+        registro.setDataHora(dataHora);
+        registro.setEstadoAnterior(this.status);
+        registro.setEstadoNovo(novoStatus);
+        registro.setFuncionarioOrigem(funcionarioOrigem);
+        registro.setFuncionarioDestino(funcionarioDestino);
+        registro.setObservacao(observacao);
+
+        historicoSolicitacoes.add(registro);
+        this.status = novoStatus;
+
     }
 }
