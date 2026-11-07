@@ -19,6 +19,8 @@ import br.com.projetoweb2.repository.SolicitacaoRepository;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @CrossOrigin 
 @RestController
@@ -33,26 +35,22 @@ public class SolicitacaoREST {
         this.solicitacaoService = solicitacaoService;
     }
 
-    public List<Solicitacao> listar() {
-        return solicitacaoRepository.findAll();
-    }
-
     @GetMapping
     public ResponseEntity<List<Solicitacao>> listarTodos() {
-        return ResponseEntity.ok(solicitacaoRepository.findAll()
-                .stream()
-                .toList());
-    }
+        return ResponseEntity.ok(solicitacaoRepository.findAll());
+    }   
 
     @GetMapping("/{id}")
     public ResponseEntity<Solicitacao> buscarPorId(@PathVariable("id") int id) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId() == id)
-                                    .findAny().orElse(null);
-        if(s == null)
+        Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+        if (solicitacao == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        else
-            return ResponseEntity.ok(s);
+        }
+
+        return ResponseEntity.ok(solicitacao);
     }
+    
 
     @PostMapping
     public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {
@@ -60,25 +58,44 @@ public class SolicitacaoREST {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Solicitacao> alterar(@PathVariable("id") int id, @RequestBody Solicitacao solicitacao) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
-                                    .findAny().orElse(null);
-        if(s == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        solicitacaoRepository.save(s);
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
+    public ResponseEntity<Solicitacao> alterar(@PathVariable ("id") int id, @RequestBody Solicitacao dados) {
+            Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+            if (solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            if(dados.getDescricaoEquipamento() == null || 
+                dados.getDescricaoEquipamento().isBlank() || 
+                dados.getDescricaoDefeito() == null || 
+                dados.getDescricaoDefeito().isBlank() ){
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            solicitacao.setDescricaoEquipamento(dados.getDescricaoEquipamento().trim());
+
+            solicitacao.setDescricaoDefeito(dados.getDescricaoDefeito().trim());
+
+            solicitacaoRepository.save(solicitacao);
+
+            return ResponseEntity.ok(solicitacao);
+
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
-                                    .findAny().orElse(null);
-        if(s == null) {
+        
+        Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+        if(solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        s.setAtivo(false);
-        solicitacaoRepository.save(s);
-        return ResponseEntity.ok(s);
+
+        solicitacao.setAtivo(false);
+        solicitacaoRepository.save(solicitacao);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
