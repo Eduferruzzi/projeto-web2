@@ -16,7 +16,7 @@ public interface SolicitacaoClienteRepository extends JpaRepository<Solicitacao,
             JOIN FETCH s.cliente c
             JOIN FETCH c.usuario
             JOIN FETCH s.categoria
-            LEFT JOIN FETCH s.historico h
+            LEFT JOIN FETCH s.historicoSolicitacoes h
             LEFT JOIN FETCH h.funcionarioOrigem fo
             LEFT JOIN FETCH fo.usuario
             WHERE s.id = :id AND (s.ativo IS NULL OR s.ativo = true)
@@ -28,7 +28,7 @@ public interface SolicitacaoClienteRepository extends JpaRepository<Solicitacao,
             JOIN FETCH s.cliente c
             JOIN FETCH c.usuario
             JOIN FETCH s.categoria
-            LEFT JOIN FETCH s.historico
+            LEFT JOIN FETCH s.historicoSolicitacoes
             WHERE c.id = :clienteId AND (s.ativo IS NULL OR s.ativo = true)
             """)
     List<Solicitacao> listarPorCliente(@Param("clienteId") Integer clienteId);

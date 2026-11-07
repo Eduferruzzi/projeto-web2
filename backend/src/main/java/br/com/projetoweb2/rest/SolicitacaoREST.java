@@ -19,6 +19,13 @@ import br.com.projetoweb2.repository.SolicitacaoRepository;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
+import org.springframework.web.bind.annotation.RequestParam;
+import br.com.projetoweb2.enums.SolicitacaoStatus;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import br.com.projetoweb2.enums.SolicitacaoStatus;
+import br.com.projetoweb2.model.Funcionario;
+import br.com.projetoweb2.repository.FuncionarioRepository;
 
 @CrossOrigin 
 @RestController
@@ -27,32 +34,45 @@ public class SolicitacaoREST {
 
     private final SolicitacaoRepository solicitacaoRepository;
     private final SolicitacaoService solicitacaoService;
+    private final FuncionarioRepository funcionarioRepository;
 
-    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository, SolicitacaoService solicitacaoService){
+    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository, SolicitacaoService solicitacaoService, FuncionarioRepository funcionarioRepository) {
         this.solicitacaoRepository = solicitacaoRepository;
         this.solicitacaoService = solicitacaoService;
-    }
-
-    public List<Solicitacao> listar() {
-        return solicitacaoRepository.findAll();
+        this.funcionarioRepository = funcionarioRepository;
     }
 
     @GetMapping
     public ResponseEntity<List<Solicitacao>> listarTodos() {
-        return ResponseEntity.ok(solicitacaoRepository.findAll()
-                .stream()
-                .toList());
+        return ResponseEntity.ok(solicitacaoRepository.findAll());
+    }   
+
+    @GetMapping("/abertas")
+    public ResponseEntity<List<Solicitacao>> listarAbertas() {
+        List<Solicitacao> solicitacoes = solicitacaoRepository.findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA);
+        return ResponseEntity.ok(solicitacoes);
     }
+
+    @GetMapping("/ativas")
+    public ResponseEntity<List<Solicitacao>> listarAtivas() {
+        List<Solicitacao> solicitacoes =
+                solicitacaoRepository.findByAtivoTrueOrderByDataHoraAberturaAsc();
+
+        return ResponseEntity.ok(solicitacoes);
+}
+    
 
     @GetMapping("/{id}")
     public ResponseEntity<Solicitacao> buscarPorId(@PathVariable("id") int id) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId() == id)
-                                    .findAny().orElse(null);
-        if(s == null)
+        Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+        if (solicitacao == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        else
-            return ResponseEntity.ok(s);
+        }
+
+        return ResponseEntity.ok(solicitacao);
     }
+    
 
     @PostMapping
     public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {
@@ -60,25 +80,106 @@ public class SolicitacaoREST {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Solicitacao> alterar(@PathVariable("id") int id, @RequestBody Solicitacao solicitacao) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
-                                    .findAny().orElse(null);
-        if(s == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        solicitacaoRepository.save(s);
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
+    public ResponseEntity<Solicitacao> alterar(@PathVariable ("id") int id, @RequestBody Solicitacao dados) {
+            Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+            if (solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            if(dados.getDescricaoEquipamento() == null || 
+                dados.getDescricaoEquipamento().isBlank() || 
+                dados.getDescricaoDefeito() == null || 
+                dados.getDescricaoDefeito().isBlank() ){
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            solicitacao.setDescricaoEquipamento(dados.getDescricaoEquipamento().trim());
+
+            solicitacao.setDescricaoDefeito(dados.getDescricaoDefeito().trim());
+
+            solicitacaoRepository.save(solicitacao);
+
+            return ResponseEntity.ok(solicitacao);
+
     }
+
+    @PutMapping("/{id}/orcamento/{funcionarioId}")
+    public ResponseEntity<Void> registrarOrcamento(
+        @PathVariable("id") Integer id,
+        @PathVariable("funcionarioId") Integer funcionarioId,
+        @RequestBody Solicitacao dados) {
+
+        if (id == null || id <= 0
+                || funcionarioId == null || funcionarioId <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (dados == null || dados.getValorOrcamento() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        BigDecimal valor = dados.getValorOrcamento();
+
+        if (valor.compareTo(BigDecimal.ZERO) <= 0
+                || valor.scale() > 2
+                || valor.compareTo(new BigDecimal("99999999.99")) > 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(id)
+                .orElse(null);
+
+        if (solicitacao == null
+                || !Boolean.TRUE.equals(solicitacao.getAtivo())) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (solicitacao.getStatus() != SolicitacaoStatus.ABERTA) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        Funcionario funcionario = funcionarioRepository
+                .findByIdAndUsuarioAtivoTrue(funcionarioId)
+                .orElse(null);
+
+        if (funcionario == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        LocalDateTime agora = LocalDateTime.now();
+
+        solicitacao.setValorOrcamento(valor);
+        solicitacao.setDataHoraOrcamento(agora);
+        solicitacao.setFuncionarioOrcamento(funcionario);
+        solicitacao.registrarMudancaDeEstado(
+                SolicitacaoStatus.ORCADA,
+                agora,
+                funcionario,
+                null,
+                "Orçamento registrado."
+        );
+        
+        solicitacaoRepository.save(solicitacao);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id) {
-        Solicitacao s = this.listar().stream().filter(sol -> sol.getId().equals(id))
-                                    .findAny().orElse(null);
-        if(s == null) {
+        
+        Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
+
+        if(solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        s.setAtivo(false);
-        solicitacaoRepository.save(s);
-        return ResponseEntity.ok(s);
+
+        solicitacao.setAtivo(false);
+        solicitacaoRepository.save(solicitacao);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

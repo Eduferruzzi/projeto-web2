@@ -10,12 +10,20 @@
             <div class="card-header bg-white p-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h2 id="requests-title" class="h4 mb-0">Aguardando orçamento</h2>
                 <span class="text-secondary small">
-                    {{ solicitacoes.length }}
-                    {{ solicitacoes.length === 1 ? 'solicitação' : 'solicitações' }}
+                    {{ solicitacoes().length }}
+                    {{ solicitacoes().length === 1 ? 'solicitação' : 'solicitações' }}
                 </span>
             </div>
 
-            @if (solicitacoes.length > 0) {
+            @if(carregando()) {
+                <div class="text-center p-5">
+                    <p class="text-secondary mb-0">Carregando solicitações</p> 
+                </div>
+            } @else if (erro()) {
+                <div class="'alert alert-danger m-4">
+                    {{erro()}}
+                </div>
+            } @else if (solicitacoes().length > 0) {
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -27,16 +35,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let s of solicitacoes">
-                                <td class="px-4 py-3 text-nowrap">{{ s.dataHora }}</td>
-                                <td class="px-4 py-3 fw-semibold">{{ s.cliente }}</td>
-                                <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
-                                <td class="px-4 py-3 text-md-end">
-                                    <a [routerLink]="['/employee-quote', s.id]" class="btn btn-sm btn-outline-primary">
-                                        Efetuar orçamento
-                                    </a>
-                                </td>
-                            </tr>
+                            @for (s of solicitacoes(); track s.id) {
+                                <tr>
+                                    <td class="px-4 py-3 text-nowrap">{{ s.dataHoraAbertura| date: 'dd/MM/yyyy HH:mm' }}</td>
+                                    <td class="px-4 py-3 fw-semibold">Nao disponivel</td>
+                                    <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
+                                    <td class="px-4 py-3 text-md-end">
+                                        <a
+                                            [routerLink]="['/employee-quote', s.id]"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Efetuar orçamento
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

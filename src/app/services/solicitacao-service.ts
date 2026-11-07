@@ -1,6 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Solicitacao, EstadoSolicitacao } from '../models/Solicitacao';
 import { dataHoraAtual } from '../shared';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+const API_URL = 'http://localhost:8080/solicitacoes';
+
+export interface SolicitacaoAbertaAPI{
+
+    id: number;
+    descricaoEquipamento: string;
+    descricaoDefeito: string;
+    dataHoraAbertura: string;
+    status: EstadoSolicitacao;
+    categoria:{
+        id: number;
+        nome: string;
+    };
+}
 
 // Dados em memoria enquanto a API (Spring Boot) nao esta integrada.
 @Injectable({
@@ -8,6 +25,9 @@ import { dataHoraAtual } from '../shared';
 })
 
 export class SolicitacaoService {
+
+    private readonly http = inject(HttpClient);
+
     private solicitacoes : Solicitacao[] = [
         {
             id: 1,
@@ -526,9 +546,24 @@ export class SolicitacaoService {
         return this.solicitacoes.find(solicitacao => solicitacao.id === id);
     }
 
+    buscarPorIdAPI(id: number): Observable<SolicitacaoAbertaAPI> {
+        return this.http.get<SolicitacaoAbertaAPI>(`${API_URL}/${id}`);
+    }
+
     listar() : Solicitacao[] {
         return this.solicitacoes;
     }
+
+    listarAtivasAPI(): Observable<SolicitacaoAbertaAPI[]> {
+        return this.http.get<SolicitacaoAbertaAPI[]>(
+        `${API_URL}/ativas`
+        );
+    }
+
+    registrarOrcamentoAPI(solicitacaoId: number, funcionarioId: number, valorOrcamento: number): Observable<void> {
+        return this.http.put<void>(`${API_URL}/${solicitacaoId}/orcamento/${funcionarioId}`,{ valorOrcamento }
+        );
+    }   
 
     cadastrar(
         descricaoEquipamento: string,
@@ -625,6 +660,11 @@ export class SolicitacaoService {
     // RF 011 - Somente solicitacoes em aberto
     listarAbertas() : Solicitacao[]{
         return this.solicitacoes.filter(s => s.estado == "ABERTA");
+    }
+
+    listarAbertasAPI(): Observable<SolicitacaoAbertaAPI[]> {
+
+        return this.http.get<SolicitacaoAbertaAPI[]>(`${API_URL}/abertas`);
     }
 
     // RF 012 Efetuar o orcamento 

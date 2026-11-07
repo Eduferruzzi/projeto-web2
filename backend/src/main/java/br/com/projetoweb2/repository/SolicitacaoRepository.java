@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import br.com.projetoweb2.enums.SolicitacaoStatus;
 import br.com.projetoweb2.model.Solicitacao;
 
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Integer> {
-    List<Solicitacao> findAll();
+    List<Solicitacao> findByAtivoTrueAndStatus(SolicitacaoStatus status);
+    List<Solicitacao> findByAtivoTrueOrderByDataHoraAberturaAsc();
 }

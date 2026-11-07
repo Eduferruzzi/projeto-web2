@@ -10,6 +10,8 @@ import br.com.projetoweb2.usuario.Cliente;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.*;
+
 @Entity
 @Table(name = "solicitacao")
 public class Solicitacao {
@@ -20,7 +22,7 @@ public class Solicitacao {
 
     // dados do equipamento e defeito
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String descricaoEquipamento;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -45,8 +47,11 @@ public class Solicitacao {
     private Boolean ativo = true;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "estado_atual", nullable = false)
     private SolicitacaoStatus status = SolicitacaoStatus.ABERTA;
+    @JsonIgnore 
+    @OneToMany(mappedBy = "solicitacao", cascade = CascadeType.ALL)
+    private List<HistoricoSolicitacao> historicoSolicitacoes = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime dataHoraAbertura;
@@ -54,7 +59,7 @@ public class Solicitacao {
 
     // orcamento
 
-    @Column(precision = 12, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal valorOrcamento;
 
     private LocalDateTime dataHoraOrcamento;
@@ -71,7 +76,7 @@ public class Solicitacao {
     private String motivoRejeicao;
 
 
-    // manutencao
+    // funciuonario responsavel pela manutencao
 
     @Column(columnDefinition = "TEXT")
     private String descricaoManutencao;
@@ -83,16 +88,16 @@ public class Solicitacao {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "funcionario_responsavel_id")
+    @JoinColumn(name = "funcionario_manutencao_id")
     private Funcionario funcionarioResponsavel;
 
 
-    // redirecionamento
+    // funcionario atual 
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "funcionario_redirecionado_id")
-    private Funcionario funcionarioRedirecionado;
+    @JoinColumn(name = "funcionario_atual_id")
+    private Funcionario funcionarioAtual;
 
 
     // pagamento
@@ -141,6 +146,14 @@ public class Solicitacao {
 
     public void setStatus(SolicitacaoStatus status) {
         this.status = status;
+    }
+
+    public List<HistoricoSolicitacao> getHistorico() {
+    return historicoSolicitacoes;
+    }
+
+    public List<HistoricoSolicitacao> getHistoricoSolicitacoes() {
+        return historicoSolicitacoes;
     }
 
     public LocalDateTime getDataHoraAbertura() {
@@ -215,12 +228,12 @@ public class Solicitacao {
         this.funcionarioResponsavel = funcionarioResponsavel;
     }
 
-    public Funcionario getFuncionarioRedirecionado() {
-        return funcionarioRedirecionado;
+    public Funcionario getFuncionarioAtual() {
+        return funcionarioAtual;
     }
 
-    public void setFuncionarioRedirecionado(Funcionario funcionarioRedirecionado) {
-        this.funcionarioRedirecionado = funcionarioRedirecionado;
+    public void setFuncionarioAtual(Funcionario funcionarioAtual) {
+        this.funcionarioAtual = funcionarioAtual;
     }
 
     public LocalDateTime getDataHoraPagamento() {
@@ -277,5 +290,23 @@ public class Solicitacao {
     
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public void registrarMudancaDeEstado(SolicitacaoStatus novoStatus, LocalDateTime dataHora, Funcionario funcionarioOrigem,
+        Funcionario funcionarioDestino, String observacao){
+       
+        HistoricoSolicitacao registro = new HistoricoSolicitacao();
+
+        registro.setSolicitacao(this);
+        registro.setDataHora(dataHora);
+        registro.setEstadoAnterior(this.status);
+        registro.setEstadoNovo(novoStatus);
+        registro.setFuncionarioOrigem(funcionarioOrigem);
+        registro.setFuncionarioDestino(funcionarioDestino);
+        registro.setObservacao(observacao);
+
+        historicoSolicitacoes.add(registro);
+        this.status = novoStatus;
+
     }
 }
