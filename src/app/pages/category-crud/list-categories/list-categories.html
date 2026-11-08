@@ -13,10 +13,16 @@
     <section class="card shadow-sm border-0" aria-labelledby="category-list-title">
         <div class="card-header bg-white p-4 d-flex align-items-center justify-content-between gap-3">
             <h2 id="category-list-title" class="h4 mb-0">Categorias cadastradas</h2>
-            <span class="text-secondary small text-nowrap">{{ categories.length }} {{ categories.length === 1 ? 'categoria' : 'categorias' }}</span>
+            <span class="text-secondary small text-nowrap">{{ categories().length }} {{ categories().length === 1 ? 'categoria' : 'categorias' }}</span>
         </div>
 
-        @if (categories.length > 0) {
+        @if (carregando()) {
+            <div class="text-center p-5">
+                <p class="text-secondary mb-0">Carregando categorias...</p>
+            </div>
+        } @else if (erro()) {
+            <div class="alert alert-danger m-4" role="alert">{{ erro() }}</div>
+        } @else if (categories().length > 0) {
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -26,7 +32,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (category of categories; track category.id){
+                        @for (category of categories(); track category.id){
                             <tr>
                                 <td class="px-4 py-3 fw-semibold">
                                     {{ category.nome }}
@@ -36,9 +42,9 @@
                                     <a [routerLink]="['/categories/edit', category.id]" title="Editar categoria" class="btn btn-sm btn-outline-primary">
                                         <i class="fa fa-edit me-1" aria-hidden="true"></i> Editar
                                     </a>
-                                    <a href="#" title="Remover categoria" class="btn btn-sm btn-outline-danger" (click)="remover($event, category)">
+                                    <button type="button" title="Remover categoria" class="btn btn-sm btn-outline-danger" (click)="abrirModalRemocao(category)">
                                         <i class="fa fa-times me-1" aria-hidden="true"></i> Remover
-                                    </a>
+                                    </button>
                                     </div>
                                 </td>
                             </tr>
@@ -58,3 +64,13 @@
         }
     </section>
 </div>
+
+@if (categoriaParaRemover(); as category) {
+    <app-confirm-modal
+        titulo="Remover categoria"
+        [mensagem]="'Tem certeza que deseja apagar a categoria ' + category.nome + '?'"
+        textoConfirmacao="Sim, apagar"
+        (cancelado)="fecharModalRemocao()"
+        (confirmado)="confirmarRemocao()">
+    </app-confirm-modal>
+}

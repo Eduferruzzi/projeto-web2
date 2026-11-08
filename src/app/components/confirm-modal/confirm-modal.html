@@ -1,0 +1,22 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog"
+    aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="confirm-modal-title">{{ titulo }}</h2>
+                <button type="button" class="btn-close" aria-label="Fechar"
+                    (click)="cancelado.emit()"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">{{ mensagem }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    (click)="cancelado.emit()">Não</button>
+                <button type="button" class="btn btn-danger"
+                    (click)="confirmado.emit()">{{ textoConfirmacao }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show" (click)="cancelado.emit()"></div>

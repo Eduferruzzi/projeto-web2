@@ -3,47 +3,29 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CatEquip } from '../models/cat-equip'
 
-const LS_CHAVE = 'catequips'
+const API_URL = 'http://localhost:8080/api/categorias';
 
 @Injectable({ providedIn: 'root' })
 export class CatEquipService {
     private http = inject(HttpClient);
 
     listarNoBanco(): Observable<CatEquip[]> {
-        return this.http.get<CatEquip[]>('http://localhost:8080/api/categorias');
+        return this.http.get<CatEquip[]>(API_URL);
     }
 
-    listar(): CatEquip[]{
-        const catEquips = localStorage[LS_CHAVE]
-
-        return catEquips ? JSON.parse(catEquips) : []
+    buscarPorId(id: number): Observable<CatEquip> {
+        return this.http.get<CatEquip>(`${API_URL}/${id}`);
     }
 
-    inserir(catEquip:CatEquip) : void{
-        const catEquips = this.listar()
-
-        catEquip.id = new Date().getTime()
-
-        catEquips.push(catEquip)
-
-        localStorage[LS_CHAVE] = JSON.stringify(catEquips)
+    inserir(catEquip: CatEquip): Observable<CatEquip> {
+        return this.http.post<CatEquip>(API_URL, { nome: catEquip.nome });
     }
 
-    buscarPorId(id:number):CatEquip | undefined{
-        const catEquips = this.listar()
-        return catEquips.find(catEquip => catEquip.id === id)
+    atualizar(catEquip: CatEquip): Observable<CatEquip> {
+        return this.http.put<CatEquip>(`${API_URL}/${catEquip.id}`, { nome: catEquip.nome });
     }
 
-    remover(id:number):void {
-        let catEquips = this.listar()
-
-        catEquips = catEquips.filter(catEquip => catEquip.id !== id)
-
-        localStorage[LS_CHAVE] = JSON.stringify(catEquips)
-    }
-
-    atualizar(catEquip:CatEquip):void{
-        this.remover(catEquip.id)
-        this.inserir(catEquip)
+    remover(id: number): Observable<void> {
+        return this.http.delete<void>(`${API_URL}/${id}`);
     }
 }
