@@ -12,7 +12,8 @@ export interface HistoricoSolicitacao {
     dataHora : string;
     estadoAnterior : EstadoSolicitacao | null;
     estadoNovo : EstadoSolicitacao;
-    funcionario : string | null;
+    funcionarioOrigem : string | null;
+    funcionarioDestino : string | null;
     observacao? : string;
 }
 
@@ -23,8 +24,8 @@ export interface Solicitacao {
     categoria : string;
     descricaoDefeito : string;
     estado : EstadoSolicitacao;
-    clienteId? : number;
-    cliente : string;
+    clienteId : number | null;
+    cliente : string | null;
     valorOrcamento : number | null;
     dataHoraOrcamento : string | null;
     funcionarioOrcamento : string | null;
@@ -33,4 +34,7 @@ export interface Solicitacao {
     historico : HistoricoSolicitacao[];
     funcionarioResponsavel : string | null;
     funcionarioRedirecionado : string | null;
+    descricaoManutencao: string | null;
+    orientacoesCliente: string | null;
+    dataHoraFinalizacao: string | null;
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { SolicitacaoService, SolicitacaoAbertaAPI } from '../../services/solicitacao-service';
+import { SolicitacaoService } from '../../services/solicitacao-service';
+import { Solicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-employee-home',
@@ -12,7 +13,7 @@ import { SolicitacaoService, SolicitacaoAbertaAPI } from '../../services/solicit
 
 export class EmployeeHome implements OnInit {
 
-  solicitacoes = signal<SolicitacaoAbertaAPI[]>([]);
+  solicitacoes = signal<Solicitacao[]>([]);
   carregando = signal(true);
   erro= signal('');
 
@@ -28,7 +29,7 @@ export class EmployeeHome implements OnInit {
     this.carregando.set(true);
     this.erro.set('');
 
-    this.solicitacaoService.listarAbertasAPI().subscribe({
+    this.solicitacaoService.listarAbertas().subscribe({
       next: (dados) => {
         this.solicitacoes.set(dados ?? []);
         this.carregando.set(false);
@@ -47,5 +48,4 @@ export class EmployeeHome implements OnInit {
     }
 
 }
-
 

@@ -3,22 +3,37 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
 
-            @if (!solicitacao) {
-                <div class="alert alert-warning">Solicitação não encontrada.</div>
+            @if (!solicitacao()) {
+                <div class="alert alert-danger" role="alert">
+                    {{ mensagem }}
+                </div>
+                <a routerLink="/user-home" class="btn btn-outline-secondary">
+                    Voltar
+                </a>
             }
-
-            @if (solicitacao) {
-                <h2 class="mb-4 text-center">Pagamento da Solicitação #{{ solicitacao.id }}</h2>
+            @else {
+                @if (mensagem){
+                    @if (mensagemSucesso) {
+                        <div class="alert alert-success" role="alert">
+                            {{ mensagem }}
+                        </div>
+                    } @else {
+                        <div class="alert alert-danger" role="alert">
+                            {{ mensagem }}
+                        </div>
+                    }
+                }
+                <h2 class="mb-4 text-center">Pagamento da Solicitação #{{ solicitacao()!.id }}</h2>
 
                 <div class="card mb-4">
                     <div class="card-body">
-                        <p class="mb-2 text-center fw-bold fs-5">{{ solicitacao.descricaoEquipamento }}</p>
-                        <p class="mb-2 text-center">{{ solicitacao.categoria }}</p>
-                        <p class="mb-2 text-center">{{ solicitacao.descricaoDefeito }}</p>
+                        <p class="mb-2 text-center fw-bold fs-5">{{ solicitacao()!.descricaoEquipamento }}</p>
+                        <p class="mb-2 text-center">{{ solicitacao()!.categoria }}</p>
+                        <p class="mb-2 text-center">{{ solicitacao()!.descricaoDefeito }}</p>
                         <p class="mb-2 text-center">
-                            <span class="badge text-bg-primary">{{ solicitacao.estado }}</span>
+                            <span class="badge text-bg-primary">{{ solicitacao()!.estado }}</span>
                         </p>
-                        <p class="mb-0 text-center text-muted">Aberta em {{ solicitacao.dataHora }}</p>
+                        <p class="mb-0 text-center text-muted">Aberta em {{ solicitacao()!.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
                     </div>
                 </div>
 
@@ -27,7 +42,7 @@
                     <div class="card-body text-center">
                         <p class="mb-1 text-uppercase fw-bold">Valor a pagar</p>
                         <p class="display-4 fw-bold text-primary mb-0">
-                            {{ solicitacao.valorOrcamento | moedaBr }}
+                            {{ solicitacao()!.valorOrcamento | moedaBr }}
                         </p>
                     </div>
                 </div>
@@ -39,7 +54,7 @@
                 <div class="d-flex justify-content-end gap-2">
                     <a routerLink="/user-home" class="btn btn-outline-secondary">Voltar</a>
 
-                    @if (solicitacao.estado === 'ARRUMADA') {
+                    @if (solicitacao()!.estado === 'ARRUMADA') {
                         <button type="button" class="btn btn-success fw-bold"
                                 (click)="confirmarPagamento()">Confirmar Pagamento</button>
                     }

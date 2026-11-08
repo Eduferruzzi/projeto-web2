@@ -144,10 +144,10 @@
                             @for (s of solicitacoesFiltradas(); track s.id) {
                                 <tr>
                                     <td class="px-4 py-3 text-nowrap">
-                                        {{ s.dataHoraAbertura | date:'dd/MM/yyyy HH:mm' }}
+                                        {{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}
                                     </td>
                                     <td class="px-4 py-3 fw-semibold">
-                                        Não disponível
+                                        {{ s.cliente || 'Não disponível' }}
                                     </td>
                                     <td class="px-4 py-3">
                                         {{ s.descricaoDefeito | slice:0:30 }}
@@ -156,34 +156,33 @@
                                     <td class="px-4 py-3 text-center">
                                         <span
                                             class="badge status-badge"
-                                            [ngClass]="'status-' + s.status.toLowerCase()">
-                                            {{ s.status }}
+                                            [ngClass]="'status-' + s.estado.toLowerCase()">
+                                            {{ s.estado }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-md-end">
-                                        @if (s.status === 'ABERTA') {
+                                        @if (s.estado === 'ABERTA') {
                                             <a
                                                 [routerLink]="['/employee-quote', s.id]"
                                                 class="btn btn-outline-primary btn-sm btn-acao">
                                                 Efetuar orçamento
                                             </a>
                                         } @else if (
-                                            s.status === 'APROVADA' ||
-                                            s.status === 'REDIRECIONADA'
+                                            s.estado === 'APROVADA' ||
+                                            s.estado === 'REDIRECIONADA'
                                         ) {
                                             <button
                                                 type="button"
+                                                [routerLink]="['/execute-maintenance', s.id]"
                                                 class="btn btn-outline-primary btn-sm btn-acao"
-                                                disabled
-                                                title="Aguardando integração da manutenção">
+                                            >
                                                 Efetuar manutenção
                                             </button>
-                                        } @else if (s.status === 'PAGA') {
+                                        } @else if (s.estado === 'PAGA') {
                                             <button
                                                 type="button"
                                                 class="btn btn-outline-success btn-sm btn-acao"
-                                                disabled
-                                                title="Aguardando integração da finalização">
+                                                (click)="finalizarSolicitacao(s.id)">
                                                 Finalizar
                                             </button>
                                         } @else {

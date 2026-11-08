@@ -9,6 +9,12 @@
         </a>
     </div>
 
+    @if (mensagem) {
+        <div class="alert" [ngClass]="mensagemSucesso ? 'alert-success' : 'alert-danger'" role="alert">
+            {{ mensagem }}
+        </div>
+    }
+
     @if (solicitacaoCadastrada) {
         <div class="alert alert-success" role="alert">
             Solicitação cadastrada com sucesso!
@@ -17,17 +23,18 @@
 
     <div class="d-flex align-items-center justify-content-between mb-3">
         <h2 class="h4 mb-0">Suas solicitações</h2>
-        <span class="text-secondary small">{{ solicitacoes.length }} solicitações</span>
+        <span class="text-secondary small">{{ solicitacoes().length }} solicitações</span>
     </div>
 
+    
     <div class="row g-3">
-        @for(solicitacao of solicitacoes; track solicitacao.id){
+        @for(solicitacao of solicitacoes(); track solicitacao.id){
             <div class="col-12 col-lg-6">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex flex-column gap-3">
                         <div class="d-flex justify-content-between gap-3">
                             <div>
-                                <p class="text-secondary small mb-1">{{solicitacao.dataHora}}</p>
+                                <p class="text-secondary small mb-1">{{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
                                 <h3 class="h5 mb-0">{{solicitacao.descricaoEquipamento}}</h3>
                             </div>
                             @switch (solicitacao.estado){

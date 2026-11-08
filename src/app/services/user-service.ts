@@ -1,48 +1,41 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { User } from '../models/user';
+
+const API_URL = 'http://localhost:8080/funcionarios';
+
+interface FuncionarioAPI {
+    id: number;
+    dataNascimento: string;
+    usuario: {
+        nome: string;
+        email: string;
+    };
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private users: User[] = [
-        {
-            id: 1,
-            nome: 'Eduardo',
-            email: 'eduardo@mock.local',
-            dataNascimento: '1990-01-12',
-            senha: '1234'
-        },
-        {
-            id: 2,
-            nome: 'Teste',
-            email: 'teste@mock.local',
-            dataNascimento: '1995-02-03',
-            senha: '1234'
-        },
-    ];
+    private readonly http = inject(HttpClient);
 
-    listarTodos(): User[] {
-        return this.users;
+    listarTodos(): Observable<User[]> {
+        return this.http.get<FuncionarioAPI[]>(API_URL).pipe(
+            map(funcionarios => funcionarios.map(funcionario => this.paraUser(funcionario)))
+        );
     }
 
-    buscarPorId(id: number): User | undefined {
-        return this.users.find((user) => user.id === id);
+    buscarPorId(id: number): Observable<User> {
+        return this.http.get<FuncionarioAPI>(`${API_URL}/${id}`).pipe(
+            map(funcionario => this.paraUser(funcionario))
+        );
     }
 
-    inserir(user: User): void {
-        user.id = new Date().getTime();
-        this.users.push(user);
-    }
-
-    atualizar(user: User): void {
-        const atual = this.buscarPorId(user.id);
-        if (!atual) {
-            return;
-        }
-
-        Object.assign(atual, user);
-    }
-
-    remover(id: number): void {
-        this.users = this.users.filter((user) => user.id !== id);
+    private paraUser(funcionario: FuncionarioAPI): User {
+        return new User(
+            funcionario.id,
+            funcionario.usuario.nome,
+            funcionario.usuario.email,
+            funcionario.dataNascimento
+        );
     }
 }

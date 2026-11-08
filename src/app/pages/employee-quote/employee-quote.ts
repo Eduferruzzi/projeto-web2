@@ -3,13 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-
-import {
-  SolicitacaoService,
-  SolicitacaoAbertaAPI
-} from '../../services/solicitacao-service';
+import { SolicitacaoService } from '../../services/solicitacao-service';
 
 import { LoginService } from '../../services/login.service';
+import { Solicitacao } from '../../models/Solicitacao'
 
 @Component({
   selector: 'app-budget',
@@ -25,13 +22,13 @@ export class Budget implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
 
-  solicitacao = signal<SolicitacaoAbertaAPI | null>(null);
+  solicitacao = signal<Solicitacao | null>(null);
 
   carregando = signal(true);
   salvando = signal(false);
   erro = signal('');
 
-  ValorOrcamento: number | null = null;
+  valorOrcamento: number | null = null;
   erroValor = '';
 
   ngOnInit(): void {
@@ -43,10 +40,9 @@ export class Budget implements OnInit {
       return;
     }
 
-    this.solicitacaoService.buscarPorIdAPI(id).subscribe({
+    this.solicitacaoService.buscarPorId(id).subscribe({
       next: (dados) => {
-
-        if (dados.status !== 'ABERTA') {
+        if (dados.estado !== 'ABERTA') {
           this.erro.set(
             'Esta solicitação não está disponível para orçamento.'
           );
@@ -74,7 +70,7 @@ export class Budget implements OnInit {
 
     this.erroValor = '';
     this.erro.set('');
-    const valor = this.ValorOrcamento;
+    const valor = this.valorOrcamento;
 
     if (
       valor === null ||
@@ -104,7 +100,7 @@ export class Budget implements OnInit {
 
     this.salvando.set(true);
 
-    this.solicitacaoService.registrarOrcamentoAPI(
+    this.solicitacaoService.efetuarOrcamento(
       solicitacao.id,
       usuario.id,
       valor

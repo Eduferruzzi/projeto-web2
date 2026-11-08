@@ -1,7 +1,7 @@
 <div class="container mt-5 mb-5">
   <div class="row justify-content-center">
     <div class="col-md-10 col-lg-8">
-      @if (!solicitacao) {
+      @if (!solicitacao()) {
         <div class="alert alert-warning">
           Solicitação não encontrada.
         </div>
@@ -11,6 +11,17 @@
         </a>
       } @else {
         <div class="card shadow-sm">
+          @if (mensagem){
+                @if (mensagemSucesso) {
+                    <div class="alert alert-success" role="alert">
+                        {{ mensagem }}
+                    </div>
+                } @else {
+                    <div class="alert alert-danger" role="alert">
+                        {{ mensagem }}
+                    </div>
+                }
+            }
           <div class="card-body p-4">
             <h1 class="h3 text-center mb-4">
               Visualizar serviço
@@ -21,74 +32,74 @@
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <strong>Número da solicitação</strong>
-                <p>#{{ solicitacao.id }}</p>
+                <p>#{{ solicitacao()!.id }}</p>
               </div>
 
               <div class="col-md-6">
                 <strong>Data e hora</strong>
-                <p>{{ solicitacao.dataHora }}</p>
+                <p>{{ solicitacao()!.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
               </div>
 
               <div class="col-md-6">
                 <strong>Cliente</strong>
-                <p>{{ solicitacao.cliente }}</p>
+                <p>{{ solicitacao()!.cliente }}</p>
               </div>
 
               <div class="col-md-6">
                 <strong>Estado atual</strong>
                 <p>
                   <span class="badge text-bg-primary">
-                    {{ solicitacao.estado }}
+                    {{ solicitacao()!.estado }}
                   </span>
                 </p>
               </div>
 
               <div class="col-md-6">
                 <strong>Equipamento</strong>
-                <p>{{ solicitacao.descricaoEquipamento }}</p>
+                <p>{{ solicitacao()!.descricaoEquipamento }}</p>
               </div>
 
               <div class="col-md-6">
                 <strong>Categoria</strong>
-                <p>{{ solicitacao.categoria }}</p>
+                <p>{{ solicitacao()!.categoria }}</p>
               </div>
 
               <div class="col-12">
                 <strong>Descrição do defeito</strong>
-                <p>{{ solicitacao.descricaoDefeito }}</p>
+                <p>{{ solicitacao()!.descricaoDefeito }}</p>
               </div>
             </div>
 
-            @if (solicitacao.valorOrcamento !== null) {
+            @if (solicitacao()!.valorOrcamento !== null) {
               <div class="alert alert-primary">
                 <strong>Valor orçado:</strong>
-                {{ formatarValor(solicitacao.valorOrcamento) }}
+                {{ solicitacao()!.valorOrcamento | moedaBr }}
                 <br>
                 <span>
-                  Funcionário: {{ solicitacao.funcionarioOrcamento }}
+                  Funcionário: {{ solicitacao()!.funcionarioOrcamento }}
                 </span>
                 <br>
                 <span>
-                  Data/Hora: {{ solicitacao.dataHoraOrcamento }}
+                  Data/Hora: {{ solicitacao()!.dataHoraOrcamento | date:'dd/MM/yyyy HH:mm' }}
                 </span>
               </div>
             }
 
-            @if (solicitacao.motivoRejeicao) {
+            @if (solicitacao()!.motivoRejeicao) {
               <div class="alert alert-danger">
                 <strong>Motivo da rejeição:</strong>
-                {{ solicitacao.motivoRejeicao }}
+                {{ solicitacao()!.motivoRejeicao }}
               </div>
             }
 
-            @if (solicitacao.estado === 'REDIRECIONADA') {
+            @if (solicitacao()!.estado === 'REDIRECIONADA') {
               <div class="alert alert-info">
                 <strong>Funcionário de destino:</strong>
-                {{ solicitacao.funcionarioRedirecionado || 'Não informado' }}
+                {{ solicitacao()!.funcionarioRedirecionado || 'Não informado' }}
               </div>
             }
 
-            <app-request-history [historico]="solicitacao.historico"></app-request-history>
+            <app-request-history [historico]="solicitacao()!.historico"></app-request-history>
 
             @if (mostrarRejeicao) {
               <div class="border rounded p-3 mt-4">
@@ -103,10 +114,6 @@
                   rows="4"
                   [(ngModel)]="motivoRejeicao"
                 ></textarea>
-
-                @if (erroMotivo) {
-                  <div class="text-danger mt-1">{{ erroMotivo }}</div>
-                }
 
                 <div class="d-flex justify-content-end gap-2 mt-3">
                   <button
@@ -150,7 +157,7 @@
                 Voltar
               </a>
 
-              @if (solicitacao.estado === 'ORCADA' && !mostrarRejeicao) {
+              @if (solicitacao()!.estado === 'ORCADA' && !mostrarRejeicao) {
                 <button
                   type="button"
                   class="btn btn-danger"
@@ -169,7 +176,7 @@
               }
 
               <!-- RF009 - Resgatar Servico -->
-              @if (solicitacao.estado === 'REJEITADA') {
+              @if (solicitacao()!.estado === 'REJEITADA') {
                 <button
                   type="button"
                   class="btn btn-warning"
@@ -180,9 +187,9 @@
               }
 
               <!-- RF010 - Pagar Servico -->
-              @if (solicitacao.estado === 'ARRUMADA') {
+              @if (solicitacao()!.estado === 'ARRUMADA') {
                 <a
-                  [routerLink]="['/payment', solicitacao.id]"
+                  [routerLink]="['/payment', solicitacao()!.id]"
                   class="btn btn-success"
                 >
                   Pagar Serviço

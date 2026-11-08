@@ -5,6 +5,10 @@
         <div class="card-body p-4">
           <h1 class="h3 text-center mb-3">Relatórios de receitas</h1>
 
+          @if (mensagem) {
+                  <div class="text-danger">{{ mensagem }}</div>
+          }
+
           <div class="d-grid gap-3 col-md-8 mx-auto">
             <button
               type="button"
@@ -21,10 +25,6 @@
 
                 <label for="dataFinal">Data final</label>
                 <input type="date" id="dataFinal" name="dataFinal" #dataFinal>
-
-                @if (erroPeriodo) {
-                  <div class="text-danger">{{ erroPeriodo }}</div>
-                }
 
                 <button
                   type="button"

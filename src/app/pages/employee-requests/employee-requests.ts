@@ -2,7 +2,8 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { SolicitacaoService, SolicitacaoAbertaAPI } from '../../services';
+import { LoginService, SolicitacaoService } from '../../services';
+import { Solicitacao } from '../../models/Solicitacao'
 
 // Limita o estado do filtro às opções oferecidas pelos controles do template.
 type FiltroTipo = 'HOJE' | 'PERIODO' | 'TODAS';
@@ -16,25 +17,28 @@ type FiltroTipo = 'HOJE' | 'PERIODO' | 'TODAS';
   styleUrls: ['./employee-requests.css']
 })
 export class EmployeeRequests implements OnInit {
-
   // dados da API
-  solicitacoes = signal<SolicitacaoAbertaAPI[]>([]);
+  solicitacoes = signal<Solicitacao[]>([]);
 
   //controle interface
   carregando = signal(false);
   erro = signal('');
+  funcId: number | null = null;
 
   // filtros de 
   filtroAtivo = signal<FiltroTipo>('HOJE');
   dataInicio = signal('');
   dataFim = signal('');
-
+  
   private solicitacaoService = inject(SolicitacaoService);
-onFiltroChange: any;
-aplicarFiltro: any;
-
+  private loginService = inject(LoginService);
+  
   ngOnInit(): void {
     this.carregarSolicitacoes();
+    this.funcId = Number(this.loginService.usuarioLogado?.id);
+    if (!Number.isInteger(this.funcId) || this.funcId <= 0) {
+      this.erro.set('ID do funcionário inválido.');
+    }
   }
 
   //consultar as solicitações abertas
@@ -42,7 +46,7 @@ aplicarFiltro: any;
     this.carregando.set(true);
     this.erro.set('');
 
-    this.solicitacaoService.listarAbertasAPI().subscribe({
+    this.solicitacaoService.listarAtivas().subscribe({
       next: (dados) => {
         this.solicitacoes.set(dados ?? []);
         this.carregando.set(false);
@@ -65,7 +69,7 @@ aplicarFiltro: any;
     const fim = fimTexto ? new Date(`${fimTexto}T23:59:59`) : null;
 
     return this.solicitacoes().filter(solicitacao => {
-      const data = new Date(solicitacao.dataHoraAbertura);
+      const data = new Date(solicitacao.dataHora);
 
       if(Number.isNaN(data.getTime())) {
         return false;
@@ -85,8 +89,29 @@ aplicarFiltro: any;
         return true;
       })
       .sort((a, b) =>
-        new Date(a.dataHoraAbertura).getTime()
-        - new Date(b.dataHoraAbertura).getTime()
+        new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
       );
   });
+
+  finalizarSolicitacao(solicitacaoId: number) {
+    this.carregando.set(true);
+    this.erro.set('');
+    if (!this.funcId) {
+      this.erro.set('ID do funcionário inválido.');
+      this.carregando.set(false);
+      return;
+    }
+    if(confirm('Deseja realmente finalizar a solicitação?')) {
+      this.solicitacaoService.alterarEstado(solicitacaoId, this.funcId, 'Finalizado pelo funcionário', 'FINALIZADA').subscribe({
+        next: (solicitacao) => {
+          this.carregarSolicitacoes();
+          this.carregando.set(false);
+        },
+        error: (err) => {
+          this.erro.set('Erro ao finalizar solicitação: ' + err.message);
+          this.carregando.set(false);
+        }
+      });
+    }
+  }
 }

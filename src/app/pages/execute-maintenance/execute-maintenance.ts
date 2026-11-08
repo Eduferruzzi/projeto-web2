@@ -1,10 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router'; 
 import { SolicitacaoService } from '../../services/solicitacao-service'; 
 import { UserService } from '../../services/user-service'; 
 import { Solicitacao } from '../../models/Solicitacao';
 import { User } from '../../models/user';
+import { LoginService } from '../../services'
+import { EstadoSolicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-execute-maintenance',
@@ -17,26 +20,47 @@ export class ExecuteMaintenance implements OnInit {
   private route = inject(ActivatedRoute); 
   private solicitacaoService = inject(SolicitacaoService); 
   private userService = inject(UserService);
+  private loginService = inject(LoginService);
 
   // variaveis de estado do componente
-  solicitacao: Solicitacao | undefined; 
-  funcionariosSelect: User[] = [];
+  solicitacao = signal<Solicitacao | undefined>(undefined);
+  funcionariosSelect = signal<User[]>([]);
   
-  // só um mock (peguei o mesmo do q tava no requests)
-  nomeFuncionarioLogado = 'Eduardo'; 
-
+  funcionarioId: number | undefined;
 
   // flag p controle de exibição
   exibirRedirecionamento: boolean = false;
   exibirFormConclusao: boolean = true;
+  mensagemSucesso = true;
+  mensagem = '';
 
   // busca a solicitacao com base no id da url p inicializar os dados
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.buscarPorId(id);
+    const funcionarioLogado = this.loginService.usuarioLogado?.id;
+    this.funcionarioId = funcionarioLogado ? Number(funcionarioLogado) : undefined;
+    this.solicitacaoService.buscarPorId(id).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao.set(solicitacao);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.mensagem = this.mensagemErro(error, 'Erro ao buscar a solicitação.');
+        this.mensagemSucesso = false;
+      }
+    });
 
     // carrega os funcionarios menos vc mesmo
-    this.funcionariosSelect = this.userService.listarTodos().filter(f => f.nome !== this.nomeFuncionarioLogado);
+    this.userService.listarTodos().subscribe({
+      next: funcionarios => {
+        this.funcionariosSelect.set(
+          funcionarios.filter(funcionario => funcionario.id !== this.funcionarioId)
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        this.mensagem = this.mensagemErro(error, 'Erro ao carregar os funcionários disponíveis.');
+        this.mensagemSucesso = false;
+      }
+    });
   }
 
   // valida campos, confirma e grava
@@ -46,23 +70,63 @@ export class ExecuteMaintenance implements OnInit {
       return;
     }
     if (confirm('Quer concluir esta manutenção?')) {
-      this.solicitacaoService.efetuarManutencao(this.solicitacao!.id, descricao, orientacoes, this.nomeFuncionarioLogado);
-      this.router.navigate(['/employee-requests']);
+      const status: EstadoSolicitacao = "ARRUMADA";
+      const obs = `Descrição da manutenção: ${descricao}. Orientações ao cliente: ${orientacoes}`;
+      const solicitacao = this.solicitacao();
+      if (!solicitacao) {
+        this.mensagem = 'Solicitação não encontrada.';
+        this.mensagemSucesso = false;
+        return;
+      }
+      if (!this.funcionarioId) {
+        this.mensagem = 'ID do funcionário inválido.';
+        this.mensagemSucesso = false;
+        return;
+      }
+      this.solicitacaoService.alterarEstado(solicitacao.id, this.funcionarioId!, obs, status)
+        .subscribe({
+          next: () => this.router.navigate(['/employee-requests']),
+          error: (error: HttpErrorResponse) => {
+            this.mensagem = this.mensagemErro(error, 'Erro ao concluir a manutenção.');
+            this.mensagemSucesso = false;
+          }
+        });
     }
   }
 
   // valida seleção, confirma e grava
   redirecionarManutencao(funcionarioId: string): void {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
+      this.mensagem = 'Solicitação não encontrada.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    if (!this.funcionarioId) {
+      this.mensagem = 'ID do funcionário inválido.';
+      this.mensagemSucesso = false;
+      return;
+    }
     if (!funcionarioId) {
-      alert('Selecione um funcionário para o redirecionamento.');
+      this.mensagem = 'Selecione um funcionário para redirecionar a manutenção.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    const idFuncionarioDestino = Number(funcionarioId);
+    if (!Number.isInteger(idFuncionarioDestino) || idFuncionarioDestino <= 0) {
+      this.mensagem = 'ID do funcionário selecionado inválido.';
+      this.mensagemSucesso = false;
       return;
     }
     if (confirm('Quer redirecionar esta manutenção para outro funcionário?')) {
-      const funcionarioDestino = this.userService.buscarPorId(Number(funcionarioId));
-      if(funcionarioDestino) {
-          this.solicitacaoService.redirecionarManutencao(this.solicitacao!.id, this.nomeFuncionarioLogado, funcionarioDestino.nome);
-      }
-      this.router.navigate(['/employee-requests']);
+      this.solicitacaoService.redirecionarManutencao(solicitacao.id, this.funcionarioId!, idFuncionarioDestino)
+        .subscribe({
+          next: () => this.router.navigate(['/employee-requests']),
+          error: (error: HttpErrorResponse) => {
+            this.mensagem = this.mensagemErro(error, 'Erro ao redirecionar a manutenção.');
+            this.mensagemSucesso = false;
+          }
+        });
     }
   }
 
@@ -76,5 +140,16 @@ export class ExecuteMaintenance implements OnInit {
   // cancela a operação e volta pra tela de solicitações
   cancelar(): void {
     this.router.navigate(['/employee-requests']);
+  }
+
+  private mensagemErro(error: HttpErrorResponse, mensagemPadrao: string): string {
+    console.error(mensagemPadrao, error);
+    const mensagemApi = typeof error.error === 'string'
+      ? error.error
+      : error.error?.message ?? error.error?.detail;
+
+    return mensagemApi
+      ? `${mensagemPadrao} ${mensagemApi}`
+      : `${mensagemPadrao} (HTTP ${error.status}).`;
   }
 }

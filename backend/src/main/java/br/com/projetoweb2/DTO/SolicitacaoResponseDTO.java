@@ -30,7 +30,7 @@ public record SolicitacaoResponseDTO(
     public static SolicitacaoResponseDTO de(Solicitacao solicitacao) {
         return new SolicitacaoResponseDTO(
                 solicitacao.getId(),
-                dataDeAbertura(solicitacao),
+                solicitacao.getDataHoraAbertura(),
                 solicitacao.getDescricaoEquipamento(),
                 solicitacao.getCategoria() == null ? null : solicitacao.getCategoria().getNome(),
                 solicitacao.getDescricaoDefeito(),
@@ -50,14 +50,6 @@ public record SolicitacaoResponseDTO(
                         .stream()
                         .map(HistoricoResponseDTO::de)
                         .toList());
-    }
-
-    private static LocalDateTime dataDeAbertura(Solicitacao solicitacao) {
-        return solicitacao.getHistorico()
-                .stream()
-                .map(passo -> passo.getDataHora())
-                .min(LocalDateTime::compareTo)
-                .orElse(null);
     }
 
     private static String nomeDoCliente(Solicitacao solicitacao) {

@@ -9,13 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.com.projetoweb2.DTO.RedirecionamentoRequestDTO;
 import br.com.projetoweb2.DTO.RejeicaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
+import br.com.projetoweb2.DTO.StatusRequestDTO;
 import br.com.projetoweb2.enums.SolicitacaoStatus;
+import br.com.projetoweb2.model.Funcionario;
 import br.com.projetoweb2.model.Solicitacao;
-import br.com.projetoweb2.repository.SolicitacaoClienteRepository;
+import br.com.projetoweb2.repository.SolicitacaoRepository;
 import br.com.projetoweb2.repository.ClienteRepository;
+import br.com.projetoweb2.repository.FuncionarioRepository;
 import br.com.projetoweb2.repository.CategoriaEquipamentoRepository;
 
 @Service
@@ -23,15 +27,51 @@ public class SolicitacaoService {
 
     private static final int TAMANHO_MINIMO_MOTIVO = 5;
 
-    private final SolicitacaoClienteRepository solicitacaoRepository;
+    private final SolicitacaoRepository solicitacaoRepository;
     private final ClienteRepository clienteRepository;
     private final CategoriaEquipamentoRepository categoriaRepository;
+    private final FuncionarioRepository funcionarioRepository;
 
-    public SolicitacaoService(SolicitacaoClienteRepository solicitacaoRepository,
-            ClienteRepository clienteRepository, CategoriaEquipamentoRepository categoriaRepository) {
+    public SolicitacaoService(SolicitacaoRepository solicitacaoRepository,
+            ClienteRepository clienteRepository, FuncionarioRepository funcionarioRepository, CategoriaEquipamentoRepository categoriaRepository) {
         this.solicitacaoRepository = solicitacaoRepository;
         this.clienteRepository = clienteRepository;
+        this.funcionarioRepository = funcionarioRepository;
         this.categoriaRepository = categoriaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarTodos() {
+        return solicitacaoRepository.findAll()
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarAbertas() {
+        return solicitacaoRepository
+                .findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA)
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarAtivas() {
+        return solicitacaoRepository
+                .findByAtivoTrueOrderByDataHoraAberturaAsc()
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SolicitacaoResponseDTO buscarPorId(Integer id) {
+        return solicitacaoRepository.buscarComHistorico(id)
+                .map(SolicitacaoResponseDTO::de)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Solicitacao nao encontrada."));
     }
 
     @Transactional
@@ -54,6 +94,7 @@ public class SolicitacaoService {
         solicitacao.setDataHoraAbertura(LocalDateTime.now());
         solicitacao.setStatus(SolicitacaoStatus.ABERTA);
         solicitacao.setAtivo(true);
+        solicitacao.registrarMudancaDeEstado(SolicitacaoStatus.ABERTA, LocalDateTime.now(), null, null, "Solicitacao aberta.");
 
         return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
     }
@@ -95,8 +136,8 @@ public class SolicitacaoService {
         solicitacao.registrarMudancaDeEstado(
                 SolicitacaoStatus.APROVADA,
                 LocalDateTime.now(),
-                null,
-                null,
+                solicitacao.getFuncionarioAtual(),
+                solicitacao.getFuncionarioAtual(),
                 "Orcamento aprovado pelo cliente.");
 
         return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
@@ -173,15 +214,71 @@ public class SolicitacaoService {
         return solicitacao;
     }
 
-    private void exigirEstado(Solicitacao solicitacao, SolicitacaoStatus esperado, String mensagem) {
-        if (solicitacao.getStatus() != esperado) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    mensagem + " Estado atual: " + solicitacao.getStatus().name() + ".");
+    @Transactional
+    public SolicitacaoResponseDTO alterarStatus(int solicitacaoId, StatusRequestDTO dados) {
+        Solicitacao solicitacao = solicitacaoRepository.findById(solicitacaoId).orElse(null);
+        if (solicitacao == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitacao nao encontrada.");
         }
+        Funcionario funcionario = funcionarioRepository.findById(dados.getFuncionarioId()).orElse(null);
+        if (funcionario == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado.");
+        }
+        SolicitacaoStatus status = SolicitacaoStatus.valueOf(dados.getStatus());
+        if (status == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status invalido.");
+        }
+        solicitacao.setFuncionarioAtual(funcionario);
+        solicitacao.registrarMudancaDeEstado(
+                status,
+                LocalDateTime.now(),
+                funcionario,
+                funcionario,
+                dados.getObservacao());
+        return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
     }
+    
+    @Transactional
+    public SolicitacaoResponseDTO redirecionar(int solicitacaoId, RedirecionamentoRequestDTO dados) {
+        Solicitacao solicitacao = solicitacaoRepository.findById(solicitacaoId).orElse(null);
+        if (solicitacao == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitacao nao encontrada.");
+        }
+        Funcionario funcionarioOrigem = funcionarioRepository.findById(dados.getFuncionarioOrigemId()).orElse(null);
+        if (funcionarioOrigem == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario de origem nao encontrado.");
+        }
+        Funcionario funcionarioDestino = funcionarioRepository.findById(dados.getFuncionarioDestinoId()).orElse(null);
+        if (funcionarioDestino == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario de destino nao encontrado.");
+        }
+        if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem e destino nao podem ser o mesmo.");
+        }
+        if (solicitacao.getFuncionarioAtual() == null) {
+            solicitacao.setFuncionarioAtual(funcionarioOrigem);
+        } else if (!solicitacao.getFuncionarioAtual().getId().equals(funcionarioOrigem.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem nao corresponde ao funcionario atual da solicitacao.");
+        }
+        solicitacao.setFuncionarioAtual(funcionarioDestino);
+        solicitacao.registrarMudancaDeEstado(
+            SolicitacaoStatus.REDIRECIONADA,
+            LocalDateTime.now(),
+            funcionarioOrigem,
+            funcionarioDestino,
+            "Solicitacao redirecionada de " + funcionarioOrigem.getUsuario().getNome() + " para " + funcionarioDestino.getUsuario().getNome() + ".");
+            return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
+        }
+        
+        private void exigirEstado(Solicitacao solicitacao, SolicitacaoStatus esperado, String mensagem) {
+            if (solicitacao.getStatus() != esperado) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        mensagem + " Estado atual: " + solicitacao.getStatus().name() + ".");
+            }
+        }
 
-    private String validarMotivo(RejeicaoRequestDTO dados) {
+        private String validarMotivo(RejeicaoRequestDTO dados) {
         if (dados == null || dados.motivo() == null || dados.motivo().isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Informe o motivo da rejeicao.");

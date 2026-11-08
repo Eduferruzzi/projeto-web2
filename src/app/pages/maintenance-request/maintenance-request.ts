@@ -1,8 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CatEquipService, SolicitacaoService, LoginService } from '../../services'
+import { CatEquipService, SolicitacaoService, LoginService, SolicitacaoInput } from '../../services'
 import { CatEquip } from '../../models/cat-equip'
+import { Solicitacao } from '../../models/Solicitacao'
+import { HttpErrorResponse } from '@angular/common/http'
+import { finalize } from 'rxjs'
 
 @Component({
   selector: 'app-maintenance-request',
@@ -17,13 +20,18 @@ export class MaintenanceRequest implements OnInit {
   private router = inject(Router);
 
   descricaoEquipamento = '';
-  categoria = '';
+  categoria: CatEquip = new CatEquip();
   descricaoDefeito = '';
+  solicitacaoId: number = 0
   
   solicitacaoEnviada = false;
   categorias = signal<CatEquip[]>([]);
   carregandoCategorias = signal(true);
   erroCategorias = signal('');
+
+  carregando = signal(false);
+  salvando = signal(false);
+  erro = signal('');
 
   ngOnInit(): void {
     this.catEquipService.listarNoBanco().subscribe({
@@ -49,16 +57,44 @@ export class MaintenanceRequest implements OnInit {
       return;
     }
 
-    const solicitacao = this.solicitacaoService.cadastrar(
-      this.descricaoEquipamento,
-      this.categoria,
-      this.descricaoDefeito,
-      cliente.id,
-      cliente.nome
+    const solicitacaoInput: SolicitacaoInput = {
+      clienteId: cliente.id,
+      categoriaId: this.categoria.id,
+      descricaoEquipamento: this.descricaoEquipamento,
+      descricaoDefeito: this.descricaoDefeito
+    }
+
+    const requisicao = this.solicitacaoService.cadastrar(solicitacaoInput)
+    
+    this.erro.set('');
+    this.salvando.set(true);
+
+    requisicao
+    .pipe(finalize(() => this.salvando.set(false)))
+    .subscribe(
+      {
+        next: (solicitacaoSalva: Solicitacao) => {
+          this.solicitacaoEnviada = true;
+          formulario.resetForm();
+          this.router.navigate(['/user-home'], { state: { solicitacaoId: solicitacaoSalva.id } })
+        },
+        error: error => {
+            this.erro.set(this.mensagemErro(error));
+        }
+      }
     );
 
-    this.solicitacaoEnviada = true;
-    formulario.resetForm();
-    this.router.navigate(['/user-home'], { state: { solicitacaoId: solicitacao.id } })
+  }
+
+  private mensagemErro(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return 'Não foi possível conectar à API. Verifique se o backend está em execução na porta 8080.';
+      }
+      if (error.status === 400) {
+        return 'Confira os dados informados e tente novamente.';
+      }
+    }
+    return 'Não foi possível concluir a operação. Tente novamente.';
   }
 }
