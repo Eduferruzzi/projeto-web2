@@ -62,9 +62,4 @@ export class Login implements OnInit {
       });
     }
   }
-
-  esqueciSenha(event: Event): void {
-    event.preventDefault();
-    alert('Um e-mail com as instruções para redefinição de senha foi enviado.');
-  }
 }
