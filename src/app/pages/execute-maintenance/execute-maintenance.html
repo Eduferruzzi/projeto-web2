@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <h2 class="mb-4">Efetuar Manutenção</h2>
 
-  @if (!solicitacao) {
+  @if (!solicitacao()) {
       <div class="alert alert-danger" role="alert">
           {{ mensagem }}
       </div>
@@ -24,13 +24,13 @@
     <!-- dados da solicitacao e do cliente -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
-        <strong>Solicitação #{{ solicitacao.id }}</strong> - {{ solicitacao.dataHora }}
+        <strong>Solicitação #{{ solicitacao()!.id }}</strong> - {{ solicitacao()!.dataHora | date:'dd/MM/yyyy HH:mm' }}
       </div>
       <div class="card-body">
         <h5 class="card-title mb-3">Dados do Cliente</h5>
         <div class="row mb-3">
           <div class="col-md-12">
-            <p class="mb-1"><strong>Nome:</strong> {{ solicitacao.cliente }}</p>
+            <p class="mb-1"><strong>Nome:</strong> {{ solicitacao()!.cliente }}</p>
           </div>
         </div>
 
@@ -39,11 +39,11 @@
         <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
         <div class="row">
           <div class="col-md-6">
-            <p class="mb-1"><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
-            <p class="mb-1"><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
+            <p class="mb-1"><strong>Equipamento:</strong> {{ solicitacao()!.descricaoEquipamento }}</p>
+            <p class="mb-1"><strong>Categoria:</strong> {{ solicitacao()!.categoria }}</p>
           </div>
           <div class="col-md-6">
-            <p class="mb-1"><strong>Descrição do Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
+            <p class="mb-1"><strong>Descrição do Defeito:</strong> {{ solicitacao()!.descricaoDefeito }}</p>
           </div>
         </div>
       </div>
@@ -74,9 +74,9 @@
 
               <tbody>
 
-                <tr *ngFor="let hist of solicitacao.historico">
+                <tr *ngFor="let hist of solicitacao()!.historico">
 
-                  <td>{{ hist.dataHora }}</td>
+                  <td>{{ hist.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
 
                   <td>
 
@@ -172,7 +172,7 @@
             required
           >
             <option value="" disabled selected>Escolha o funcionário</option>
-            <option *ngFor="let func of funcionariosSelect" [value]="func.id">
+            <option *ngFor="let func of funcionariosSelect()" [value]="func.id">
                 {{ func.nome }}
             </option>
           </select>

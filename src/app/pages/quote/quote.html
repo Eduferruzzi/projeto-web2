@@ -1,6 +1,6 @@
 <!-- RF005 - Mostrar orçamento: dados da solicitação + preço orçado em destaque -->
 <div class="container mt-4 mb-5">
-    @if (!solicitacao) {
+    @if (!solicitacao()) {
         <div class="alert alert-danger" role="alert">
             {{ mensagem }}
         </div>
@@ -22,15 +22,15 @@
                 }
             }
     
-            <h2 class="mb-4 text-center">Orçamento da Solicitação #{{ solicitacao.id }}</h2>
+            <h2 class="mb-4 text-center">Orçamento da Solicitação #{{ solicitacao()!.id }}</h2>
     
             <!-- valor orçado em destaque -->
             <div class="card border-primary border-2 mb-4">
                 <div class="card-body text-center">
                     <p class="mb-1 text-uppercase fw-bold">Valor orçado</p>
-                    <p class="display-4 fw-bold text-primary mb-2">{{ solicitacao.valorOrcamento | moedaBr }}</p>
+                    <p class="display-4 fw-bold text-primary mb-2">{{ solicitacao()!.valorOrcamento | moedaBr }}</p>
                     <p class="mb-0 text-muted">
-                        Orçado por {{ solicitacao.funcionarioOrcamento }} em {{ solicitacao.dataHoraOrcamento }}
+                        Orçado por {{ solicitacao()!.funcionarioOrcamento }} em {{ solicitacao()!.dataHoraOrcamento | date:'dd/MM/yyyy HH:mm' }}
                     </p>
                 </div>
             </div>
@@ -42,33 +42,33 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <span class="form-label fw-bold d-block">Data/Hora da abertura</span>
-                            <span>{{ solicitacao.dataHora }}</span>
+                            <span>{{ solicitacao()!.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
                         </div>
                         <div class="col-md-6">
                             <span class="form-label fw-bold d-block">Estado atual</span>
-                            <span class="badge text-bg-secondary">{{ solicitacao.estado }}</span>
+                            <span class="badge text-bg-secondary">{{ solicitacao()!.estado }}</span>
                         </div>
                     </div>
     
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <span class="form-label fw-bold d-block">Cliente</span>
-                            <span>{{ solicitacao.cliente }}</span>
+                            <span>{{ solicitacao()!.cliente }}</span>
                         </div>
                         <div class="col-md-6">
                             <span class="form-label fw-bold d-block">Categoria do equipamento</span>
-                            <span>{{ solicitacao.categoria }}</span>
+                            <span>{{ solicitacao()!.categoria }}</span>
                         </div>
                     </div>
     
                     <div class="mb-3">
                         <span class="form-label fw-bold d-block">Descrição do equipamento</span>
-                        <span>{{ solicitacao.descricaoEquipamento }}</span>
+                        <span>{{ solicitacao()!.descricaoEquipamento }}</span>
                     </div>
     
                     <div>
                         <span class="form-label fw-bold d-block">Descrição do defeito</span>
-                        <span>{{ solicitacao.descricaoDefeito }}</span>
+                        <span>{{ solicitacao()!.descricaoDefeito }}</span>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LoginService, SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
@@ -8,7 +9,7 @@ import { formatarMoedaBr } from '../../shared';
 // RF010 - Pagar Servico
 @Component({
   selector: 'app-payment',
-  imports: [RouterLink, MoedaBrPipe],
+  imports: [CommonModule, RouterLink, MoedaBrPipe],
   templateUrl: './payment.html',
   styleUrl: './payment.css',
 })
@@ -17,7 +18,7 @@ export class Payment {
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
 
-  solicitacao: Solicitacao | undefined;
+  solicitacao = signal<Solicitacao | undefined>(undefined);
   clienteId: number | undefined;
   mensagemSucesso = true;
   mensagem = '';
@@ -32,7 +33,7 @@ export class Payment {
     }
     this.solicitacaoService.buscarPorIdECliente(id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao buscar a solicitação.';
@@ -42,7 +43,8 @@ export class Payment {
   }
 
   confirmarPagamento(): void {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
 
@@ -52,10 +54,11 @@ export class Payment {
       return;
     }
 
-    this.solicitacaoService.pagar(this.solicitacao.id, this.clienteId).subscribe({
+    this.solicitacaoService.pagar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
-        this.mensagem = `Pagamento de ${formatarMoedaBr(this.solicitacao.valorOrcamento)} confirmado em ${this.solicitacao.dataHoraPagamento}.`;
+        this.solicitacao.set(solicitacao);
+        const dataPagamento = this.formatarDataPagamento(solicitacao.dataHoraPagamento);
+        this.mensagem = `Pagamento de ${formatarMoedaBr(solicitacao.valorOrcamento)} confirmado em ${dataPagamento}.`;
         this.mensagemSucesso = true;
       },
       error: (error) => {
@@ -63,5 +66,15 @@ export class Payment {
         this.mensagemSucesso = false;
       }
     });
+  }
+
+  private formatarDataPagamento(dataHora: string | null): string {
+    if (!dataHora) {
+      return '';
+    }
+
+    const [data, hora = ''] = dataHora.split('T');
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano} ${hora.substring(0, 5)}`;
   }
 }

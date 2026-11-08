@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { CommonModule } from '@angular/common'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Solicitacao } from '../../models/Solicitacao'
 import { LoginService, SolicitacaoService } from '../../services'
@@ -9,7 +10,7 @@ import { formatarMoedaBr } from '../../shared'
 
 @Component({
   selector: 'app-service-details',
-  imports: [FormsModule, RouterLink, RequestHistory, MoedaBrPipe],
+  imports: [CommonModule, FormsModule, RouterLink, RequestHistory, MoedaBrPipe],
   templateUrl: './service-details.html',
   styleUrl: './service-details.css',
 })
@@ -18,7 +19,7 @@ export class ServiceDetails {
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
 
-  solicitacao: Solicitacao | undefined;
+  solicitacao = signal<Solicitacao | undefined>(undefined);
   clienteId: number | undefined; 
   mostrarRejeicao = false;
   motivoRejeicao = '';
@@ -35,7 +36,7 @@ export class ServiceDetails {
     }
     this.solicitacaoService.buscarPorIdECliente(id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao buscar a solicitação.';
@@ -45,7 +46,8 @@ export class ServiceDetails {
   }
 
   aprovarServico(): void {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
 
@@ -55,10 +57,10 @@ export class ServiceDetails {
       return;
     }
 
-    const valor = formatarMoedaBr(this.solicitacao.valorOrcamento);
-    this.solicitacaoService.aprovar(this.solicitacao.id, this.clienteId).subscribe({
+    const valor = formatarMoedaBr(solicitacao.valorOrcamento);
+    this.solicitacaoService.aprovar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
         this.mensagem = `Serviço aprovado no valor de ${valor}.`;
         this.mensagemSucesso = true;
       },
@@ -82,7 +84,8 @@ export class ServiceDetails {
   }
 
   rejeitarServico(): void {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
 
@@ -99,12 +102,12 @@ export class ServiceDetails {
     }
 
     this.solicitacaoService.rejeitar(
-      this.solicitacao.id,
+      solicitacao.id,
       this.motivoRejeicao.trim(),
       this.clienteId
     ).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao rejeitar o serviço.';
@@ -118,7 +121,8 @@ export class ServiceDetails {
 
   // RF009 - Resgatar Servico
   resgatarServico(): void {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
     if (!this.clienteId) {
@@ -127,9 +131,9 @@ export class ServiceDetails {
       return;
     }
 
-    this.solicitacaoService.resgatar(this.solicitacao.id, this.clienteId).subscribe({
+    this.solicitacaoService.resgatar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao resgatar o serviço.';

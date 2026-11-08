@@ -13,7 +13,7 @@
     <tbody>
       @for (passo of historicoOrdenado; track $index) {
         <tr>
-          <td>{{ passo.dataHora }}</td>
+          <td>{{ passo.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
           <td>
             {{ descreverPasso(passo) }}
 

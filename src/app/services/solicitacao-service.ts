@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Solicitacao, EstadoSolicitacao, HistoricoSolicitacao } from '../models/Solicitacao';
-import { dataHoraAtual } from '../shared';
+import { Solicitacao, EstadoSolicitacao } from '../models/Solicitacao';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
@@ -214,12 +213,12 @@ export class SolicitacaoService {
             orientacoesCliente: solicitacaoAPI.orientacoesCliente,
             dataHoraFinalizacao: solicitacaoAPI.dataHoraFinalizacao,
             historico: solicitacaoAPI.historico.map(historico => ({
-            dataHora: historico.dataHora,
-            estadoAnterior: historico.estadoAnterior,
-            estadoNovo: historico.estadoNovo,
-            funcionarioOrigem: historico.funcionarioOrigem,
-            funcionarioDestino: historico.funcionarioDestino,
-            observacao: historico.observacao ?? undefined
+                dataHora: historico.dataHora,
+                estadoAnterior: historico.estadoAnterior,
+                estadoNovo: historico.estadoNovo,
+                funcionarioOrigem: historico.funcionarioOrigem,
+                funcionarioDestino: historico.funcionarioDestino,
+                observacao: historico.observacao ?? undefined
             }))
         };
     }

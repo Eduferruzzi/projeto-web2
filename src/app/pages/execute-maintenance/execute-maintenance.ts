@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router'; 
 import { SolicitacaoService } from '../../services/solicitacao-service'; 
@@ -22,8 +22,8 @@ export class ExecuteMaintenance implements OnInit {
   private loginService = inject(LoginService);
 
   // variaveis de estado do componente
-  solicitacao: Solicitacao | undefined; 
-  funcionariosSelect: User[] = [];
+  solicitacao = signal<Solicitacao | undefined>(undefined);
+  funcionariosSelect = signal<User[]>([]);
   
   funcionarioId: number | undefined;
 
@@ -39,7 +39,7 @@ export class ExecuteMaintenance implements OnInit {
     this.funcionarioId = this.loginService.usuarioLogado?.id;
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao buscar a solicitação.';
@@ -48,7 +48,9 @@ export class ExecuteMaintenance implements OnInit {
     });
 
     // carrega os funcionarios menos vc mesmo
-    this.funcionariosSelect = this.userService.listarTodos().filter(f => f.id !== this.funcionarioId);
+    this.funcionariosSelect.set(
+      this.userService.listarTodos().filter(f => f.id !== this.funcionarioId)
+    );
   }
 
   // valida campos, confirma e grava
@@ -60,7 +62,8 @@ export class ExecuteMaintenance implements OnInit {
     if (confirm('Quer concluir esta manutenção?')) {
       const status: EstadoSolicitacao = "ARRUMADA";
       const obs = `Descrição da manutenção: ${descricao}. Orientações ao cliente: ${orientacoes}`;
-      if (!this.solicitacao) {
+      const solicitacao = this.solicitacao();
+      if (!solicitacao) {
         this.mensagem = 'Solicitação não encontrada.';
         this.mensagemSucesso = false;
         return;
@@ -70,14 +73,21 @@ export class ExecuteMaintenance implements OnInit {
         this.mensagemSucesso = false;
         return;
       }
-      this.solicitacaoService.alterarEstado(this.solicitacao!.id, this.funcionarioId!, obs, status);
-      this.router.navigate(['/employee-requests']);
+      this.solicitacaoService.alterarEstado(solicitacao.id, this.funcionarioId!, obs, status)
+        .subscribe({
+          next: () => this.router.navigate(['/employee-requests']),
+          error: () => {
+            this.mensagem = 'Erro ao concluir a manutenção.';
+            this.mensagemSucesso = false;
+          }
+        });
     }
   }
 
   // valida seleção, confirma e grava
   redirecionarManutencao(funcionarioId: string): void {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       this.mensagem = 'Solicitação não encontrada.';
       this.mensagemSucesso = false;
       return;
@@ -99,8 +109,14 @@ export class ExecuteMaintenance implements OnInit {
       return;
     }
     if (confirm('Quer redirecionar esta manutenção para outro funcionário?')) {
-      this.solicitacaoService.redirecionarManutencao(this.solicitacao!.id, this.funcionarioId!, idFuncionarioDestino);
-      this.router.navigate(['/employee-requests']);
+      this.solicitacaoService.redirecionarManutencao(solicitacao.id, this.funcionarioId!, idFuncionarioDestino)
+        .subscribe({
+          next: () => this.router.navigate(['/employee-requests']),
+          error: () => {
+            this.mensagem = 'Erro ao redirecionar a manutenção.';
+            this.mensagemSucesso = false;
+          }
+        });
     }
   }
 

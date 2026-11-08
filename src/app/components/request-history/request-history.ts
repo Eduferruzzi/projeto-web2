@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HistoricoSolicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-request-history',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './request-history.html',
   styleUrl: './request-history.css',
 })

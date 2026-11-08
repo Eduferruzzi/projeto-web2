@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,7 @@ export class Quote {
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
 
-  solicitacao : Solicitacao | undefined;
+  solicitacao = signal<Solicitacao | undefined>(undefined);
   clienteId: number | undefined;
   mostrarFormRejeicao = false;
   motivoRejeicao = '';
@@ -37,7 +37,7 @@ export class Quote {
     }
     this.solicitacaoService.buscarPorIdECliente(id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
       },
       error: (error) => {
         this.mensagem = 'Erro ao buscar a solicitação.';
@@ -48,7 +48,8 @@ export class Quote {
 
   // RF006 - Aprovar Servico
   aprovar() {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
     if (!this.clienteId) {
@@ -56,10 +57,10 @@ export class Quote {
       this.mensagemSucesso = false;
       return;
     }
-    this.solicitacaoService.aprovar(this.solicitacao.id, this.clienteId).subscribe({
+    this.solicitacaoService.aprovar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
-        window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(this.solicitacao.valorOrcamento)}`);
+        this.solicitacao.set(solicitacao);
+        window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(solicitacao.valorOrcamento)}`);
         this.router.navigate(['/user-home']);
       },
       error: (error) => {
@@ -81,7 +82,8 @@ export class Quote {
   }
 
   confirmarRejeicao() {
-    if (!this.solicitacao) {
+    const solicitacao = this.solicitacao();
+    if (!solicitacao) {
       return;
     }
     if (this.motivoRejeicao.trim().length < 5) {
@@ -93,9 +95,9 @@ export class Quote {
       this.mensagemSucesso = false;
       return;
     }
-    this.solicitacaoService.rejeitar(this.solicitacao.id, this.motivoRejeicao.trim(), this.clienteId).subscribe({
+    this.solicitacaoService.rejeitar(solicitacao.id, this.motivoRejeicao.trim(), this.clienteId).subscribe({
       next: (solicitacao) => {
-        this.solicitacao = solicitacao;
+        this.solicitacao.set(solicitacao);
         this.mostrarFormRejeicao = false;
         window.alert('Serviço Rejeitado');
         this.router.navigate(['/user-home']);

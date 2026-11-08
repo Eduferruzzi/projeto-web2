@@ -10,6 +10,11 @@
             #formulario="ngForm"
             (ngSubmit)="cadastrarSolicitacao(formulario)"
           >
+            @if (erro()) {
+              <div class="alert alert-danger">
+                {{ erro() }}
+              </div>
+            }
             <div class="mb-3">
               <label for="equipamento" class="form-label">
                 Descrição do equipamento
@@ -40,7 +45,7 @@
               >
                 <option value="" disabled>Selecione uma categoria</option>
                 @for (categoriaEquipamento of categorias(); track categoriaEquipamento.id) {
-                  <option [value]="categoriaEquipamento.nome">
+                  <option [ngValue]="categoriaEquipamento">
                     {{ categoriaEquipamento.nome }}
                   </option>
                 }

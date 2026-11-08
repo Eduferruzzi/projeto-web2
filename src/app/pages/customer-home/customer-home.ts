@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SolicitacaoService, LoginService } from '../../services'
-import { Solicitacao, EstadoSolicitacao } from '../../models/Solicitacao'
+import { Solicitacao } from '../../models/Solicitacao'
 import { CommonModule } from '@angular/common'
 
 @Component({
@@ -16,7 +16,7 @@ export class CustomerHome implements OnInit{
   private router = inject(Router)
   private solicitacaoCadastradaId = this.router.currentNavigation()?.extras.state?.['solicitacaoId']
   solicitacaoCadastrada = false
-  solicitacoes: Solicitacao[] = []
+  solicitacoes = signal<Solicitacao[]>([])
   mensagem = ''
   mensagemSucesso = true
 
@@ -25,21 +25,24 @@ export class CustomerHome implements OnInit{
     if (cliente && cliente.perfil === 'CLIENTE' && cliente.id > 0) {
       this.solicitacaoService.listarPorCliente(cliente.id).subscribe({
         next: (solicitacoes) => {
-          this.solicitacoes = this.ordenarPorData(solicitacoes)
+          this.solicitacoes.set(this.ordenarPorData(solicitacoes))
           this.verificarSolicitacaoCadastrada()
         },
         error: (error) => {
+          console.error('Erro ao listar solicitações:', error);
           this.mensagem = 'Erro ao buscar solicitações do cliente.'
           this.mensagemSucesso = false
         }
       })
-      this.solicitacaoCadastrada = this.solicitacoes.some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
+    } else {
+      this.mensagem = 'Cliente não logado ou inválido.'
+      this.mensagemSucesso = false
     }
   }
 
   private verificarSolicitacaoCadastrada(): void {
     if (this.solicitacaoCadastradaId) {
-      this.solicitacaoCadastrada = this.solicitacoes.some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
+      this.solicitacaoCadastrada = this.solicitacoes().some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
     }
   }
 
