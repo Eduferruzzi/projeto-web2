@@ -154,6 +154,7 @@ public class SolicitacaoREST {
         solicitacao.setValorOrcamento(valor);
         solicitacao.setDataHoraOrcamento(agora);
         solicitacao.setFuncionarioOrcamento(funcionario);
+        solicitacao.setFuncionarioAtual(funcionario);
         solicitacao.registrarMudancaDeEstado(
                 SolicitacaoStatus.ORCADA,
                 agora,

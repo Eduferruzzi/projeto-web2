@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router'; 
 import { SolicitacaoService } from '../../services/solicitacao-service'; 
 import { UserService } from '../../services/user-service'; 
@@ -36,21 +37,30 @@ export class ExecuteMaintenance implements OnInit {
   // busca a solicitacao com base no id da url p inicializar os dados
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.funcionarioId = this.loginService.usuarioLogado?.id;
+    const funcionarioLogado = this.loginService.usuarioLogado?.id;
+    this.funcionarioId = funcionarioLogado ? Number(funcionarioLogado) : undefined;
     this.solicitacaoService.buscarPorId(id).subscribe({
       next: (solicitacao) => {
         this.solicitacao.set(solicitacao);
       },
-      error: (error) => {
-        this.mensagem = 'Erro ao buscar a solicitação.';
+      error: (error: HttpErrorResponse) => {
+        this.mensagem = this.mensagemErro(error, 'Erro ao buscar a solicitação.');
         this.mensagemSucesso = false;
       }
     });
 
     // carrega os funcionarios menos vc mesmo
-    this.funcionariosSelect.set(
-      this.userService.listarTodos().filter(f => f.id !== this.funcionarioId)
-    );
+    this.userService.listarTodos().subscribe({
+      next: funcionarios => {
+        this.funcionariosSelect.set(
+          funcionarios.filter(funcionario => funcionario.id !== this.funcionarioId)
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        this.mensagem = this.mensagemErro(error, 'Erro ao carregar os funcionários disponíveis.');
+        this.mensagemSucesso = false;
+      }
+    });
   }
 
   // valida campos, confirma e grava
@@ -76,8 +86,8 @@ export class ExecuteMaintenance implements OnInit {
       this.solicitacaoService.alterarEstado(solicitacao.id, this.funcionarioId!, obs, status)
         .subscribe({
           next: () => this.router.navigate(['/employee-requests']),
-          error: () => {
-            this.mensagem = 'Erro ao concluir a manutenção.';
+          error: (error: HttpErrorResponse) => {
+            this.mensagem = this.mensagemErro(error, 'Erro ao concluir a manutenção.');
             this.mensagemSucesso = false;
           }
         });
@@ -112,8 +122,8 @@ export class ExecuteMaintenance implements OnInit {
       this.solicitacaoService.redirecionarManutencao(solicitacao.id, this.funcionarioId!, idFuncionarioDestino)
         .subscribe({
           next: () => this.router.navigate(['/employee-requests']),
-          error: () => {
-            this.mensagem = 'Erro ao redirecionar a manutenção.';
+          error: (error: HttpErrorResponse) => {
+            this.mensagem = this.mensagemErro(error, 'Erro ao redirecionar a manutenção.');
             this.mensagemSucesso = false;
           }
         });
@@ -130,5 +140,16 @@ export class ExecuteMaintenance implements OnInit {
   // cancela a operação e volta pra tela de solicitações
   cancelar(): void {
     this.router.navigate(['/employee-requests']);
+  }
+
+  private mensagemErro(error: HttpErrorResponse, mensagemPadrao: string): string {
+    console.error(mensagemPadrao, error);
+    const mensagemApi = typeof error.error === 'string'
+      ? error.error
+      : error.error?.message ?? error.error?.detail;
+
+    return mensagemApi
+      ? `${mensagemPadrao} ${mensagemApi}`
+      : `${mensagemPadrao} (HTTP ${error.status}).`;
   }
 }

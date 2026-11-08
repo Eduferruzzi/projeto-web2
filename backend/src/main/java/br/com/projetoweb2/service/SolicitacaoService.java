@@ -136,8 +136,8 @@ public class SolicitacaoService {
         solicitacao.registrarMudancaDeEstado(
                 SolicitacaoStatus.APROVADA,
                 LocalDateTime.now(),
-                null,
-                null,
+                solicitacao.getFuncionarioAtual(),
+                solicitacao.getFuncionarioAtual(),
                 "Orcamento aprovado pelo cliente.");
 
         return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
@@ -255,7 +255,9 @@ public class SolicitacaoService {
         if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem e destino nao podem ser o mesmo.");
         }
-        if (solicitacao.getFuncionarioAtual() == null || !solicitacao.getFuncionarioAtual().getId().equals(funcionarioOrigem.getId())) {
+        if (solicitacao.getFuncionarioAtual() == null) {
+            solicitacao.setFuncionarioAtual(funcionarioOrigem);
+        } else if (!solicitacao.getFuncionarioAtual().getId().equals(funcionarioOrigem.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem nao corresponde ao funcionario atual da solicitacao.");
         }
         solicitacao.setFuncionarioAtual(funcionarioDestino);

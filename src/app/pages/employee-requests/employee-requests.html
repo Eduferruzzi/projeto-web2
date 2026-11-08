@@ -173,17 +173,16 @@
                                         ) {
                                             <button
                                                 type="button"
+                                                [routerLink]="['/execute-maintenance', s.id]"
                                                 class="btn btn-outline-primary btn-sm btn-acao"
-                                                disabled
-                                                title="Aguardando integração da manutenção">
+                                            >
                                                 Efetuar manutenção
                                             </button>
                                         } @else if (s.estado === 'PAGA') {
                                             <button
                                                 type="button"
                                                 class="btn btn-outline-success btn-sm btn-acao"
-                                                disabled
-                                                title="Aguardando integração da finalização">
+                                                (click)="finalizarSolicitacao(s.id)">
                                                 Finalizar
                                             </button>
                                         } @else {

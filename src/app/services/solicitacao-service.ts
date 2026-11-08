@@ -169,28 +169,17 @@ export class SolicitacaoService {
     }
 
     // RF015 - Redirecionar Manutenção
-    redirecionarManutencao(solicitacaId: number, funcOrigem: number, funcDestino: number):Observable<Solicitacao> {
-        return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaId}/redirecionar`, { funcOrigem, funcDestino }).pipe(
+    redirecionarManutencao(solicitacaId: number, funcionarioOrigemId: number, funcionarioDestinoId: number):Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaId}/redirecionar`, {
+            funcionarioOrigemId,
+            funcionarioDestinoId
+        }).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
             })
         );
     }
-
-    // // RF016 - Finalizar Solicitação
-    // finalizarSolicitacao(id: number, funcionario: string) {
-    //     const solicitacao = this.buscarPorId(id);
-    //     if (!solicitacao) return;
-        
-    //     solicitacao.historico.push({
-    //         dataHora: dataHoraAtual(),
-    //         estadoAnterior: solicitacao.estado,
-    //         estadoNovo: 'FINALIZADA',
-    //         funcionario: funcionario
-    //     });
-    //     solicitacao.estado = 'FINALIZADA';
-    // }
 
     private paraSolicitacao(solicitacaoAPI: SolicitacaoAPI): Solicitacao {
         return {

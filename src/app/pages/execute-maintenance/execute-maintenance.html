@@ -1,6 +1,12 @@
 <div class="container mt-4">
   <h2 class="mb-4">Efetuar Manutenção</h2>
 
+  @if (mensagem) {
+      <div class="alert" [ngClass]="mensagemSucesso ? 'alert-success' : 'alert-danger'" role="alert">
+          {{ mensagem }}
+      </div>
+  }
+
   @if (!solicitacao()) {
       <div class="alert alert-danger" role="alert">
           {{ mensagem }}
@@ -10,17 +16,6 @@
       </a>
   }
   @else {
-    @if (mensagem){
-        @if (mensagemSucesso) {
-            <div class="alert alert-success" role="alert">
-                {{ mensagem }}
-            </div>
-        } @else {
-            <div class="alert alert-danger" role="alert">
-                {{ mensagem }}
-            </div>
-        }
-    }
     <!-- dados da solicitacao e do cliente -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
@@ -67,7 +62,7 @@
                 <tr>
                   <th>Data/Hora</th>
                   <th>Estado Novo</th>
-                  <th>Funcionário</th>
+                  <th>Responsável</th>
                   <th>Observação</th>
                 </tr>
               </thead>
@@ -84,7 +79,7 @@
 
                   </td>
 
-                  <td>{{ hist.funcionarioDestino || hist.funcionarioOrigem || 'Samuel Lino' }}</td>
+                  <td>{{ hist.funcionarioDestino || hist.funcionarioOrigem || 'Cliente' }}</td>
 
                   <td>{{ hist.observacao || '-' }}</td>
 
