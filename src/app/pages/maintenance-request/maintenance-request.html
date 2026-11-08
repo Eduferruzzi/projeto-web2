@@ -4,7 +4,7 @@
       <div class="card shadow-sm">
         <div class="card-body p-4">
           <h1 class="h3 text-center mb-4">
-            Nova Solicitacao de manutencao
+            Nova Solicitação de manutenção
           </h1>
           <form
             #formulario="ngForm"
@@ -12,7 +12,7 @@
           >
             <div class="mb-3">
               <label for="equipamento" class="form-label">
-                Descricao do equipamento
+                Descrição do equipamento
               </label>
 
               <input
@@ -56,7 +56,7 @@
 
             <div class="mb-4">
               <label for="defeito" class="form-label">
-                Descricao do defeito
+                Descrição do defeito
               </label>
 
               <textarea
@@ -83,7 +83,7 @@
                 class="btn btn-primary"
                 [disabled]="formulario.invalid || carregandoCategorias() || categorias().length === 0"
               >
-                Cadastrar solicitacao
+                Cadastrar solicitação
               </button>
             </div>
           </form>

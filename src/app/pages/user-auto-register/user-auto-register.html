@@ -3,7 +3,7 @@
         <div class="text-center mb-4">
             <h2>Autocadastro</h2>
             <p>
-                Complete os campos abaixo para realizer o seu cadastro.
+                Complete os campos abaixo para realizar o seu cadastro.
             </p>
         </div>
         
@@ -13,7 +13,7 @@
     
 
             <div class="mb-3 col-12 col-md-6">
-                <label class="form-label">Nome</label>
+                <label class="form-label">Nome <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -42,7 +42,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-6">
-                <label class="form-label">CPF</label>
+                <label class="form-label">CPF <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -51,18 +51,19 @@
                     mask="000.000.000-00" 
                     [showMaskTyped]="true"
                     required
-                    #cpfCampo="ngModel" 
+                    cpfValido
+                    #cpfCampo="ngModel"
                 >
                 @if(cpfCampo.invalid && formCadastro.submitted)
                 {
                     <div class="text-danger mt-1">
-                        CPF invalido.
+                        CPF inválido.
                     </div>
                 }
             </div>
 
             <div class="mb-3 col-12 col-md-6">
-                <label class="form-label">Email</label>
+                <label class="form-label">Email <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="email"
                     class="form-control" 
@@ -92,7 +93,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-6">
-                <label class="form-label">Telefone</label>
+                <label class="form-label">Telefone <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -107,7 +108,7 @@
                 @if(telefoneCampo.invalid && formCadastro.submitted)
                 {
                     <div class="text-danger mt-1">
-                        Telefone invalido.
+                        Telefone inválido.
                     </div>
                 }
             </div>
@@ -125,7 +126,7 @@
         <div class="row g-3">
 
             <div class="mb-3 col-12 col-md-4">
-                <label class="form-label">CEP</label>
+                <label class="form-label">CEP <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -140,13 +141,13 @@
                 @if(cepCampo.invalid && formCadastro.submitted)
                 {
                     <div class="text-danger mt-1">
-                        CEP é invalido.
+                        CEP inválido.
                     </div>
                 }
             </div>
 
             <div class="mb-3 col-12 col-md-8">
-                <label class="form-label">Logradouro</label>
+                <label class="form-label">Logradouro <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -165,7 +166,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-4">
-                <label class="form-label">Numero</label>
+                <label class="form-label">Número <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -198,7 +199,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-4">
-                <label class="form-label">Bairro</label>
+                <label class="form-label">Bairro <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -217,7 +218,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-4">
-                <label class="form-label">Cidade</label>
+                <label class="form-label">Cidade <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 
@@ -236,7 +237,7 @@
             </div>
 
             <div class="mb-3 col-12 col-md-4">
-                <label class="form-label">Estado</label>
+                <label class="form-label">Estado <i class="fas fa-asterisk fa-xs text-danger" title="Obrigatório" aria-hidden="true"></i></label>
                 <input 
                     type="text" 
                     class="form-control" 

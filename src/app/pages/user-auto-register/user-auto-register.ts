@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CepService, RegistroService } from '../../services'
+import { CpfValido } from '../../shared'
 import { NgForm } from '@angular/forms'
 import { NgxMaskDirective } from 'ngx-mask'
 import { Router, RouterLink } from '@angular/router'
@@ -9,7 +10,7 @@ import { of } from 'rxjs'
 
 @Component({
   selector: 'app-user-auto-register',
-  imports: [FormsModule, NgxMaskDirective, RouterLink],
+  imports: [FormsModule, NgxMaskDirective, RouterLink, CpfValido],
   templateUrl: './user-auto-register.html',
   styleUrl: './user-auto-register.css',
 })
