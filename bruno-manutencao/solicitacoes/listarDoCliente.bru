@@ -1,0 +1,15 @@
+meta {
+  name: listarDoCliente
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/solicitacoes/cliente?clienteId=12
+  body: none
+  auth: inherit
+}
+
+params:query {
+  clienteId: 12
+}

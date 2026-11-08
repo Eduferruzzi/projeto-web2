@@ -4,10 +4,25 @@
         <div class="col-lg-8">
 
             @if (!solicitacao) {
-                <div class="alert alert-warning">Solicitação não encontrada.</div>
+                <div class="alert alert-danger" role="alert">
+                    {{ mensagem }}
+                </div>
+                <a routerLink="/user-home" class="btn btn-outline-secondary">
+                    Voltar
+                </a>
             }
-
-            @if (solicitacao) {
+            @else {
+                @if (mensagem){
+                    @if (mensagemSucesso) {
+                        <div class="alert alert-success" role="alert">
+                            {{ mensagem }}
+                        </div>
+                    } @else {
+                        <div class="alert alert-danger" role="alert">
+                            {{ mensagem }}
+                        </div>
+                    }
+                }
                 <h2 class="mb-4 text-center">Pagamento da Solicitação #{{ solicitacao.id }}</h2>
 
                 <div class="card mb-4">

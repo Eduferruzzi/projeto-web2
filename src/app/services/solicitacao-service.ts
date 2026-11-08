@@ -75,10 +75,11 @@ export class SolicitacaoService {
             )
     }
 
-    registrarOrcamento(solicitacaoId: number, funcionarioId: number, valorOrcamento: number): Observable<void> {
-        return this.http.put<void>(`${API_URL}/${solicitacaoId}/orcamento/${funcionarioId}`,{ valorOrcamento }
-        )
-    }   
+    listarTodas(): Observable<Solicitacao[]> {
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}`).pipe(
+                map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
+            )
+    }
 
     cadastrar(solicitacao: SolicitacaoInput): Observable<Solicitacao> {
         return this.http.post<SolicitacaoAPI>(API_URL, solicitacao).pipe(
@@ -87,170 +88,139 @@ export class SolicitacaoService {
     }
 
     // RF006 - Aprovar Servico
-    aprovar(id : number, clienteId : number): Observable<void> {
-        return this.http.put<void>(`${API_URL}/${id}/aprovar?clienteId=${clienteId}`, {}).pipe(
+    aprovar(id : number, clienteId : number): Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/aprovar?clienteId=${clienteId}`, {}).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
-                console.error('Erro ao aprovar a solicitação:', error);
                 return throwError(() => error);
             })
         );
     }
 
     // RF007 - Rejeitar Servico
-    rejeitar(id : number, motivo : string, clienteId : number): Observable<void> {
-        return this.http.put<void>(`${API_URL}/${id}/rejeitar?clienteId=${clienteId}`, { motivo }).pipe(
+    rejeitar(id : number, motivo : string, clienteId : number): Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/rejeitar?clienteId=${clienteId}`, { motivo }).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
-                console.error('Erro ao rejeitar a solicitação:', error);
                 return throwError(() => error);
             })
         );
     }
 
     // RF009 - Resgatar Servico: o que estava REJEITADA volta para APROVADA
-    resgatar(id : number, clienteId : number) : Observable<void> {
-        return this.http.put<void>(`${API_URL}/${id}/resgatar?clienteId=${clienteId}`, {}).pipe(
+    resgatar(id : number, clienteId : number) : Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/resgatar?clienteId=${clienteId}`, {}).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
-                console.error('Erro ao resgatar a solicitação:', error);
                 return throwError(() => error);
             })
         );
     }
 
     // RF010 - Pagar Servico: registra a data/hora do pagamento
-    pagar(id : number, clienteId : number): Observable<void> {
-        return this.http.put<void>(`${API_URL}/${id}/pagar?clienteId=${clienteId}`, {}).pipe(
+    pagar(id : number, clienteId : number): Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/pagar?clienteId=${clienteId}`, {}).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
-                console.error('Erro ao pagar a solicitação:', error);
                 return throwError(() => error);
             })
         );
     }
 
-    // RF015 - Alterar estado de uma solicitação
-    private alterarEstado(
-        id: number,
-        novoEstado: EstadoSolicitacao,
-        observacao?: string,
-        funcionario: string | null = null
-    ) {
-        const solicitacao = this.buscarPorId(id);
-        if (!solicitacao) {
-            return;
-        }
-        solicitacao.historico.push({
-            dataHora: dataHoraAtual(),
-            estadoAnterior: solicitacao.estado,
-            estadoNovo: novoEstado,
-            funcionario,
-            observacao: observacao
-        });
-        solicitacao.estado = novoEstado;
+    // RFs 14-16 Alterar estado de uma solicitação
+    alterarEstado(
+        solicitacaoId: number,
+        funcionarioId: number | null,
+        observacao: string | null,
+        status: EstadoSolicitacao
+    ): Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaoId}/status`, {
+            funcionarioId,
+            observacao,
+            status
+        }).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
+            catchError((error) => {
+                return throwError(() => error);
+            })
+        );
     }
 
     // RF 011 - Somente solicitacoes em aberto
-    listarAbertas() : Solicitacao[]{
-        return this.solicitacoes.filter(s => s.estado == "ABERTA");
-    }
-
-    listarAbertasAPI(): Observable<SolicitacaoAPI[]> {
-
-        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/abertas`);
+    listarAbertas(): Observable<Solicitacao[]> {
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/abertas`).pipe(
+            map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
+        );
     }
 
     // RF 012 Efetuar o orcamento 
-    efetuarOrcamento(id : number, valor : number, funcionario : string){
-        const solicitacao = this.buscarPorId(id);
-        if(!solicitacao){
-            return;
-        }
-        solicitacao.valorOrcamento = valor;
-        solicitacao.dataHoraOrcamento = new Date().toLocaleDateString('pt-BR');
-        solicitacao.funcionarioOrcamento = funcionario;
-        this.alterarEstado(id, "ORCADA", undefined, funcionario);
-
+    efetuarOrcamento(id : number, funcionarioId : number, valor : number): Observable<void> {
+        return this.http.put<void>(`${API_URL}/${id}/orcamento/${funcionarioId}`, { valorOrcamento: valor }).pipe(
+            catchError((error) => {
+                return throwError(() => error);
+            })
+        );
     }
 
     //RF 013 - Listar todas as solicitacoes para um funcionario especifico
-    listarParaFuncionario(funcionario : string) : Solicitacao[]{
-        return this.solicitacoes.filter(s => s.estado !== 'REDIRECIONADA' || s.funcionarioRedirecionado === funcionario).sort((a, b) => this.paraTimestamp(a.dataHora) - this.paraTimestamp(b.dataHora));
-    }
-
-    // RF014 - Efetuar Manutenção
-    efetuarManutencao(id: number, descricao: string, orientacoes: string, funcionario: string) {
-        const solicitacao = this.buscarPorId(id);
-        if (!solicitacao) return;
-        
-        solicitacao.historico.push({
-            dataHora: dataHoraAtual(),
-            estadoAnterior: solicitacao.estado,
-            estadoNovo: 'ARRUMADA',
-            funcionario: funcionario,
-            observacao: `Manutenção: ${descricao} | Orientações: ${orientacoes}`
-        });
-        solicitacao.estado = 'ARRUMADA';
+    listarParaFuncionario(funcionario : string) : Observable<Solicitacao[]>{
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/funcionario?funcionario=${funcionario}`).pipe(
+            map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
+        );
     }
 
     // RF015 - Redirecionar Manutenção
-    redirecionarManutencao(id: number, funcOrigem: string, nomeFuncDestino: string) {
-        const solicitacao = this.buscarPorId(id);
-        if (!solicitacao) return;
-        
-        solicitacao.funcionarioRedirecionado = nomeFuncDestino;
-        solicitacao.historico.push({
-            dataHora: dataHoraAtual(),
-            estadoAnterior: solicitacao.estado,
-            estadoNovo: 'REDIRECIONADA',
-            funcionario: funcOrigem,
-            observacao: `Redirecionado para ${nomeFuncDestino}`
-        });
-        solicitacao.estado = 'REDIRECIONADA';
+    redirecionarManutencao(solicitacaId: number, funcOrigem: number, funcDestino: number):Observable<Solicitacao> {
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaId}/redirecionar`, { funcOrigem, funcDestino }).pipe(
+            map((resposta) => this.paraSolicitacao(resposta)),
+            catchError((error) => {
+                return throwError(() => error);
+            })
+        );
     }
 
-    // RF016 - Finalizar Solicitação
-    finalizarSolicitacao(id: number, funcionario: string) {
-        const solicitacao = this.buscarPorId(id);
-        if (!solicitacao) return;
+    // // RF016 - Finalizar Solicitação
+    // finalizarSolicitacao(id: number, funcionario: string) {
+    //     const solicitacao = this.buscarPorId(id);
+    //     if (!solicitacao) return;
         
-        solicitacao.historico.push({
-            dataHora: dataHoraAtual(),
-            estadoAnterior: solicitacao.estado,
-            estadoNovo: 'FINALIZADA',
-            funcionario: funcionario
-        });
-        solicitacao.estado = 'FINALIZADA';
-    }
-
-    private paraTimestamp(dataHora : string) : number{
-        const [data, hora] = dataHora.split(' ');
-        const [dia, mes, ano] = data.split('/');
-        const [horaNum, minuto] = hora.split(':');
-        return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(horaNum), Number(minuto)).getTime();
-    }
+    //     solicitacao.historico.push({
+    //         dataHora: dataHoraAtual(),
+    //         estadoAnterior: solicitacao.estado,
+    //         estadoNovo: 'FINALIZADA',
+    //         funcionario: funcionario
+    //     });
+    //     solicitacao.estado = 'FINALIZADA';
+    // }
 
     private paraSolicitacao(solicitacaoAPI: SolicitacaoAPI): Solicitacao {
-  return {
-    id: solicitacaoAPI.id,
-    dataHora: solicitacaoAPI.dataHora,
-    descricaoEquipamento: solicitacaoAPI.descricaoEquipamento,
-    categoria: solicitacaoAPI.categoria,
-    descricaoDefeito: solicitacaoAPI.descricaoDefeito,
-    estado: solicitacaoAPI.estado,
-    clienteId: solicitacaoAPI.clienteId ?? undefined,
-    cliente: solicitacaoAPI.cliente ?? '',
-    valorOrcamento: solicitacaoAPI.valorOrcamento,
-    dataHoraOrcamento: solicitacaoAPI.dataHoraOrcamento,
-    funcionarioOrcamento: solicitacaoAPI.funcionarioOrcamento,
-    motivoRejeicao: solicitacaoAPI.motivoRejeicao,
-    dataHoraPagamento: solicitacaoAPI.dataHoraPagamento,
-    funcionarioResponsavel: solicitacaoAPI.funcionarioResponsavel,
-    funcionarioRedirecionado: null,
-    historico: solicitacaoAPI.historico.map(historico => ({
-      dataHora: historico.dataHora,
-      estadoAnterior: historico.estadoAnterior,
-      estadoNovo: historico.estadoNovo,
-      funcionario: historico.funcionarioOrigem ?? historico.funcionarioDestino,
-      observacao: historico.observacao ?? undefined
-    }))
-  };
-}
+        return {
+            id: solicitacaoAPI.id,
+            dataHora: solicitacaoAPI.dataHora,
+            descricaoEquipamento: solicitacaoAPI.descricaoEquipamento,
+            categoria: solicitacaoAPI.categoria,
+            descricaoDefeito: solicitacaoAPI.descricaoDefeito,
+            estado: solicitacaoAPI.estado,
+            clienteId: solicitacaoAPI.clienteId ?? null,
+            cliente: solicitacaoAPI.cliente ?? '',
+            valorOrcamento: solicitacaoAPI.valorOrcamento,
+            dataHoraOrcamento: solicitacaoAPI.dataHoraOrcamento,
+            funcionarioOrcamento: solicitacaoAPI.funcionarioOrcamento,
+            motivoRejeicao: solicitacaoAPI.motivoRejeicao,
+            dataHoraPagamento: solicitacaoAPI.dataHoraPagamento,
+            funcionarioResponsavel: solicitacaoAPI.funcionarioResponsavel,
+            funcionarioRedirecionado: null,
+            descricaoManutencao: solicitacaoAPI.descricaoManutencao,
+            orientacoesCliente: solicitacaoAPI.orientacoesCliente,
+            dataHoraFinalizacao: solicitacaoAPI.dataHoraFinalizacao,
+            historico: solicitacaoAPI.historico.map(historico => ({
+            dataHora: historico.dataHora,
+            estadoAnterior: historico.estadoAnterior,
+            estadoNovo: historico.estadoNovo,
+            funcionarioOrigem: historico.funcionarioOrigem,
+            funcionarioDestino: historico.funcionarioDestino,
+            observacao: historico.observacao ?? undefined
+            }))
+        };
+    }
 }

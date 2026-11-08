@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.projetoweb2.model.Solicitacao;
 import br.com.projetoweb2.repository.SolicitacaoRepository;
+import br.com.projetoweb2.DTO.RedirecionamentoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
+import br.com.projetoweb2.DTO.StatusRequestDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
 import br.com.projetoweb2.enums.SolicitacaoStatus;
 import java.math.BigDecimal;
@@ -88,10 +91,21 @@ public class SolicitacaoREST {
             solicitacaoRepository.save(solicitacao);
 
             return ResponseEntity.ok(solicitacao);
+    }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<SolicitacaoResponseDTO> alterarStatus(@PathVariable ("id") int id, @RequestBody StatusRequestDTO dados) {
+        return ResponseEntity.ok(solicitacaoService.alterarStatus(id, dados));
+    }
+
+    @PutMapping("/{id}/redirecionar")
+    @Transactional
+    public ResponseEntity<SolicitacaoResponseDTO> redirecionar(@PathVariable ("id") int id, @RequestBody RedirecionamentoRequestDTO dados) {
+        return ResponseEntity.ok(solicitacaoService.redirecionar(id, dados));
     }
 
     @PutMapping("/{id}/orcamento/{funcionarioId}")
+    @Transactional
     public ResponseEntity<Void> registrarOrcamento(
         @PathVariable("id") Integer id,
         @PathVariable("funcionarioId") Integer funcionarioId,
@@ -144,7 +158,7 @@ public class SolicitacaoREST {
                 SolicitacaoStatus.ORCADA,
                 agora,
                 funcionario,
-                null,
+                funcionario,
                 "Orçamento registrado."
         );
         

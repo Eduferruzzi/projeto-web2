@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SolicitacaoService } from '../../services';
+import { LoginService, SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
 import { MoedaBrPipe } from '../../pipes';
 import { formatarMoedaBr } from '../../shared';
@@ -18,16 +18,32 @@ export class Quote {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
+  private loginService = inject(LoginService);
 
   solicitacao : Solicitacao | undefined;
-
+  clienteId: number | undefined;
   mostrarFormRejeicao = false;
   motivoRejeicao = '';
-  erroMotivo = '';
+  mensagem = '';
+  mensagemSucesso = true;
 
   constructor() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.solicitacao = this.solicitacaoService.buscarPorId(id);
+    this.clienteId = Number(this.loginService.usuarioLogado?.id);
+    if (!Number.isInteger(id) || id <= 0 || !Number.isInteger(this.clienteId) || this.clienteId <= 0) {
+      this.mensagem = 'ID de solicitação ou de cliente inválido.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    this.solicitacaoService.buscarPorIdECliente(id, this.clienteId).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+      },
+      error: (error) => {
+        this.mensagem = 'Erro ao buscar a solicitação.';
+        this.mensagemSucesso = false;
+      }
+    });
   }
 
   // RF006 - Aprovar Servico
@@ -35,9 +51,22 @@ export class Quote {
     if (!this.solicitacao) {
       return;
     }
-    this.solicitacaoService.aprovar(this.solicitacao.id);
-    window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(this.solicitacao.valorOrcamento)}`);
-    this.router.navigate(['/user-home']);
+    if (!this.clienteId) {
+      this.mensagem = 'ID do cliente inválido.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    this.solicitacaoService.aprovar(this.solicitacao.id, this.clienteId).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+        window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(this.solicitacao.valorOrcamento)}`);
+        this.router.navigate(['/user-home']);
+      },
+      error: (error) => {
+        this.mensagem = 'Erro ao aprovar o serviço.';
+        this.mensagemSucesso = false;
+      }
+    });
   }
 
   // RF007 - Rejeitar Servico
@@ -48,7 +77,7 @@ export class Quote {
   cancelarRejeicao() {
     this.mostrarFormRejeicao = false;
     this.motivoRejeicao = '';
-    this.erroMotivo = '';
+    this.mensagem = '';
   }
 
   confirmarRejeicao() {
@@ -56,11 +85,25 @@ export class Quote {
       return;
     }
     if (this.motivoRejeicao.trim().length < 5) {
-      this.erroMotivo = 'Informe o motivo da rejeição (mínimo 5 caracteres).';
+      this.mensagem = 'Informe o motivo da rejeição (mínimo 5 caracteres).';
       return;
     }
-    this.solicitacaoService.rejeitar(this.solicitacao.id, this.motivoRejeicao.trim());
-    window.alert('Serviço Rejeitado');
-    this.router.navigate(['/user-home']);
+    if (!this.clienteId) {
+      this.mensagem = 'ID do cliente inválido.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    this.solicitacaoService.rejeitar(this.solicitacao.id, this.motivoRejeicao.trim(), this.clienteId).subscribe({
+      next: (solicitacao) => {
+        this.solicitacao = solicitacao;
+        this.mostrarFormRejeicao = false;
+        window.alert('Serviço Rejeitado');
+        this.router.navigate(['/user-home']);
+      },
+      error: (error) => {
+        this.mensagem = 'Erro ao rejeitar o serviço.';
+        this.mensagemSucesso = false;
+      }
+    });
   }
 }

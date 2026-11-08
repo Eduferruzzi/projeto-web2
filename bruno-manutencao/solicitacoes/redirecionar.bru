@@ -1,0 +1,18 @@
+meta {
+  name: redirecionar
+  type: http
+  seq: 9
+}
+
+put {
+  url: http://localhost:8080/solicitacoes/4/redirecionar
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "funcionarioOrigemId": 13,
+    "funcionarioDestinoId": 9
+  }
+}

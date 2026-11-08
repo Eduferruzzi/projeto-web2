@@ -1,0 +1,21 @@
+meta {
+  name: registrarOrcamento
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://localhost:8080/solicitacoes/4/orcamento/13
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "valorOrcamento": 20.00
+  }
+}

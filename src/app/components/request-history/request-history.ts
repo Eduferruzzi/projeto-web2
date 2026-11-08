@@ -30,6 +30,6 @@ export class RequestHistory {
   }
 
   mostrarResponsavel(passo: HistoricoSolicitacao): string {
-    return passo.funcionario ?? 'Cliente';
+    return passo.funcionarioOrigem ?? passo.funcionarioDestino ?? 'Cliente';
   }
 }

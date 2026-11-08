@@ -149,10 +149,6 @@ public class Solicitacao {
     }
 
     public List<HistoricoSolicitacao> getHistorico() {
-    return historicoSolicitacoes;
-    }
-
-    public List<HistoricoSolicitacao> getHistoricoSolicitacoes() {
         return historicoSolicitacoes;
     }
 
@@ -307,6 +303,5 @@ public class Solicitacao {
 
         historicoSolicitacoes.add(registro);
         this.status = novoStatus;
-
     }
 }

@@ -11,6 +11,17 @@
         </a>
       } @else {
         <div class="card shadow-sm">
+          @if (mensagem){
+                @if (mensagemSucesso) {
+                    <div class="alert alert-success" role="alert">
+                        {{ mensagem }}
+                    </div>
+                } @else {
+                    <div class="alert alert-danger" role="alert">
+                        {{ mensagem }}
+                    </div>
+                }
+            }
           <div class="card-body p-4">
             <h1 class="h3 text-center mb-4">
               Visualizar serviço
@@ -62,7 +73,7 @@
             @if (solicitacao.valorOrcamento !== null) {
               <div class="alert alert-primary">
                 <strong>Valor orçado:</strong>
-                {{ formatarValor(solicitacao.valorOrcamento) }}
+                {{ solicitacao.valorOrcamento | moedaBr }}
                 <br>
                 <span>
                   Funcionário: {{ solicitacao.funcionarioOrcamento }}
@@ -103,10 +114,6 @@
                   rows="4"
                   [(ngModel)]="motivoRejeicao"
                 ></textarea>
-
-                @if (erroMotivo) {
-                  <div class="text-danger mt-1">{{ erroMotivo }}</div>
-                }
 
                 <div class="d-flex justify-content-end gap-2 mt-3">
                   <button

@@ -3,6 +3,8 @@ import { SolicitacaoService } from '../../services/solicitacao-service';
 import { formatarMoedaBr } from '../../shared';
 import autoTable, { UserOptions } from 'jspdf-autotable'
 import jsPDF from 'jspdf'
+import { Solicitacao } from '../../models/Solicitacao'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
   selector: 'app-reports',
@@ -14,42 +16,54 @@ import jsPDF from 'jspdf'
 export class Reports {
   private solicitacaoService = inject(SolicitacaoService);
   mostrarDatas = false;
-  erroPeriodo = '';
+  mensagem = '';
 
   exibirDatas(): void {
     this.mostrarDatas = true;
   }
 
   async baixarRelatorio(tipo: 'data' | 'categoria', inicio = '', fim = ''): Promise<void> {
-    this.erroPeriodo = '';
+    this.mensagem = '';
 
     if (tipo === 'data' && inicio && fim && inicio > fim) {
-      this.erroPeriodo = 'A data inicial não pode ser posterior à data final.';
+      this.mensagem = 'A data inicial não pode ser posterior à data final.';
       return;
     }
 
-    const { jsPDF } = await import('jspdf');
     const receitas: Record<string, number> = {};
     let total = 0;
 
-    const solicitacoes = [
-      ...this.solicitacaoService.listar(),
-      { categoria: 'Notebook', valorOrcamento: 350, dataHoraPagamento: '15/09/2026 16:00' },
-      { categoria: 'Impressora', valorOrcamento: 180, dataHoraPagamento: '14/09/2026 16:00' },
-      { categoria: 'Notebook', valorOrcamento: 420, dataHoraPagamento: '14/09/2026 16:00' },
-    ];
+    let solicitacoes: Solicitacao[];
+
+    try {
+      solicitacoes = await firstValueFrom<Solicitacao[]>(this.solicitacaoService.listarTodas());
+    } catch (error) {
+      this.mensagem = 'Erro ao buscar solicitações.';
+      return;
+    }
 
     for (const solicitacao of solicitacoes) {
-      if (!solicitacao.dataHoraPagamento) {
+      if (
+        !solicitacao.dataHoraPagamento || 
+        (solicitacao.estado !== 'FINALIZADA' && solicitacao.estado !== 'PAGA') ||
+        !solicitacao.valorOrcamento
+      ) {
         continue;
       }
 
       let grupo = solicitacao.categoria;
 
       if (tipo === 'data') {
-        const dataPagamento = solicitacao.dataHoraPagamento.split(' ')[0];
-        const [dia, mes, ano] = dataPagamento.split('/');
-        const data = `${ano}-${mes}-${dia}`;
+        const dataPagamento = new Date(solicitacao.dataHoraPagamento);
+
+        if (Number.isNaN(dataPagamento.getTime())) {
+          continue;
+        }
+
+        const data =
+          `${dataPagamento.getFullYear()}-` +
+          `${String(dataPagamento.getMonth() + 1).padStart(2, '0')}-` +
+          `${String(dataPagamento.getDate()).padStart(2, '0')}`;
 
         if (inicio && data < inicio) {
           continue;

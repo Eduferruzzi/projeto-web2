@@ -20,7 +20,7 @@
                     <p class="text-secondary mb-0">Carregando solicitações</p> 
                 </div>
             } @else if (erro()) {
-                <div class="'alert alert-danger m-4">
+                <div class="alert alert-danger m-4">
                     {{erro()}}
                 </div>
             } @else if (solicitacoes().length > 0) {
@@ -37,8 +37,8 @@
                         <tbody>
                             @for (s of solicitacoes(); track s.id) {
                                 <tr>
-                                    <td class="px-4 py-3 text-nowrap">{{ s.dataHoraAbertura| date: 'dd/MM/yyyy HH:mm' }}</td>
-                                    <td class="px-4 py-3 fw-semibold">Não disponível</td>
+                                    <td class="px-4 py-3 text-nowrap">{{ s.dataHora | date: 'dd/MM/yyyy HH:mm' }}</td>
+                                    <td class="px-4 py-3 fw-semibold">{{ s.cliente || 'Não disponível' }}</td>
                                     <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
                                     <td class="px-4 py-3 text-md-end">
                                         <a

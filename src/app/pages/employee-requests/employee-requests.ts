@@ -2,7 +2,8 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { SolicitacaoService, SolicitacaoAbertaAPI } from '../../services';
+import { SolicitacaoService } from '../../services';
+import { Solicitacao } from '../../models/Solicitacao'
 
 // Limita o estado do filtro às opções oferecidas pelos controles do template.
 type FiltroTipo = 'HOJE' | 'PERIODO' | 'TODAS';
@@ -18,7 +19,7 @@ type FiltroTipo = 'HOJE' | 'PERIODO' | 'TODAS';
 export class EmployeeRequests implements OnInit {
 
   // dados da API
-  solicitacoes = signal<SolicitacaoAbertaAPI[]>([]);
+  solicitacoes = signal<Solicitacao[]>([]);
 
   //controle interface
   carregando = signal(false);
@@ -30,8 +31,6 @@ export class EmployeeRequests implements OnInit {
   dataFim = signal('');
 
   private solicitacaoService = inject(SolicitacaoService);
-onFiltroChange: any;
-aplicarFiltro: any;
 
   ngOnInit(): void {
     this.carregarSolicitacoes();
@@ -42,7 +41,7 @@ aplicarFiltro: any;
     this.carregando.set(true);
     this.erro.set('');
 
-    this.solicitacaoService.listarAbertasAPI().subscribe({
+    this.solicitacaoService.listarAbertas().subscribe({
       next: (dados) => {
         this.solicitacoes.set(dados ?? []);
         this.carregando.set(false);
@@ -65,7 +64,7 @@ aplicarFiltro: any;
     const fim = fimTexto ? new Date(`${fimTexto}T23:59:59`) : null;
 
     return this.solicitacoes().filter(solicitacao => {
-      const data = new Date(solicitacao.dataHoraAbertura);
+      const data = new Date(solicitacao.dataHora);
 
       if(Number.isNaN(data.getTime())) {
         return false;
@@ -85,8 +84,7 @@ aplicarFiltro: any;
         return true;
       })
       .sort((a, b) =>
-        new Date(a.dataHoraAbertura).getTime()
-        - new Date(b.dataHoraAbertura).getTime()
+        new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
       );
   });
 }

@@ -1,92 +1,107 @@
 <div class="container mt-4">
   <h2 class="mb-4">Efetuar Manutenção</h2>
 
-  <div class="alert alert-warning" *ngIf="!solicitacao">
-      Solicitação não encontrada.
-  </div>
+  @if (!solicitacao) {
+      <div class="alert alert-danger" role="alert">
+          {{ mensagem }}
+      </div>
+      <a routerLink="/user-home" class="btn btn-outline-secondary">
+          Voltar
+      </a>
+  }
+  @else {
+    @if (mensagem){
+        @if (mensagemSucesso) {
+            <div class="alert alert-success" role="alert">
+                {{ mensagem }}
+            </div>
+        } @else {
+            <div class="alert alert-danger" role="alert">
+                {{ mensagem }}
+            </div>
+        }
+    }
+    <!-- dados da solicitacao e do cliente -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <strong>Solicitação #{{ solicitacao.id }}</strong> - {{ solicitacao.dataHora }}
+      </div>
+      <div class="card-body">
+        <h5 class="card-title mb-3">Dados do Cliente</h5>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <p class="mb-1"><strong>Nome:</strong> {{ solicitacao.cliente }}</p>
+          </div>
+        </div>
 
-  <div *ngIf="solicitacao">
-      <!-- dados da solicitacao e do cliente -->
+        <hr>
+
+        <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
+            <p class="mb-1"><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Descrição do Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- historico da solicitacao -->
       <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-          <strong>Solicitação #{{ solicitacao.id }}</strong> - {{ solicitacao.dataHora }}
-        </div>
-        <div class="card-body">
-          <h5 class="card-title mb-3">Dados do Cliente</h5>
-          <div class="row mb-3">
-            <div class="col-md-12">
-              <p class="mb-1"><strong>Nome:</strong> {{ solicitacao.cliente }}</p>
-            </div>
-          </div>
+        
+        <div class="card-header bg-info text-white">
 
-          <hr>
+          <i class="bi bi-clock-history"></i> <strong>Histórico da solicitação</strong>
 
-          <h5 class="card-title mb-3">Dados do Equipamento e Defeito</h5>
-          <div class="row">
-            <div class="col-md-6">
-              <p class="mb-1"><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
-              <p class="mb-1"><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
-            </div>
-            <div class="col-md-6">
-              <p class="mb-1"><strong>Descrição do Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
-            </div>
-          </div>
         </div>
 
-        <!-- historico da solicitacao -->
-        <div class="card mb-4">
-          
-          <div class="card-header bg-info text-white">
+        <div class="card-body p-0">
 
-            <i class="bi bi-clock-history"></i> <strong>Histórico da solicitação</strong>
+          <div class="table-responsive">
 
-          </div>
+            <table class="table table-striped table-hover mb-0">
 
-          <div class="card-body p-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Data/Hora</th>
+                  <th>Estado Novo</th>
+                  <th>Funcionário</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
 
-            <div class="table-responsive">
+              <tbody>
 
-              <table class="table table-striped table-hover mb-0">
+                <tr *ngFor="let hist of solicitacao.historico">
 
-                <thead class="table-light">
-                  <tr>
-                    <th>Data/Hora</th>
-                    <th>Estado Novo</th>
-                    <th>Funcionário</th>
-                    <th>Observação</th>
-                  </tr>
-                </thead>
+                  <td>{{ hist.dataHora }}</td>
 
-                <tbody>
+                  <td>
 
-                  <tr *ngFor="let hist of solicitacao.historico">
+                    <span class="badge bg-secondary">{{ hist.estadoNovo }}</span>
 
-                    <td>{{ hist.dataHora }}</td>
+                  </td>
 
-                    <td>
+                  <td>{{ hist.funcionarioDestino || hist.funcionarioOrigem || 'Samuel Lino' }}</td>
 
-                      <span class="badge bg-secondary">{{ hist.estadoNovo }}</span>
+                  <td>{{ hist.observacao || '-' }}</td>
 
-                    </td>
+                </tr>
+                
+              </tbody>
 
-                    <td>{{ hist.funcionarioDestino || hist.funcionarioOrigem || 'Samuel Lino' }}</td>
-
-                    <td>{{ hist.observacao || '-' }}</td>
-
-                  </tr>
-                  
-                </tbody>
-
-              </table>
-            
-            </div>
+            </table>
           
           </div>
         
         </div>
       
       </div>
-
+    
+    </div>
+  }
   <!-- form de conclusao -->
   <div class="card mb-4" *ngIf="exibirFormConclusao">
     <div class="card-header bg-primary text-white">

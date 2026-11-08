@@ -37,7 +37,7 @@
                                     Data/hora de abertura
                                 </span>
                                 <span>
-                                    {{ s.dataHoraAbertura | date:'dd/MM/yyyy HH:mm' }}
+                                    {{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}
                                 </span>
                             </div>
                             <div class="col-12 col-md-6">
@@ -45,21 +45,21 @@
                                     Estado atual
                                 </span>
                                 <span class="badge text-bg-secondary">
-                                    {{ s.status }}
+                                    {{ s.estado }}
                                 </span>
                             </div>
                             <div class="col-12 col-md-6">
                                 <span class="form-label fw-semibold d-block">
                                     Cliente
                                 </span>
-                                <span>Não disponível</span>
+                                <span>{{ s.cliente || 'Não disponível' }}</span>
                             </div>
                             <div class="col-12 col-md-6">
                                 <span class="form-label fw-semibold d-block">
                                     Categoria do equipamento
                                 </span>
                                 <span class="badge text-bg-secondary">
-                                    {{ s.categoria?.nome || 'Não informada' }}
+                                    {{ s.categoria || 'Não informada' }}
                                 </span>
                             </div>
                             <div class="col-12">
@@ -103,7 +103,7 @@
                                     name="valor"
                                     type="number"
                                     class="form-control"
-                                    [(ngModel)]="ValorOrcamento"
+                                    [(ngModel)]="valorOrcamento"
                                     min="0.01"
                                     max="99999999.99"
                                     step="0.01"

@@ -74,7 +74,9 @@ export class MaintenanceRequest implements OnInit {
     .subscribe(
       {
         next: (solicitacaoSalva: Solicitacao) => {
-          this.solicitacaoId = solicitacaoSalva.id
+          this.solicitacaoEnviada = true;
+          formulario.resetForm();
+          this.router.navigate(['/user-home'], { state: { solicitacaoId: solicitacaoSalva.id } })
         },
         error: error => {
             this.erro.set(this.mensagemErro(error));
@@ -82,9 +84,6 @@ export class MaintenanceRequest implements OnInit {
       }
     );
 
-    this.solicitacaoEnviada = true;
-    formulario.resetForm();
-    this.router.navigate(['/user-home'], { state: { solicitacaoId: this.solicitacaoId } })
   }
 
   private mensagemErro(error: unknown): string {

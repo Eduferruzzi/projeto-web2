@@ -17,27 +17,39 @@ export class CustomerHome implements OnInit{
   private solicitacaoCadastradaId = this.router.currentNavigation()?.extras.state?.['solicitacaoId']
   solicitacaoCadastrada = false
   solicitacoes: Solicitacao[] = []
+  mensagem = ''
+  mensagemSucesso = true
 
   ngOnInit(): void {
     const cliente = this.loginService.usuarioLogado
     if (cliente && cliente.perfil === 'CLIENTE' && cliente.id > 0) {
-      this.solicitacoes = this.ordenarPorData(
-        this.solicitacaoService.listar().filter(solicitacao => solicitacao.clienteId === cliente.id)
-      )
+      this.solicitacaoService.listarPorCliente(cliente.id).subscribe({
+        next: (solicitacoes) => {
+          this.solicitacoes = this.ordenarPorData(solicitacoes)
+          this.verificarSolicitacaoCadastrada()
+        },
+        error: (error) => {
+          this.mensagem = 'Erro ao buscar solicitações do cliente.'
+          this.mensagemSucesso = false
+        }
+      })
       this.solicitacaoCadastrada = this.solicitacoes.some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
     }
   }
 
-  private parseDataHora(dataHora: string): Date {
-    const [data, hora] = dataHora.split(' ');
-    const [dia, mes, ano] = data.split('/');
-    const [horaNum, minuto] = hora.split(':');
-    return new Date(Number(ano), Number(mes) - 1, Number(dia), Number(horaNum), Number(minuto));
+  private verificarSolicitacaoCadastrada(): void {
+    if (this.solicitacaoCadastradaId) {
+      this.solicitacaoCadastrada = this.solicitacoes.some(solicitacao => solicitacao.id === this.solicitacaoCadastradaId)
+    }
+  }
+
+  private paraTimestamp(dataHora : string) : number{
+    return new Date(dataHora).getTime();
   }
 
   private ordenarPorData(solicitacoes: Solicitacao[]): Solicitacao[] {
     return [...solicitacoes].sort((a, b) =>
-      this.parseDataHora(a.dataHora).getTime() - this.parseDataHora(b.dataHora).getTime()
+      this.paraTimestamp(a.dataHora) - this.paraTimestamp(b.dataHora)
     );
   }
 
