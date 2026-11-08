@@ -59,6 +59,17 @@
 
                                 <!-- Tipo de listagem -->
                 <div class="d-flex flex-wrap gap-2 mt-3">
+                    
+                    <button
+                        type="button"
+                        class="btn btn-sm"
+                        [class.btn-primary]="somenteAtribuidas()"
+                        [class.btn-outline-primary]="!somenteAtribuidas()"
+                        (click)="alterarListagem(true)">
+
+                        Minhas solicitações
+
+                    </button>
 
                     <button
                         type="button"
@@ -68,17 +79,6 @@
                         (click)="alterarListagem(false)">
 
                         Todas as visíveis
-
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-sm"
-                        [class.btn-primary]="somenteAtribuidas()"
-                        [class.btn-outline-primary]="!somenteAtribuidas()"
-                        (click)="alterarListagem(true)">
-
-                        Minhas solicitações
 
                     </button>
 
