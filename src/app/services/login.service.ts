@@ -2,8 +2,12 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Usuario, Login } from '../shared/models';
+import {
+  clearAuthenticatedUser,
+  readAuthenticatedUser,
+  storeAuthenticatedUser
+} from '../auth/auth-session';
 
-const LS_CHAVE: string = "usuarioLogado";
 const API_URL = 'http://localhost:8080/login';
 
 @Injectable({
@@ -12,20 +16,19 @@ const API_URL = 'http://localhost:8080/login';
 export class LoginService {
 
   public get usuarioLogado(): Usuario | null {
-    const usuario = localStorage.getItem(LS_CHAVE);
-    return usuario ? JSON.parse(usuario) : null;
+    return readAuthenticatedUser();
   }
 
   public set usuarioLogado(usuario: Usuario | null) {
     if (usuario) {
-      localStorage.setItem(LS_CHAVE, JSON.stringify(usuario));
+      storeAuthenticatedUser(usuario);
     } else {
-      localStorage.removeItem(LS_CHAVE);
+      clearAuthenticatedUser();
     }
   }
 
   logout(): void {
-    localStorage.removeItem(LS_CHAVE);
+    clearAuthenticatedUser();
   }
 
   private http = inject(HttpClient);

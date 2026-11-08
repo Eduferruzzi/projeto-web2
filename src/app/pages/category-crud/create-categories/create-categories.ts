@@ -15,14 +15,18 @@ import { CatEquipService } from '../../../services'
 export class CreateCategories {
   @ViewChild('formCategory') form! : NgForm
   category: CatEquip = new CatEquip()
+  erro = ''
 
   private catEquipService = inject(CatEquipService)
   private router = inject(Router)
 
   inserir():void {
     if(this.form.form.valid){
-      this.catEquipService.inserir(this.category)
-      this.router.navigate(['/categories'])
+      this.erro = ''
+      this.catEquipService.inserir(this.category).subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: () => this.erro = 'Não foi possível cadastrar a categoria. Tente novamente.'
+      })
     }
   }
 }
