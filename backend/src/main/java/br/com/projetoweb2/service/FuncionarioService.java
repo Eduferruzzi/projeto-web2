@@ -77,7 +77,6 @@ public class FuncionarioService {
 
         Funcionario funcionario = buscarAtivo(id);
         Usuario usuario = funcionario.getUsuario();
-        Usuario dadosusuario = dados.getUsuario();
 
         String email = normalizarEmail(dados.getUsuario().getEmail());
 

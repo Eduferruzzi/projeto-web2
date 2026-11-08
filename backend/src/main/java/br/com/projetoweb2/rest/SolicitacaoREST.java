@@ -19,11 +19,9 @@ import br.com.projetoweb2.repository.SolicitacaoRepository;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
-import org.springframework.web.bind.annotation.RequestParam;
 import br.com.projetoweb2.enums.SolicitacaoStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import br.com.projetoweb2.enums.SolicitacaoStatus;
 import br.com.projetoweb2.model.Funcionario;
 import br.com.projetoweb2.repository.FuncionarioRepository;
 
@@ -43,36 +41,24 @@ public class SolicitacaoREST {
     }
 
     @GetMapping
-    public ResponseEntity<List<Solicitacao>> listarTodos() {
-        return ResponseEntity.ok(solicitacaoRepository.findAll());
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos() {
+        return ResponseEntity.ok(solicitacaoService.listarTodos());
     }   
 
     @GetMapping("/abertas")
-    public ResponseEntity<List<Solicitacao>> listarAbertas() {
-        List<Solicitacao> solicitacoes = solicitacaoRepository.findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA);
-        return ResponseEntity.ok(solicitacoes);
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAbertas() {
+        return ResponseEntity.ok(solicitacaoService.listarAbertas());
     }
 
     @GetMapping("/ativas")
-    public ResponseEntity<List<Solicitacao>> listarAtivas() {
-        List<Solicitacao> solicitacoes =
-                solicitacaoRepository.findByAtivoTrueOrderByDataHoraAberturaAsc();
-
-        return ResponseEntity.ok(solicitacoes);
-}
-    
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtivas() {
+        return ResponseEntity.ok(solicitacaoService.listarAtivas());
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Solicitacao> buscarPorId(@PathVariable("id") int id) {
-        Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
-
-        if (solicitacao == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        return ResponseEntity.ok(solicitacao);
+    public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable("id") int id) {
+        return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
     }
-    
 
     @PostMapping
     public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {

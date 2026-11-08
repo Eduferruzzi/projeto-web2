@@ -14,7 +14,7 @@ import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.enums.SolicitacaoStatus;
 import br.com.projetoweb2.model.Solicitacao;
-import br.com.projetoweb2.repository.SolicitacaoClienteRepository;
+import br.com.projetoweb2.repository.SolicitacaoRepository;
 import br.com.projetoweb2.repository.ClienteRepository;
 import br.com.projetoweb2.repository.CategoriaEquipamentoRepository;
 
@@ -23,15 +23,49 @@ public class SolicitacaoService {
 
     private static final int TAMANHO_MINIMO_MOTIVO = 5;
 
-    private final SolicitacaoClienteRepository solicitacaoRepository;
+    private final SolicitacaoRepository solicitacaoRepository;
     private final ClienteRepository clienteRepository;
     private final CategoriaEquipamentoRepository categoriaRepository;
 
-    public SolicitacaoService(SolicitacaoClienteRepository solicitacaoRepository,
+    public SolicitacaoService(SolicitacaoRepository solicitacaoRepository,
             ClienteRepository clienteRepository, CategoriaEquipamentoRepository categoriaRepository) {
         this.solicitacaoRepository = solicitacaoRepository;
         this.clienteRepository = clienteRepository;
         this.categoriaRepository = categoriaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarTodos() {
+        return solicitacaoRepository.findAll()
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarAbertas() {
+        return solicitacaoRepository
+                .findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA)
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarAtivas() {
+        return solicitacaoRepository
+                .findByAtivoTrueOrderByDataHoraAberturaAsc()
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SolicitacaoResponseDTO buscarPorId(Integer id) {
+        return solicitacaoRepository.buscarComHistorico(id)
+                .map(SolicitacaoResponseDTO::de)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Solicitacao nao encontrada."));
     }
 
     @Transactional
