@@ -1,14 +1,11 @@
 package br.com.projetoweb2.service;
-
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import br.com.projetoweb2.DTO.RedirecionamentoRequestDTO;
 import br.com.projetoweb2.DTO.RejeicaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoRequestDTO;
@@ -61,6 +58,33 @@ public class SolicitacaoService {
     public List<SolicitacaoResponseDTO> listarAtivas() {
         return solicitacaoRepository
                 .findByAtivoTrueOrderByDataHoraAberturaAsc()
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarVisiveis(Integer funcionarioId) {
+
+        exigirFuncionarioAtivo(funcionarioId);
+
+        return solicitacaoRepository
+                .listarVisiveisFuncionario(
+                        funcionarioId,
+                        SolicitacaoStatus.REDIRECIONADA
+                )
+                .stream()
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarAtribuidas(Integer funcionarioId) {
+
+        exigirFuncionarioAtivo(funcionarioId);
+
+        return solicitacaoRepository
+                .listarAtribuidasFuncionario(funcionarioId)
                 .stream()
                 .map(SolicitacaoResponseDTO::de)
                 .toList();
@@ -215,82 +239,265 @@ public class SolicitacaoService {
     }
 
     @Transactional
-    public SolicitacaoResponseDTO alterarStatus(int solicitacaoId, StatusRequestDTO dados) {
-        Solicitacao solicitacao = solicitacaoRepository.findById(solicitacaoId).orElse(null);
-        if (solicitacao == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitacao nao encontrada.");
+    public SolicitacaoResponseDTO alterarStatus(
+            int solicitacaoId,
+            StatusRequestDTO dados) {
+
+        // Validar dados recebidos
+        if (solicitacaoId <= 0
+                || dados == null
+                || dados.getFuncionarioId() == null
+                || dados.getFuncionarioId() <= 0
+                || dados.getStatus() == null) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Dados da solicitação inválidos.");
         }
-        Funcionario funcionario = funcionarioRepository.findById(dados.getFuncionarioId()).orElse(null);
-        if (funcionario == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario nao encontrado.");
+
+        // Buscar solicitação ativa
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(solicitacaoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Solicitação não encontrada."));
+
+        if (!Boolean.TRUE.equals(solicitacao.getAtivo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Solicitação inativa.");
         }
-        SolicitacaoStatus status = SolicitacaoStatus.valueOf(dados.getStatus());
-        if (status == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status invalido.");
+
+        // Buscar funcionário ativo
+        Funcionario funcionario = funcionarioRepository
+                .findByIdAndUsuarioAtivoTrue(dados.getFuncionarioId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Funcionário não encontrado ou inativo."));
+
+        LocalDateTime agora = LocalDateTime.now();
+
+        // Concluir manutenção
+        if ("ARRUMADA".equals(dados.getStatus())) {
+
+            if (solicitacao.getStatus() != SolicitacaoStatus.APROVADA
+                    && solicitacao.getStatus() != SolicitacaoStatus.REDIRECIONADA) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "A solicitação não está disponível para manutenção.");
+            }
+
+            Funcionario atual = solicitacao.getFuncionarioAtual();
+
+            if (atual == null
+                    || !atual.getId().equals(funcionario.getId())) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "A manutenção pertence a outro funcionário.");
+            }
+
+            if (dados.getObservacao() == null
+                    || dados.getObservacao().isBlank()) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Informe os detalhes da manutenção.");
+            }
+
+            solicitacao.setFuncionarioResponsavel(funcionario);
+            solicitacao.setDataHoraManutencao(agora);
+
+            solicitacao.registrarMudancaDeEstado(
+                    SolicitacaoStatus.ARRUMADA,
+                    agora,
+                    funcionario,
+                    null,
+                    dados.getObservacao().trim()
+            );
+
+        // Finalizar solicitação
+        } else if ("FINALIZADA".equals(dados.getStatus())) {
+
+            if (solicitacao.getStatus() != SolicitacaoStatus.PAGA) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Somente solicitações pagas podem ser finalizadas.");
+            }
+
+            solicitacao.setFuncionarioFinalizacao(funcionario);
+            solicitacao.setDataHoraFinalizacao(agora);
+
+            solicitacao.registrarMudancaDeEstado(
+                    SolicitacaoStatus.FINALIZADA,
+                    agora,
+                    funcionario,
+                    null,
+                    "Solicitação finalizada."
+            );
+
+        } else {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Alteração de estado não permitida por este endpoint.");
         }
-        solicitacao.setFuncionarioAtual(funcionario);
-        solicitacao.registrarMudancaDeEstado(
-                status,
-                LocalDateTime.now(),
-                funcionario,
-                funcionario,
-                dados.getObservacao());
-        return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
+
+        return SolicitacaoResponseDTO.de(
+                solicitacaoRepository.save(solicitacao)
+        );
     }
     
     @Transactional
-    public SolicitacaoResponseDTO redirecionar(int solicitacaoId, RedirecionamentoRequestDTO dados) {
-        Solicitacao solicitacao = solicitacaoRepository.findById(solicitacaoId).orElse(null);
-        if (solicitacao == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitacao nao encontrada.");
-        }
-        Funcionario funcionarioOrigem = funcionarioRepository.findById(dados.getFuncionarioOrigemId()).orElse(null);
-        if (funcionarioOrigem == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario de origem nao encontrado.");
-        }
-        Funcionario funcionarioDestino = funcionarioRepository.findById(dados.getFuncionarioDestinoId()).orElse(null);
-        if (funcionarioDestino == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario de destino nao encontrado.");
-        }
-        if (funcionarioOrigem.getId().equals(funcionarioDestino.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem e destino nao podem ser o mesmo.");
-        }
-        if (solicitacao.getFuncionarioAtual() == null) {
-            solicitacao.setFuncionarioAtual(funcionarioOrigem);
-        } else if (!solicitacao.getFuncionarioAtual().getId().equals(funcionarioOrigem.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario de origem nao corresponde ao funcionario atual da solicitacao.");
-        }
-        solicitacao.setFuncionarioAtual(funcionarioDestino);
-        solicitacao.registrarMudancaDeEstado(
-            SolicitacaoStatus.REDIRECIONADA,
-            LocalDateTime.now(),
-            funcionarioOrigem,
-            funcionarioDestino,
-            "Solicitacao redirecionada de " + funcionarioOrigem.getUsuario().getNome() + " para " + funcionarioDestino.getUsuario().getNome() + ".");
-            return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
-        }
-        
-        private void exigirEstado(Solicitacao solicitacao, SolicitacaoStatus esperado, String mensagem) {
-            if (solicitacao.getStatus() != esperado) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        mensagem + " Estado atual: " + solicitacao.getStatus().name() + ".");
-            }
+    public SolicitacaoResponseDTO redirecionar(
+            int solicitacaoId,
+            RedirecionamentoRequestDTO dados) {
+
+        // Validar dados
+        if (solicitacaoId <= 0
+                || dados == null
+                || dados.getFuncionarioOrigemId() == null
+                || dados.getFuncionarioDestinoId() == null
+                || dados.getFuncionarioOrigemId() <= 0
+                || dados.getFuncionarioDestinoId() <= 0) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Informe os funcionários de origem e destino.");
         }
 
-        private String validarMotivo(RejeicaoRequestDTO dados) {
-        if (dados == null || dados.motivo() == null || dados.motivo().isBlank()) {
+        Integer origemId = dados.getFuncionarioOrigemId();
+        Integer destinoId = dados.getFuncionarioDestinoId();
+
+        // Impedir redirecionamento para si mesmo
+        if (origemId.equals(destinoId)) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Informe o motivo da rejeicao.");
+                    HttpStatus.BAD_REQUEST,
+                    "Não é permitido redirecionar para si mesmo.");
+        }
+
+        // Buscar solicitação
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(solicitacaoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Solicitação não encontrada."));
+
+        if (!Boolean.TRUE.equals(solicitacao.getAtivo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Solicitação inativa.");
+        }
+
+        // Verificar estado
+        if (solicitacao.getStatus() != SolicitacaoStatus.APROVADA
+                && solicitacao.getStatus() != SolicitacaoStatus.REDIRECIONADA) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A solicitação não pode ser redirecionada neste estado.");
+        }
+
+        // Buscar funcionários ativos
+        Funcionario origem = funcionarioRepository
+                .findByIdAndUsuarioAtivoTrue(origemId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Funcionário de origem não encontrado ou inativo."));
+
+        Funcionario destino = funcionarioRepository
+                .findByIdAndUsuarioAtivoTrue(destinoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Funcionário de destino não encontrado ou inativo."));
+
+        // Verificar funcionário responsável atual
+        Funcionario atual = solicitacao.getFuncionarioAtual();
+
+        if (atual == null || !atual.getId().equals(origem.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Somente o funcionário responsável pode redirecionar.");
+        }
+
+        // Atualizar destino
+        solicitacao.setFuncionarioAtual(destino);
+
+        // Registrar histórico
+        solicitacao.registrarMudancaDeEstado(
+                SolicitacaoStatus.REDIRECIONADA,
+                LocalDateTime.now(),
+                origem,
+                destino,
+                "Solicitação redirecionada de "
+                        + origem.getUsuario().getNome()
+                        + " para "
+                        + destino.getUsuario().getNome() + "."
+        );
+
+        return SolicitacaoResponseDTO.de(
+                solicitacaoRepository.save(solicitacao)
+        );
+    }
+
+        // Verifica se a solicitação está no estado esperado
+    private void exigirEstado(
+            Solicitacao solicitacao,
+            SolicitacaoStatus esperado,
+            String mensagem) {
+
+        if (solicitacao.getStatus() != esperado) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    mensagem + " Estado atual: "
+                            + solicitacao.getStatus().name() + "."
+            );
+        }
+    }
+
+    // Valida o motivo informado pelo cliente ao rejeitar orçamento
+    private String validarMotivo(RejeicaoRequestDTO dados) {
+
+        if (dados == null
+                || dados.motivo() == null
+                || dados.motivo().isBlank()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Informe o motivo da rejeicao."
+            );
         }
 
         String motivo = dados.motivo().trim();
+
         if (motivo.length() < TAMANHO_MINIMO_MOTIVO) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "O motivo deve ter pelo menos " + TAMANHO_MINIMO_MOTIVO + " caracteres.");
+                    "O motivo deve ter pelo menos "
+                            + TAMANHO_MINIMO_MOTIVO
+                            + " caracteres."
+            );
         }
 
         return motivo;
+    }
+
+    private void exigirFuncionarioAtivo(Integer funcionarioId) {
+
+        if (funcionarioId == null || funcionarioId <= 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Identificador do funcionário inválido."
+            );
+        }
+
+        funcionarioRepository
+                .findByIdAndUsuarioAtivoTrue(funcionarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Funcionário não encontrado ou inativo."
+                ));
     }
 }

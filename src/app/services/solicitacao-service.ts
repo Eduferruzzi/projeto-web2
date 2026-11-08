@@ -73,6 +73,23 @@ export class SolicitacaoService {
                 map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
             )
     }
+        // RF013 - Solicitações visíveis para o funcionário
+    listarVisiveis(funcionarioId: number): Observable<Solicitacao[]> {
+        return this.http.get<SolicitacaoAPI[]>(
+            `${API_URL}/visiveis/${funcionarioId}`
+        ).pipe(
+            map(dados => dados.map(s => this.paraSolicitacao(s)))
+        );
+    }
+
+    // Solicitações atribuídas ao funcionário
+    listarAtribuidas(funcionarioId: number): Observable<Solicitacao[]> {
+        return this.http.get<SolicitacaoAPI[]>(
+            `${API_URL}/atribuidas/${funcionarioId}`
+        ).pipe(
+            map(dados => dados.map(s => this.paraSolicitacao(s)))
+        );
+    }
 
     listarTodas(): Observable<Solicitacao[]> {
         return this.http.get<SolicitacaoAPI[]>(`${API_URL}`).pipe(

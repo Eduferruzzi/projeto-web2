@@ -25,6 +25,8 @@ export class EmployeeRequests implements OnInit {
   erro = signal('');
   funcId: number | null = null;
 
+  somenteAtribuidas = signal(false);
+
   // filtros de 
   filtroAtivo = signal<FiltroTipo>('HOJE');
   dataInicio = signal('');
@@ -33,30 +35,51 @@ export class EmployeeRequests implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
   
-  ngOnInit(): void {
-    this.carregarSolicitacoes();
-    this.funcId = Number(this.loginService.usuarioLogado?.id);
-    if (!Number.isInteger(this.funcId) || this.funcId <= 0) {
-      this.erro.set('ID do funcionário inválido.');
-    }
-  }
+ngOnInit(): void {
+
+  const id = Number(this.loginService.usuarioLogado?.id);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    this.funcId = null;
+    this.erro.set('Funcionário não identificado.');
+    return;
+}
+
+  this.funcId = id;
+
+  this.carregarSolicitacoes();
+}
 
   //consultar as solicitações abertas
-  carregarSolicitacoes() {
-    this.carregando.set(true);
-    this.erro.set('');
+carregarSolicitacoes(): void {
 
-    this.solicitacaoService.listarAtivas().subscribe({
-      next: (dados) => {
-        this.solicitacoes.set(dados ?? []);
-        this.carregando.set(false);
-      },
-      error: (err) => {
-        this.erro.set('Erro ao carregar solicitações: ' + err.message);
-        this.carregando.set(false);
-      }
-    });
+  if (!this.funcId) {
+    this.erro.set('Funcionário não identificado.');
+    this.solicitacoes.set([]);
+    return;
   }
+
+  this.carregando.set(true);
+  this.erro.set('');
+
+  const consulta = this.somenteAtribuidas()
+    ? this.solicitacaoService.listarAtribuidas(this.funcId)
+    : this.solicitacaoService.listarVisiveis(this.funcId);
+
+  consulta.subscribe({
+
+    next: (dados) => {
+      this.solicitacoes.set(dados ?? []);
+      this.carregando.set(false);
+    },
+
+    error: () => {
+      this.erro.set('Não foi possível carregar as solicitações.');
+      this.carregando.set(false);
+    }
+
+  });
+}
 
   // filtrar com signal
   solicitacoesFiltradas = computed(() => {
@@ -69,6 +92,11 @@ export class EmployeeRequests implements OnInit {
     const fim = fimTexto ? new Date(`${fimTexto}T23:59:59`) : null;
 
     return this.solicitacoes().filter(solicitacao => {
+
+      if(filtro == "TODAS"){
+        return true;
+      }
+
       const data = new Date(solicitacao.dataHora);
 
       if(Number.isNaN(data.getTime())) {
@@ -113,5 +141,16 @@ export class EmployeeRequests implements OnInit {
         }
       });
     }
+  }
+
+  alterarListagem(somenteMinhas: boolean): void {
+
+    if (this.somenteAtribuidas() === somenteMinhas) {
+      return;
+    }
+
+    this.somenteAtribuidas.set(somenteMinhas);
+
+    this.carregarSolicitacoes();
   }
 }

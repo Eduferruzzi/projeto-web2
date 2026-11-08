@@ -63,6 +63,26 @@ public class SolicitacaoREST {
         return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
     }
 
+    // RF013 - Solicitações visíveis ao funcionário
+    @GetMapping("/visiveis/{funcionarioId}")
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarVisiveis(
+            @PathVariable("funcionarioId") Integer funcionarioId) {
+
+        return ResponseEntity.ok(
+                solicitacaoService.listarVisiveis(funcionarioId)
+        );
+    }
+
+    // Solicitações atribuídas ao funcionário
+    @GetMapping("/atribuidas/{funcionarioId}")
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtribuidas(
+            @PathVariable("funcionarioId") Integer funcionarioId) {
+
+        return ResponseEntity.ok(
+                solicitacaoService.listarAtribuidas(funcionarioId)
+        );
+    }
+
     @PostMapping
     public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoService.criar(dados));
