@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common'
 export class CustomerHome implements OnInit{
   private solicitacaoService = inject(SolicitacaoService)
   private loginService = inject(LoginService)
+  cliente = this.loginService.usuarioLogado
   private router = inject(Router)
   private solicitacaoCadastradaId = this.router.currentNavigation()?.extras.state?.['solicitacaoId']
   solicitacaoCadastrada = false
