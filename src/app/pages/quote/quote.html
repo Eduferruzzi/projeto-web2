@@ -75,6 +75,7 @@
     
             <!-- botões de ação: RF006 e RF007 -->
             <div class="d-flex gap-3 justify-content-center" *ngIf="!mostrarFormRejeicao">
+                <a routerLink="/user-home" class="btn btn-outline-secondary">Voltar</a>
                 <button type="button" class="btn btn-success fw-bold" (click)="aprovar()">Aprovar o Serviço</button>
                 <button type="button" class="btn btn-danger fw-bold" (click)="abrirRejeicao()">Rejeitar o Serviço</button>
             </div>
