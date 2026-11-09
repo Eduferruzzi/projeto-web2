@@ -74,13 +74,15 @@
             </div>
     
             <!-- botões de ação: RF006 e RF007 -->
-            <div class="d-flex gap-3 justify-content-center" *ngIf="!mostrarFormRejeicao">
+            @if (!mostrarFormRejeicao) {
+            <div class="d-flex gap-3 justify-content-center">
+                <a routerLink="/user-home" class="btn btn-outline-secondary">Voltar</a>
                 <button type="button" class="btn btn-success fw-bold" (click)="aprovar()">Aprovar o Serviço</button>
                 <button type="button" class="btn btn-danger fw-bold" (click)="abrirRejeicao()">Rejeitar o Serviço</button>
             </div>
-    
+            } @else {
             <!-- RF007 - motivo da rejeição -->
-            <div class="card border-danger" *ngIf="mostrarFormRejeicao">
+            <div class="card border-danger">
                 <div class="card-header fw-bold">Motivo da Rejeição</div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -95,6 +97,7 @@
                     </div>
                 </div>
             </div>
+            }
     
         </div>
     }

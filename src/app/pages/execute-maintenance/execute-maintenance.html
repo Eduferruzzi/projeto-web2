@@ -69,7 +69,8 @@
 
               <tbody>
 
-                <tr *ngFor="let hist of solicitacao()!.historico">
+                @for (hist of solicitacao()!.historico; track $index) {
+                <tr>
 
                   <td>{{ hist.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
 
@@ -84,6 +85,7 @@
                   <td>{{ hist.observacao || '-' }}</td>
 
                 </tr>
+                }
                 
               </tbody>
 
@@ -98,7 +100,8 @@
     </div>
   }
   <!-- form de conclusao -->
-  <div class="card mb-4" *ngIf="exibirFormConclusao">
+  @if (exibirFormConclusao) {
+  <div class="card mb-4">
     <div class="card-header bg-primary text-white">
       <strong>Registrar Conserto</strong>
     </div>
@@ -146,9 +149,11 @@
       </form>
     </div>
   </div>
+  }
 
   <!-- redirecionamento -->
-  <div class="card mb-4 border-warning" *ngIf="exibirRedirecionamento">
+  @if (exibirRedirecionamento) {
+  <div class="card mb-4 border-warning">
     <div class="card-header bg-primary text-white">
       <strong>Redirecionar Manutenção para Outro Funcionário</strong>
     </div>
@@ -167,9 +172,11 @@
             required
           >
             <option value="" disabled selected>Escolha o funcionário</option>
-            <option *ngFor="let func of funcionariosSelect()" [value]="func.id">
+            @for (func of funcionariosSelect(); track func.id) {
+            <option [value]="func.id">
                 {{ func.nome }}
             </option>
+            }
           </select>
         </div>
 
@@ -183,5 +190,6 @@
       </form>
     </div>
   </div>
+  }
 
 </div>

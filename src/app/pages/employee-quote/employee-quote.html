@@ -101,12 +101,14 @@
                                 <input
                                     id="valor"
                                     name="valor"
-                                    type="number"
+                                    type="text"
+                                    inputmode="decimal"
                                     class="form-control"
                                     [(ngModel)]="valorOrcamento"
-                                    min="0.01"
-                                    max="99999999.99"
-                                    step="0.01"
+                                    mask="separator.2"
+                                    thousandSeparator="."
+                                    decimalMarker=","
+                                    [outputTransformFn]="paraNumero"
                                     [disabled]="salvando()"
                                     placeholder="0,00">
                             </div>

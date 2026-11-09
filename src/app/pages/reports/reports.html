@@ -6,7 +6,7 @@
           <h1 class="h3 text-center mb-3">Relatórios de receitas</h1>
 
           @if (mensagem) {
-                  <div class="text-danger">{{ mensagem }}</div>
+            <div class="alert alert-danger">{{ mensagem }}</div>
           }
 
           <div class="d-grid gap-3 col-md-8 mx-auto">
@@ -19,20 +19,28 @@
             </button>
 
             @if (mostrarDatas) {
-              <div>
-                <label for="dataInicial">Data inicial</label>
-                <input type="date" id="dataInicial" name="dataInicial" #dataInicial>
+              <div class="border rounded p-3">
+                <div class="row g-3">
+                  <div class="col-sm-6">
+                    <label for="dataInicial" class="form-label">Data inicial</label>
+                    <input type="date" id="dataInicial" name="dataInicial" class="form-control" #dataInicial>
+                  </div>
 
-                <label for="dataFinal">Data final</label>
-                <input type="date" id="dataFinal" name="dataFinal" #dataFinal>
+                  <div class="col-sm-6">
+                    <label for="dataFinal" class="form-label">Data final</label>
+                    <input type="date" id="dataFinal" name="dataFinal" class="form-control" #dataFinal>
+                  </div>
+                </div>
 
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  (click)="baixarRelatorio('data', dataInicial.value, dataFinal.value)"
-                >
-                  Baixar PDF
-                </button>
+                <div class="d-grid mt-3">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="baixarRelatorio('data', dataInicial.value, dataFinal.value)"
+                  >
+                    Baixar PDF
+                  </button>
+                </div>
               </div>
             }
 

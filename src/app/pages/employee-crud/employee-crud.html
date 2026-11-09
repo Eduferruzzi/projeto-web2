@@ -169,7 +169,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let funcionario of funcionarios()">
+                        @for (funcionario of funcionarios(); track funcionario.id) {
+                        <tr>
                             <td class="px-4 py-3 fw-semibold">
                                 {{ funcionario.nome }}
                             </td>
@@ -202,6 +203,7 @@
                                 </div>
                             </td>
                         </tr>
+                        }
                     </tbody>
                 </table>
             </div>

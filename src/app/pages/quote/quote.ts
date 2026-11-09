@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoginService, SolicitacaoService } from '../../services';
 import { Solicitacao } from '../../models/Solicitacao';
 import { MoedaBrPipe } from '../../pipes';
@@ -10,7 +10,7 @@ import { formatarMoedaBr } from '../../shared';
 // RF005 - Mostrar orcamento (inclui RF006 aprovar e RF007 rejeitar)
 @Component({
   selector: 'app-quote',
-  imports: [CommonModule, FormsModule, MoedaBrPipe],
+  imports: [CommonModule, FormsModule, RouterLink, MoedaBrPipe],
   templateUrl: './quote.html',
   styleUrl: './quote.css',
 })
