@@ -6,6 +6,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { User } from '../../models/user';
 import { FuncionarioInput, FuncionarioService } from '../../services/funcionario-service';
+import { LoginService } from '../../services';
+
 
 @Component({
   selector: 'app-crudemployee',
@@ -26,7 +28,7 @@ export class CRUDemployee implements OnInit {
   erro = signal('');
   mensagem = signal('');
 
-  constructor(private funcionarioService: FuncionarioService) {}
+  constructor(private funcionarioService: FuncionarioService, private loginService: LoginService) {}
 
   ngOnInit(): void {
     this.carregarFuncionarios();
@@ -124,6 +126,18 @@ export class CRUDemployee implements OnInit {
   }
 
   excluirFuncionario(id: number): void {
+
+    // Impedir autoexclusão
+    if (id === this.funcionarioLogadoId) {
+      this.erro.set('Você não pode excluir sua própria conta.');
+      return;
+    }
+
+    // Impedir exclusão do último funcionário
+    if (this.funcionarios().length <= 1) {
+      this.erro.set('O último funcionário ativo não pode ser excluído.');
+      return;
+    }
     const alvo = this.funcionarios().find(
       funcionario => funcionario.id === id
     );
@@ -153,8 +167,12 @@ export class CRUDemployee implements OnInit {
       },
 
       error: error => {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
+        this.erro.set('O último funcionário ativo não pode ser excluído.');
+      } else {
         this.erro.set(this.mensagemErro(error));
       }
+          }
     });
   }
 
@@ -181,5 +199,9 @@ export class CRUDemployee implements OnInit {
     }
 
     return 'Não foi possível concluir a operação. Tente novamente.';
+  }
+
+  get funcionarioLogadoId(): number | null {
+    return this.loginService.usuarioLogado?.id ?? null;
   }
 }

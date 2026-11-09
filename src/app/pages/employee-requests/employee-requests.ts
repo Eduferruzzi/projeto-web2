@@ -25,7 +25,7 @@ export class EmployeeRequests implements OnInit {
   erro = signal('');
   funcId: number | null = null;
 
-  somenteAtribuidas = signal(false);
+  somenteAtribuidas = signal(true);
 
   // filtros de 
   filtroAtivo = signal<FiltroTipo>('HOJE');
