@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgxMaskDirective } from 'ngx-mask';
 import { SolicitacaoService } from '../../services/solicitacao-service';
 
 import { LoginService } from '../../services/login.service';
@@ -10,7 +11,7 @@ import { Solicitacao } from '../../models/Solicitacao'
 
 @Component({
   selector: 'app-budget',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgxMaskDirective],
   templateUrl: './employee-quote.html',
   styleUrl: './employee-quote.css',
 })
@@ -30,6 +31,12 @@ export class Budget implements OnInit {
 
   valorOrcamento: number | null = null;
   erroValor = '';
+
+
+  paraNumero = (valor: unknown): number | null =>
+    valor === '' || valor === null || valor === undefined
+      ? null
+      : Number(String(valor).replace(',', '.'));
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

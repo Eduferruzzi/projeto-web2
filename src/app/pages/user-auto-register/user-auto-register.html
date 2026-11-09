@@ -245,6 +245,9 @@
                     name="estado" 
                     placeholder="UF (ex.: PR)"
                     maxlength="2"
+                    mask="SS"
+                    [inputTransformFn]="maiusculo"
+                    [outputTransformFn]="maiusculo"
                     required
                     #estadoCampo="ngModel" 
                 >

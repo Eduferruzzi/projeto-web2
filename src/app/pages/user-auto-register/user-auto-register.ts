@@ -28,6 +28,8 @@ export class UserAutoRegister {
   cidade = signal('');
   estado = signal('');
 
+  maiusculo = (valor: unknown): string => String(valor ?? '').toUpperCase();
+
   mensagemSucesso = signal('');
   mensagemErro = signal('');
   cadastrando = signal(false);
