@@ -185,11 +185,19 @@
                                         Editar
                                     </button>
 
-                                    <button type="button"
+                                    <button
+                                        type="button"
                                         class="btn btn-sm btn-outline-danger"
-                                        title="Excluir funcionário"
+                                        [disabled]="funcionario.id === funcionarioLogadoId || funcionarios().length <= 1"
+                                        [title]="funcionario.id === funcionarioLogadoId
+                                            ? 'Você não pode excluir sua própria conta'
+                                            : funcionarios().length <= 1
+                                                ? 'O último funcionário ativo não pode ser excluído'
+                                                : 'Excluir funcionário'"
                                         (click)="excluirFuncionario(funcionario.id)">
+
                                         Excluir
+
                                     </button>
                                 </div>
                             </td>
