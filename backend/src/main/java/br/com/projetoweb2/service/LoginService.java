@@ -31,4 +31,16 @@ public class LoginService {
                 .filter(usuario -> passwordService.matches(dados.senha(), usuario.getSenha()))
                 .map(LoginResponseDTO::de);
     }
+
+    @Transactional(readOnly = true)
+    public Optional<LoginResponseDTO> buscarUsuarioAtivo(Integer id) {
+
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        return usuarioRepository.findById(id)
+                .filter(usuario -> Boolean.TRUE.equals(usuario.getAtivo()))
+                .map(LoginResponseDTO::de);
+    }
 }

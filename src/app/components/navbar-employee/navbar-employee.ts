@@ -21,10 +21,16 @@ export class NavbarEmployee {
   }
 
   logout(): void {
-    this.loginService.logout();
-    this.router.navigate(['/login']);
+    this.loginService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+    },
+      error: (error) => {
+      alert('Erro ao fazer logout: ' + error.message);
+    }
+    });
   }
-
+  
   alternarMenu(): void {
     this.menuAberto = !this.menuAberto;
   }
