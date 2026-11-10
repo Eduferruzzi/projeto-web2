@@ -105,7 +105,6 @@ public class FuncionarioService {
     public void desativar(Integer id) {
 
         Funcionario funcionario = buscarAtivo(id);
-        funcionario.getUsuario().setAtivo(false);
 
         if(funcionarioRepository.countByUsuarioAtivoTrue() <= 1) {
             throw new ResponseStatusException(
