@@ -35,7 +35,7 @@ export class LoginService {
 
   login(login: Login): Observable<Usuario | null> {
     return this.http
-      .post<Usuario>(API_URL, login, { observe: 'response' })
+      .post<Usuario>(API_URL, login, { observe: 'response', withCredentials: true })
       .pipe(
         map((resp: HttpResponse<Usuario>) => (resp.status === 200 ? resp.body : null)),
         catchError(() => of(null))
