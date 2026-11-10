@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ConfirmModal } from '../../components/confirm-modal';
+import { ChangeDetectorRef, ViewChild, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router'; 
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SolicitacaoService } from '../../services/solicitacao-service'; 
 import { UserService } from '../../services/user-service'; 
 import { Solicitacao } from '../../models/Solicitacao';
@@ -11,16 +12,18 @@ import { EstadoSolicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-execute-maintenance',
-  imports: [CommonModule],
+  imports: [ConfirmModal, CommonModule, RouterLink],
   templateUrl: './execute-maintenance.html',
   styleUrl: './execute-maintenance.css'
 })
 export class ExecuteMaintenance implements OnInit {
+  @ViewChild(ConfirmModal) modal!: ConfirmModal;
   private router = inject(Router);
   private route = inject(ActivatedRoute); 
   private solicitacaoService = inject(SolicitacaoService); 
   private userService = inject(UserService);
   private loginService = inject(LoginService);
+  private detector = inject(ChangeDetectorRef);
 
   // variaveis de estado do componente
   solicitacao = signal<Solicitacao | undefined>(undefined);
@@ -39,13 +42,26 @@ export class ExecuteMaintenance implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     const funcionarioLogado = this.loginService.usuarioLogado?.id;
     this.funcionarioId = funcionarioLogado ? Number(funcionarioLogado) : undefined;
-    this.solicitacaoService.buscarPorId(id).subscribe({
-      next: (solicitacao) => {
+    if (!this.funcionarioId || !Number.isInteger(id) || id <= 0) {
+      this.mensagem = 'Funcionário ou solicitação inválidos.';
+      this.mensagemSucesso = false;
+      return;
+    }
+    this.solicitacaoService.listarAtribuidas(this.funcionarioId).subscribe({
+      next: (solicitacoes) => {
+        const solicitacao = solicitacoes.find(s => s.id === id);
+        if (!solicitacao || !['APROVADA', 'REDIRECIONADA'].includes(solicitacao.estado)) {
+          this.mensagem = 'Esta manutenção não está disponível para você. Somente o funcionário responsável pode realizá-la ou redirecioná-la.';
+          this.mensagemSucesso = false;
+          this.detector.markForCheck();
+          return;
+        }
         this.solicitacao.set(solicitacao);
       },
       error: (error: HttpErrorResponse) => {
         this.mensagem = this.mensagemErro(error, 'Erro ao buscar a solicitação.');
         this.mensagemSucesso = false;
+        this.detector.markForCheck();
       }
     });
 
@@ -66,10 +82,10 @@ export class ExecuteMaintenance implements OnInit {
   // valida campos, confirma e grava
   concluirManutencao(descricao: string, orientacoes: string): void {
     if (!descricao || !orientacoes) {
-      alert('Por favor, preencha todos os campos da manutenção.');
+      this.modal.abrir('Por favor, preencha todos os campos da manutenção.', undefined, true);
       return;
     }
-    if (confirm('Quer concluir esta manutenção?')) {
+    this.modal.abrir('Tem certeza que deseja concluir esta manutenção?', () => {
       const status: EstadoSolicitacao = "ARRUMADA";
       const obs = `Descrição da manutenção: ${descricao}. Orientações ao cliente: ${orientacoes}`;
       const solicitacao = this.solicitacao();
@@ -89,9 +105,10 @@ export class ExecuteMaintenance implements OnInit {
           error: (error: HttpErrorResponse) => {
             this.mensagem = this.mensagemErro(error, 'Erro ao concluir a manutenção.');
             this.mensagemSucesso = false;
+            this.detector.markForCheck();
           }
         });
-    }
+    });
   }
 
   // valida seleção, confirma e grava
@@ -118,16 +135,17 @@ export class ExecuteMaintenance implements OnInit {
       this.mensagemSucesso = false;
       return;
     }
-    if (confirm('Quer redirecionar esta manutenção para outro funcionário?')) {
+    this.modal.abrir('Tem certeza que deseja redirecionar esta manutenção para outro funcionário?', () => {
       this.solicitacaoService.redirecionarManutencao(solicitacao.id, this.funcionarioId!, idFuncionarioDestino)
         .subscribe({
           next: () => this.router.navigate(['/employee-requests']),
           error: (error: HttpErrorResponse) => {
             this.mensagem = this.mensagemErro(error, 'Erro ao redirecionar a manutenção.');
             this.mensagemSucesso = false;
+            this.detector.markForCheck();
           }
         });
-    }
+    });
   }
 
   // alterna a exibicao de redirecionamento/conclusao

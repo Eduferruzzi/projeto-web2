@@ -37,10 +37,11 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Intege
         @Query("""
         SELECT s
         FROM Solicitacao s
+        LEFT JOIN s.funcionarioAtual funcionario
         WHERE s.ativo = true
         AND (
                 s.status <> :estadoRedirecionada
-                OR s.funcionarioAtual.id = :funcionarioId
+                OR funcionario.id = :funcionarioId
         )
         ORDER BY s.dataHoraAbertura ASC
         """)

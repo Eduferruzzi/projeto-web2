@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { ConfirmModal } from '../../components/confirm-modal';
+import { ViewChild, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -10,11 +11,12 @@ import { formatarMoedaBr } from '../../shared';
 // RF005 - Mostrar orcamento (inclui RF006 aprovar e RF007 rejeitar)
 @Component({
   selector: 'app-quote',
-  imports: [CommonModule, FormsModule, RouterLink, MoedaBrPipe],
+  imports: [ConfirmModal, CommonModule, FormsModule, RouterLink, MoedaBrPipe],
   templateUrl: './quote.html',
   styleUrl: './quote.css',
 })
 export class Quote {
+  @ViewChild(ConfirmModal) modal!: ConfirmModal;
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private solicitacaoService = inject(SolicitacaoService);
@@ -60,8 +62,9 @@ export class Quote {
     this.solicitacaoService.aprovar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
         this.solicitacao.set(solicitacao);
-        window.alert(`Serviço Aprovado no Valor ${formatarMoedaBr(solicitacao.valorOrcamento)}`);
-        this.router.navigate(['/user-home']);
+        this.modal.abrir(`Serviço Aprovado no Valor ${formatarMoedaBr(solicitacao.valorOrcamento)}`, () => {
+          this.router.navigate(['/user-home']);
+        }, true);
       },
       error: (error) => {
         this.mensagem = 'Erro ao aprovar o serviço.';
@@ -99,8 +102,9 @@ export class Quote {
       next: (solicitacao) => {
         this.solicitacao.set(solicitacao);
         this.mostrarFormRejeicao = false;
-        window.alert('Serviço Rejeitado');
-        this.router.navigate(['/user-home']);
+        this.modal.abrir('Serviço Rejeitado', () => {
+          this.router.navigate(['/user-home']);
+        }, true);
       },
       error: (error) => {
         this.mensagem = 'Erro ao rejeitar o serviço.';
