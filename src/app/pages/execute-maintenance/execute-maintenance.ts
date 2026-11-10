@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ConfirmModal } from '../../components/confirm-modal';
+import { ViewChild, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router'; 
@@ -11,11 +12,12 @@ import { EstadoSolicitacao } from '../../models/Solicitacao';
 
 @Component({
   selector: 'app-execute-maintenance',
-  imports: [CommonModule],
+  imports: [ConfirmModal, CommonModule],
   templateUrl: './execute-maintenance.html',
   styleUrl: './execute-maintenance.css'
 })
 export class ExecuteMaintenance implements OnInit {
+  @ViewChild(ConfirmModal) modal!: ConfirmModal;
   private router = inject(Router);
   private route = inject(ActivatedRoute); 
   private solicitacaoService = inject(SolicitacaoService); 
@@ -66,10 +68,10 @@ export class ExecuteMaintenance implements OnInit {
   // valida campos, confirma e grava
   concluirManutencao(descricao: string, orientacoes: string): void {
     if (!descricao || !orientacoes) {
-      alert('Por favor, preencha todos os campos da manutenção.');
+      this.modal.abrir('Por favor, preencha todos os campos da manutenção.', undefined, true);
       return;
     }
-    if (confirm('Quer concluir esta manutenção?')) {
+    this.modal.abrir('Tem certeza que deseja concluir esta manutenção?', () => {
       const status: EstadoSolicitacao = "ARRUMADA";
       const obs = `Descrição da manutenção: ${descricao}. Orientações ao cliente: ${orientacoes}`;
       const solicitacao = this.solicitacao();
@@ -91,7 +93,7 @@ export class ExecuteMaintenance implements OnInit {
             this.mensagemSucesso = false;
           }
         });
-    }
+    });
   }
 
   // valida seleção, confirma e grava
@@ -118,7 +120,7 @@ export class ExecuteMaintenance implements OnInit {
       this.mensagemSucesso = false;
       return;
     }
-    if (confirm('Quer redirecionar esta manutenção para outro funcionário?')) {
+    this.modal.abrir('Tem certeza que deseja redirecionar esta manutenção para outro funcionário?', () => {
       this.solicitacaoService.redirecionarManutencao(solicitacao.id, this.funcionarioId!, idFuncionarioDestino)
         .subscribe({
           next: () => this.router.navigate(['/employee-requests']),
@@ -127,7 +129,7 @@ export class ExecuteMaintenance implements OnInit {
             this.mensagemSucesso = false;
           }
         });
-    }
+    });
   }
 
   // alterna a exibicao de redirecionamento/conclusao
