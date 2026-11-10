@@ -11,6 +11,7 @@ export interface FuncionarioInput {
 }
 
 const API_URL = 'http://localhost:8080/funcionarios';
+const AUTH_OPTIONS = { withCredentials: true, credentials: 'include' as const };
 
 interface FuncionarioApi {
   id: number;
@@ -35,25 +36,25 @@ export class FuncionarioService {
   private readonly http = inject(HttpClient);
 
   listar(): Observable<User[]> {
-    return this.http.get<FuncionarioApi[]>(API_URL).pipe(
+    return this.http.get<FuncionarioApi[]>(API_URL, AUTH_OPTIONS).pipe(
       map(funcionarios => funcionarios.map(funcionario => this.paraUser(funcionario)))
     );
   }
 
   criar(funcionario: FuncionarioInput): Observable<User> {
-    return this.http.post<FuncionarioApi>(API_URL, this.paraRequest(funcionario)).pipe(
+    return this.http.post<FuncionarioApi>(API_URL, this.paraRequest(funcionario), AUTH_OPTIONS).pipe(
       map(resposta => this.paraUser(resposta))
     );
   }
 
   atualizar(id: number, funcionario: FuncionarioInput): Observable<User> {
-    return this.http.put<FuncionarioApi>(`${API_URL}/${id}`, this.paraRequest(funcionario)).pipe(
+    return this.http.put<FuncionarioApi>(`${API_URL}/${id}`, this.paraRequest(funcionario), AUTH_OPTIONS).pipe(
       map(resposta => this.paraUser(resposta))
     );
   }
 
   desativar(id: number): Observable<void> {
-    return this.http.delete<void>(`${API_URL}/${id}`);
+    return this.http.delete<void>(`${API_URL}/${id}`, { withCredentials: true, credentials: 'include' });
   }
 
   private paraRequest(funcionario: FuncionarioInput): FuncionarioRequest {
@@ -77,7 +78,7 @@ export class FuncionarioService {
   }
 
   buscarPorId(id: number): Observable<User> {
-    return this.http.get<FuncionarioApi>(`${API_URL}/${id}`).pipe(
+    return this.http.get<FuncionarioApi>(`${API_URL}/${id}`, AUTH_OPTIONS).pipe(
       map(funcionario => this.paraUser(funcionario))
     );
   }

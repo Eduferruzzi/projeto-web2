@@ -6,10 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import br.com.projetoweb2.service.FuncionarioService;
 import br.com.projetoweb2.model.Funcionario;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/funcionarios")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class FuncionarioREST {
 
     private final FuncionarioService funcionarioService;
@@ -19,13 +22,16 @@ public class FuncionarioREST {
     }
 
     @GetMapping
-    public List<Funcionario> listar() {
+    public List<Funcionario> listar(HttpServletRequest request) {
+
+        exigirFuncionarioAutenticado(request);
         return funcionarioService.listar();
     }
 
     @GetMapping("/{id}")
     public Funcionario buscarPorId(
-            @PathVariable Integer id) {
+            @PathVariable Integer id, HttpServletRequest request) {
+        exigirFuncionarioAutenticado(request);
         return funcionarioService.buscar(id);
     }
 
@@ -51,10 +57,31 @@ public class FuncionarioREST {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> desativar(
-            @PathVariable Integer id) {
+            @PathVariable Integer id, HttpServletRequest request) {
 
-        funcionarioService.desativar(id);
+        HttpSession session = request.getSession(false);
+
+        if(session == null || !(session.getAttribute("usuarioId") instanceof Integer usuarioLogadoId)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        }
+
+        funcionarioService.desativar(id, usuarioLogadoId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private void exigirFuncionarioAutenticado(HttpServletRequest request) {
+        HttpSession sessao = request.getSession(false);
+
+        if (sessao == null ||
+            !(sessao.getAttribute("usuarioId") instanceof Integer usuarioId)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuário não autenticado."
+            );
+        }
+
+        funcionarioService.validarFuncionarioAutenticado(usuarioId);
     }
 }
