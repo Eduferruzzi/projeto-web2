@@ -1,5 +1,6 @@
+import { ConfirmModal } from '../../components/confirm-modal';
 
-import { Component, OnInit, signal } from '@angular/core';
+import { ViewChild, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,11 +12,12 @@ import { LoginService } from '../../services';
 
 @Component({
   selector: 'app-crudemployee',
-  imports: [CommonModule, FormsModule],
+  imports: [ConfirmModal, CommonModule, FormsModule],
   templateUrl: './employee-crud.html',
   styleUrl: './employee-crud.css',
 })
 export class CRUDemployee implements OnInit {
+  @ViewChild(ConfirmModal) modal!: ConfirmModal;
   funcionarios = signal<User[]>([]);
   funcionarioEditandoId: number | null = null;
   nome = '';
@@ -146,11 +148,7 @@ export class CRUDemployee implements OnInit {
       return;
     }
 
-    if (!window.confirm(
-      `Deseja realmente remover ${alvo.nome} do cadastro?`
-    )) {
-      return;
-    }
+    this.modal.abrir(`Tem certeza que deseja remover ${alvo.nome} do cadastro?`, () => {
     this.erro.set('');
     this.mensagem.set('');
     this.funcionarioService.desativar(id).subscribe({
@@ -173,6 +171,7 @@ export class CRUDemployee implements OnInit {
         this.erro.set(this.mensagemErro(error));
       }
           }
+    });
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core'
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CommonModule } from '@angular/common'
 import { ActivatedRoute, RouterLink } from '@angular/router'
@@ -15,6 +15,7 @@ import { formatarMoedaBr } from '../../shared'
   styleUrl: './service-details.css',
 })
 export class ServiceDetails {
+  private detector = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private solicitacaoService = inject(SolicitacaoService);
   private loginService = inject(LoginService);
@@ -101,6 +102,7 @@ export class ServiceDetails {
       return;
     }
 
+    this.mensagem = '';
     this.solicitacaoService.rejeitar(
       solicitacao.id,
       this.motivoRejeicao.trim(),
@@ -108,15 +110,16 @@ export class ServiceDetails {
     ).subscribe({
       next: (solicitacao) => {
         this.solicitacao.set(solicitacao);
+        this.mostrarRejeicao = false;
+        this.mensagem = 'Serviço rejeitado.';
+        this.mensagemSucesso = true;
       },
       error: (error) => {
         this.mensagem = 'Erro ao rejeitar o serviço.';
         this.mensagemSucesso = false;
+        this.detector.markForCheck();
       }
     });
-    this.mostrarRejeicao = false;
-    this.mensagem = 'Serviço rejeitado.';
-    this.mensagemSucesso = false;
   }
 
   // RF009 - Resgatar Servico
@@ -131,17 +134,19 @@ export class ServiceDetails {
       return;
     }
 
+    this.mensagem = '';
     this.solicitacaoService.resgatar(solicitacao.id, this.clienteId).subscribe({
       next: (solicitacao) => {
         this.solicitacao.set(solicitacao);
+        this.mensagem = 'Serviço resgatado. A solicitação voltou para o estado APROVADA.';
+        this.mensagemSucesso = true;
       },
       error: (error) => {
         this.mensagem = 'Erro ao resgatar o serviço.';
         this.mensagemSucesso = false;
+        this.detector.markForCheck();
       }
     });
-    this.mensagem = 'Serviço resgatado. A solicitação voltou para o estado APROVADA.';
-    this.mensagemSucesso = true;
   }
 
   fecharMensagem(): void {

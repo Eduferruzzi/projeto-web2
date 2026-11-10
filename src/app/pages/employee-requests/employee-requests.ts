@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { ConfirmModal } from '../../components/confirm-modal';
+import { ViewChild, Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -12,11 +13,12 @@ type FiltroTipo = 'HOJE' | 'PERIODO' | 'TODAS';
 // para outras telas e FormsModule conecta os campos de data às propriedades do componente.
 @Component({
   selector: 'app-employee-requests',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [ConfirmModal, CommonModule, RouterLink, FormsModule],
   templateUrl: './employee-requests.html',
   styleUrls: ['./employee-requests.css']
 })
 export class EmployeeRequests implements OnInit {
+  @ViewChild(ConfirmModal) modal!: ConfirmModal;
   // dados da API
   solicitacoes = signal<Solicitacao[]>([]);
 
@@ -122,15 +124,15 @@ carregarSolicitacoes(): void {
   });
 
   finalizarSolicitacao(solicitacaoId: number) {
-    this.carregando.set(true);
     this.erro.set('');
     if (!this.funcId) {
       this.erro.set('ID do funcionário inválido.');
       this.carregando.set(false);
       return;
     }
-    if(confirm('Deseja realmente finalizar a solicitação?')) {
-      this.solicitacaoService.alterarEstado(solicitacaoId, this.funcId, 'Finalizado pelo funcionário', 'FINALIZADA').subscribe({
+    this.modal.abrir('Tem certeza que deseja finalizar a solicitação?', () => {
+      this.carregando.set(true);
+      this.solicitacaoService.alterarEstado(solicitacaoId, this.funcId!, 'Finalizado pelo funcionário', 'FINALIZADA').subscribe({
         next: (solicitacao) => {
           this.carregarSolicitacoes();
           this.carregando.set(false);
@@ -140,7 +142,7 @@ carregarSolicitacoes(): void {
           this.carregando.set(false);
         }
       });
-    }
+    });
   }
 
   alterarListagem(somenteMinhas: boolean): void {

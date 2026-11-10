@@ -8,10 +8,7 @@
   }
 
   @if (!solicitacao()) {
-      <div class="alert alert-danger" role="alert">
-          {{ mensagem }}
-      </div>
-      <a routerLink="/user-home" class="btn btn-outline-secondary">
+      <a routerLink="/employee-requests" class="btn btn-outline-secondary">
           Voltar
       </a>
   }
@@ -193,3 +190,4 @@
   }
 
 </div>
+<app-confirm-modal [aberto]="false"></app-confirm-modal>

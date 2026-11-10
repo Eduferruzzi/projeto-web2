@@ -48,7 +48,7 @@
                             name="filtro"
                             id="filtro-todas"
                             [checked]="filtroAtivo() === 'TODAS'"
-                            (click)="filtroAtivo.set('TODAS')">
+                            (click)="filtroAtivo.set('TODAS'); alterarListagem(false)">
 
                         <label class="btn btn-outline-primary" for="filtro-todas">
                             Todas
@@ -232,3 +232,5 @@
                 </div>
             }
         </section>
+
+<app-confirm-modal [aberto]="false"></app-confirm-modal>

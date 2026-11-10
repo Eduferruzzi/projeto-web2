@@ -1,22 +1,28 @@
+@if (aberto) {
 <div class="modal fade show d-block" tabindex="-1" role="dialog"
-    aria-modal="true" aria-labelledby="confirm-modal-title">
+    (keydown.escape)="cancelar()" aria-modal="true" [attr.aria-labelledby]="informativo || titulo ? 'confirm-modal-title' : 'confirm-modal-message'">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title fs-5" id="confirm-modal-title">{{ titulo }}</h2>
-                <button type="button" class="btn-close" aria-label="Fechar"
-                    (click)="cancelado.emit()"></button>
+                @if (informativo || titulo) {
+                    <h2 class="modal-title fs-5" id="confirm-modal-title">{{ informativo ? 'Aviso' : titulo }}</h2>
+                }
+                <button type="button" class="btn-close ms-auto" aria-label="Fechar"
+                    (click)="cancelar()"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-0">{{ mensagem }}</p>
+                <p class="mb-0" id="confirm-modal-message">{{ mensagem || 'Tem certeza que deseja ' + acao + '?' }}</p>
             </div>
             <div class="modal-footer">
+                @if (!informativo) {
                 <button type="button" class="btn btn-secondary"
-                    (click)="cancelado.emit()">Não</button>
-                <button type="button" class="btn btn-danger"
-                    (click)="confirmado.emit()">{{ textoConfirmacao }}</button>
+                    (click)="cancelar()">{{ textoCancelamento }}</button>
+                }
+                <button type="button" class="btn" [ngClass]="informativo ? 'btn-primary' : classeConfirmacao"
+                    (click)="confirmar()">{{ informativo ? 'OK' : textoConfirmacao }}</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal-backdrop fade show" (click)="cancelado.emit()"></div>
+<div class="modal-backdrop fade show" (click)="cancelar()"></div>
+}

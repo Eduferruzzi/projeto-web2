@@ -30,7 +30,7 @@ export class Reports {
       return;
     }
 
-    const receitas: Record<string, number> = {};
+    const receitas: Record<string, Solicitacao[]> = {};
     let total = 0;
 
     let solicitacoes: Solicitacao[];
@@ -76,7 +76,7 @@ export class Reports {
       }
 
       const valor = solicitacao.valorOrcamento ?? 0;
-      receitas[grupo] = (receitas[grupo] ?? 0) + valor;
+      (receitas[grupo] ??= []).push(solicitacao);
       total += valor;
     }
 
@@ -92,7 +92,7 @@ export class Reports {
     // Subtítulo
     const partesSubtitulo: string[] = []
     if (inicio){
-      partesSubtitulo.push(`Apartir de ${this.formatarData(inicio)}`)
+      partesSubtitulo.push(`A partir de ${this.formatarData(inicio)}`)
     }
 
     if (fim){
@@ -115,21 +115,32 @@ export class Reports {
     
     // Tabela das receitas
     const colunaTipo = tipo.toUpperCase()
-    const colunas = [colunaTipo, 'VALOR(R$)']
+    const colunas = [colunaTipo, 'CLIENTE', tipo === 'data' ? 'CATEGORIA' : 'DATA DO PAGAMENTO', 'VALOR (R$)']
     const grupos = Object.keys(receitas).sort();
-    const linhas = grupos.map((grupo)=> [
-      tipo==='data'? this.formatarData(grupo) : grupo,
-      formatarMoedaBr(receitas[grupo])
-    ])
-
-    const larguraTabela = 55
-    const margemEsquerda = (larguraPagina - larguraTabela)/2
+    const linhas: string[][] = [];
+    for (const grupo of grupos) {
+      let subtotal = 0;
+      for (const solicitacao of receitas[grupo]) {
+        const valor = solicitacao.valorOrcamento ?? 0;
+        linhas.push([
+          tipo === 'data' ? this.formatarData(grupo) : grupo,
+          solicitacao.cliente ?? 'Não informado',
+          tipo === 'data' ? solicitacao.categoria : this.formatarData(solicitacao.dataHoraPagamento!.slice(0, 10)),
+          formatarMoedaBr(valor)
+        ]);
+        subtotal += valor;
+      }
+      linhas.push(['Subtotal', '', '', formatarMoedaBr(subtotal)]);
+    }
 
     const opcoesTabela: UserOptions = {
       startY: 38,
-      margin: { left: margemEsquerda },
+      margin: { left: 14, right: 14 },
       head: [colunas],
       body: linhas,
+      foot: [['Total geral', '', '', formatarMoedaBr(total)]],
+      showFoot: 'lastPage',
+      footStyles: { fillColor: [41, 128, 185], halign: 'right' },
       theme: 'striped',
       headStyles: {
         fillColor: [41, 128, 185],
@@ -138,8 +149,10 @@ export class Reports {
         halign: 'left',
       },
       columnStyles: {
-        0: { cellWidth: 25, halign: 'center' },
-        1: { cellWidth: 30, halign: 'right' },
+        0: { cellWidth: 38 },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 48 },
+        3: { cellWidth: 32, halign: 'right' },
       },
       styles: {
         font: 'helvetica',
@@ -149,17 +162,6 @@ export class Reports {
     }
 
     autoTable(pdf, opcoesTabela)
-
-    // Total, final da tabela
-    const finalY = (pdf as Record<string, any>)['lastAutoTable']?.finalY ?? 32 
-
-    pdf.setFont('helvetica', 'bold')
-    pdf.setFontSize(12)
-    pdf.text(`Receita Total: ${formatarMoedaBr(total)}`, centroX, finalY + 10, { 
-      align: 'center'
-    })
-
-    //TODO: arrumar o total
 
     pdf.save(`receitas-por-${tipo}.pdf`);
   }
