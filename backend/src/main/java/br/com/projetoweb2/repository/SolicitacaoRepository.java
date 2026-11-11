@@ -10,6 +10,8 @@ import br.com.projetoweb2.model.Solicitacao;
 public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Integer> {
     List<Solicitacao> findByAtivoTrueAndStatus(SolicitacaoStatus status);
     List<Solicitacao> findByAtivoTrueOrderByDataHoraAberturaAsc();
+    boolean existsByAtivoTrueAndFuncionarioAtualIdAndStatusNot(
+            Integer funcionarioId, SolicitacaoStatus status);
 
     @Query("""
             SELECT DISTINCT s FROM Solicitacao s
@@ -40,14 +42,14 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Intege
         LEFT JOIN s.funcionarioAtual funcionario
         WHERE s.ativo = true
         AND (
-                s.status <> :estadoRedirecionada
+                s.status IN :estadosPublicos
                 OR funcionario.id = :funcionarioId
         )
         ORDER BY s.dataHoraAbertura ASC
         """)
         List<Solicitacao> listarVisiveisFuncionario(
                 @Param("funcionarioId") Integer funcionarioId,
-                @Param("estadoRedirecionada") SolicitacaoStatus estadoRedirecionada
+                @Param("estadosPublicos") List<SolicitacaoStatus> estadosPublicos
         );
 
         // Solicitações atribuídas ao funcionário

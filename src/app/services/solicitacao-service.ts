@@ -223,7 +223,9 @@ export class SolicitacaoService {
             motivoRejeicao: solicitacaoAPI.motivoRejeicao,
             dataHoraPagamento: solicitacaoAPI.dataHoraPagamento,
             funcionarioResponsavel: solicitacaoAPI.funcionarioResponsavel,
-            funcionarioRedirecionado: null,
+            funcionarioRedirecionado: solicitacaoAPI.estado === 'REDIRECIONADA'
+                ? solicitacaoAPI.funcionarioResponsavel
+                : null,
             descricaoManutencao: solicitacaoAPI.descricaoManutencao,
             orientacoesCliente: solicitacaoAPI.orientacoesCliente,
             dataHoraFinalizacao: solicitacaoAPI.dataHoraFinalizacao,

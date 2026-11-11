@@ -55,8 +55,8 @@ public class SolicitacaoREST {
 
     @GetMapping
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos(HttpServletRequest request) {
-        exigirFuncionarioAutenticado(request);
-        return ResponseEntity.ok(solicitacaoService.listarTodos());
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
+        return ResponseEntity.ok(solicitacaoService.listarTodos(funcionarioId));
     }   
 
     @GetMapping("/abertas")
@@ -67,8 +67,8 @@ public class SolicitacaoREST {
 
     @GetMapping("/ativas")
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtivas(HttpServletRequest request) {
-        exigirFuncionarioAutenticado(request);
-        return ResponseEntity.ok(solicitacaoService.listarAtivas());
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
+        return ResponseEntity.ok(solicitacaoService.listarAtivas(funcionarioId));
     }
 
     @GetMapping("/{id}")
@@ -78,8 +78,8 @@ public class SolicitacaoREST {
         if ("CLIENTE".equals(usuario.perfil())) {
             return ResponseEntity.ok(solicitacaoService.buscar(id, usuario.id()));
         }
-        exigirFuncionarioAutenticado(request);
-        return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
+        return ResponseEntity.ok(solicitacaoService.buscarPorId(id, funcionarioId));
     }
 
     // RF013 - Solicitações visíveis ao funcionário
@@ -124,13 +124,16 @@ public class SolicitacaoREST {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<Solicitacao> alterar(@PathVariable ("id") int id, @RequestBody Solicitacao dados, HttpServletRequest request) {
-            exigirFuncionarioAutenticado(request);
+            Integer funcionarioId = exigirFuncionarioAutenticado(request);
             Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
 
             if (solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
+            exigirAlteracaoPermitida(solicitacao, funcionarioId);
 
             if(dados.getDescricaoEquipamento() == null || 
                 dados.getDescricaoEquipamento().isBlank() || 
@@ -257,8 +260,9 @@ public class SolicitacaoREST {
 
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id, HttpServletRequest request) {
-        exigirFuncionarioAutenticado(request);
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
         
         Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
 
@@ -266,11 +270,23 @@ public class SolicitacaoREST {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        exigirAlteracaoPermitida(solicitacao, funcionarioId);
         solicitacao.setAtivo(false);
         solicitacaoRepository.save(solicitacao);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    private void exigirAlteracaoPermitida(Solicitacao solicitacao, Integer funcionarioId) {
+        if (solicitacao.getStatus() == SolicitacaoStatus.FINALIZADA) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Solicitacao finalizada nao pode ser alterada.");
+        }
+        if (solicitacao.getStatus() != SolicitacaoStatus.ABERTA
+                && (solicitacao.getFuncionarioAtual() == null
+                    || !funcionarioId.equals(solicitacao.getFuncionarioAtual().getId()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solicitacao atribuida a outro funcionario.");
+        }
+    }
+
     private LoginResponseDTO exigirUsuarioAutenticado(HttpServletRequest request) {
         HttpSession sessao = request.getSession(false);
         if (sessao == null || !(sessao.getAttribute("usuarioId") instanceof Integer usuarioId)) {

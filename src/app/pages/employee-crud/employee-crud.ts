@@ -166,7 +166,7 @@ export class CRUDemployee implements OnInit {
 
       error: error => {
       if (error instanceof HttpErrorResponse && error.status === 409) {
-        this.erro.set('O último funcionário ativo não pode ser excluído.');
+        this.erro.set(error.error?.message || 'Nao foi possivel excluir o funcionario.');
       } else {
         this.erro.set(this.mensagemErro(error));
       }
