@@ -39,7 +39,7 @@
                                 <tr>
                                     <td class="px-4 py-3 text-nowrap">{{ s.dataHora | date: 'dd/MM/yyyy HH:mm' }}</td>
                                     <td class="px-4 py-3 fw-semibold">{{ s.cliente || 'Não disponível' }}</td>
-                                    <td class="px-4 py-3">{{ verif(s.descricaoDefeito) }}</td>
+                                    <td class="px-4 py-3">{{ verif(s.descricaoEquipamento) }}</td>
                                     <td class="px-4 py-3 text-md-end">
                                         <a
                                             [routerLink]="['/employee-quote', s.id]"

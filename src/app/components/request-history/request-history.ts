@@ -23,7 +23,7 @@ export class RequestHistory {
   }
 
   descreverPasso(passo: HistoricoSolicitacao): string {
-    if (passo.estadoAnterior === null) {
+    if (passo.estadoAnterior === null || passo.estadoAnterior === passo.estadoNovo) {
       return `Solicitação criada como ${passo.estadoNovo}`;
     }
 

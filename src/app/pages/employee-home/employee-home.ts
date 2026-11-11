@@ -44,7 +44,7 @@ export class EmployeeHome implements OnInit {
 
 
   verif(text: string, limite: number = 30): string {
-      return text.length > limite ? text.substring(0, limite) + '...' : text;
+      return text.length > limite ? text.substring(0, limite - 3) + '...' : text;
     }
 
 }

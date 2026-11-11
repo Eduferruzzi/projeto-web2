@@ -47,23 +47,24 @@ export class ExecuteMaintenance implements OnInit {
       this.mensagemSucesso = false;
       return;
     }
-    this.solicitacaoService.listarAtribuidas(this.funcionarioId).subscribe({
-      next: (solicitacoes) => {
-        const solicitacao = solicitacoes.find(s => s.id === id);
-        if (!solicitacao || !['APROVADA', 'REDIRECIONADA'].includes(solicitacao.estado)) {
-          this.mensagem = 'Esta manutenção não está disponível para você. Somente o funcionário responsável pode realizá-la ou redirecioná-la.';
-          this.mensagemSucesso = false;
-          this.detector.markForCheck();
-          return;
-        }
-        this.solicitacao.set(solicitacao);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.mensagem = this.mensagemErro(error, 'Erro ao buscar a solicitação.');
+    this.solicitacaoService.buscarPorId(id).subscribe({
+    next: (solicitacao) => {
+      if (!['APROVADA', 'REDIRECIONADA'].includes(solicitacao.estado)) {
+        this.mensagem = 'Solicitação indisponível para manutenção.';
         this.mensagemSucesso = false;
         this.detector.markForCheck();
+        return;
       }
-    });
+
+      this.solicitacao.set(solicitacao);
+      this.detector.markForCheck();
+    },
+    error: (error: HttpErrorResponse) => {
+      this.mensagem = this.mensagemErro(error, 'Erro ao buscar a solicitação.');
+      this.mensagemSucesso = false;
+      this.detector.markForCheck();
+    }
+});
 
     // carrega os funcionarios menos vc mesmo
     this.userService.listarTodos().subscribe({
