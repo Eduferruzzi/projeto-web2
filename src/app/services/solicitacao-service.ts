@@ -52,25 +52,25 @@ export class SolicitacaoService {
     private readonly http = inject(HttpClient);
 
     buscarPorIdECliente(id: number, clienteId: number): Observable<Solicitacao> {
-        return this.http.get<SolicitacaoAPI>(`${API_URL}/${id}/cliente?clienteId=${clienteId}`).pipe(
+        return this.http.get<SolicitacaoAPI>(`${API_URL}/${id}/cliente?clienteId=${clienteId}`, AUTH_OPTIONS).pipe(
                 map(resposta => this.paraSolicitacao(resposta))
             )
     }
 
     buscarPorId(id: number): Observable<Solicitacao> {
-        return this.http.get<SolicitacaoAPI>(`${API_URL}/${id}`).pipe(
+        return this.http.get<SolicitacaoAPI>(`${API_URL}/${id}`, AUTH_OPTIONS).pipe(
                 map(resposta => this.paraSolicitacao(resposta))
             )
     }
 
     listarPorCliente(clienteId: number): Observable<Solicitacao[]> {
-        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/cliente?clienteId=${clienteId}`).pipe(
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/cliente?clienteId=${clienteId}`, AUTH_OPTIONS).pipe(
                 map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
             )
     }
 
     listarAtivas(): Observable<Solicitacao[]> {
-        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/ativas`).pipe(
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/ativas`, AUTH_OPTIONS).pipe(
                 map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
             )
     }
@@ -93,20 +93,20 @@ export class SolicitacaoService {
     }
 
     listarTodas(): Observable<Solicitacao[]> {
-        return this.http.get<SolicitacaoAPI[]>(`${API_URL}`).pipe(
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}`, AUTH_OPTIONS).pipe(
                 map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
             )
     }
 
     cadastrar(solicitacao: SolicitacaoInput): Observable<Solicitacao> {
-        return this.http.post<SolicitacaoAPI>(API_URL, solicitacao).pipe(
+        return this.http.post<SolicitacaoAPI>(API_URL, solicitacao, AUTH_OPTIONS).pipe(
                 map((resposta) => this.paraSolicitacao(resposta))
             )
     }
 
     // RF006 - Aprovar Servico
     aprovar(id : number, clienteId : number): Observable<Solicitacao> {
-        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/aprovar?clienteId=${clienteId}`, {}).pipe(
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/aprovar?clienteId=${clienteId}`, {}, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
@@ -116,7 +116,7 @@ export class SolicitacaoService {
 
     // RF007 - Rejeitar Servico
     rejeitar(id : number, motivo : string, clienteId : number): Observable<Solicitacao> {
-        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/rejeitar?clienteId=${clienteId}`, { motivo }).pipe(
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/rejeitar?clienteId=${clienteId}`, { motivo }, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
@@ -126,7 +126,7 @@ export class SolicitacaoService {
 
     // RF009 - Resgatar Servico: o que estava REJEITADA volta para APROVADA
     resgatar(id : number, clienteId : number) : Observable<Solicitacao> {
-        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/resgatar?clienteId=${clienteId}`, {}).pipe(
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/resgatar?clienteId=${clienteId}`, {}, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
@@ -136,7 +136,7 @@ export class SolicitacaoService {
 
     // RF010 - Pagar Servico: registra a data/hora do pagamento
     pagar(id : number, clienteId : number): Observable<Solicitacao> {
-        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/pagar?clienteId=${clienteId}`, {}).pipe(
+        return this.http.put<SolicitacaoAPI>(`${API_URL}/${id}/pagar?clienteId=${clienteId}`, {}, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
@@ -169,7 +169,7 @@ export class SolicitacaoService {
 
     // RF 011 - Somente solicitacoes em aberto
     listarAbertas(): Observable<Solicitacao[]> {
-        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/abertas`).pipe(
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/abertas`, AUTH_OPTIONS).pipe(
             map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
         );
     }
