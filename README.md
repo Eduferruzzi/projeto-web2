@@ -19,9 +19,14 @@ backend/            API REST em Spring Boot
 database/
   script.sql        criação do banco e das tabelas
   inserts.sql       dados iniciais para teste
+  dbdiagram.dbml    diagrama do banco (dbdiagram.io)
 src/                front-end Angular
 bruno-manutencao/   coleção do Bruno para testar a API
 ```
+
+## Modelo do banco
+
+![Diagrama do banco de dados](database/BancoDR.png)
 
 ## Como rodar
 
