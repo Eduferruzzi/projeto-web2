@@ -1,0 +1,104 @@
+// Diagrama do banco manutencao_db
+// Para visualizar: colar este arquivo em https://dbdiagram.io/d
+
+Enum perfil_usuario {
+  CLIENTE
+  FUNCIONARIO
+}
+
+Enum estado_solicitacao {
+  ABERTA
+  ORCADA
+  APROVADA
+  REJEITADA
+  REDIRECIONADA
+  ARRUMADA
+  PAGA
+  FINALIZADA
+}
+
+Table usuario {
+  id int [pk, increment]
+  nome varchar(150) [not null]
+  email varchar(150) [not null, unique]
+  senha varchar(255) [not null, note: 'salt$hash (SHA-256 + SALT)']
+  perfil perfil_usuario [not null]
+  ativo boolean [default: true]
+}
+
+Table cliente {
+  usuario_id int [pk]
+  cpf varchar(14) [not null, unique]
+  telefone varchar(20) [not null]
+  cep varchar(9) [not null]
+  logradouro varchar(150) [not null]
+  numero varchar(10) [not null]
+  complemento varchar(50)
+  bairro varchar(100) [not null]
+  cidade varchar(100) [not null]
+  estado varchar(2) [not null]
+}
+
+Table funcionario {
+  usuario_id int [pk]
+  data_nascimento date [not null]
+}
+
+Table categoria_equipamento {
+  id int [pk, increment]
+  nome varchar(100) [not null]
+  ativo boolean [default: true]
+}
+
+Table solicitacao {
+  id int [pk, increment]
+  cliente_id int [not null]
+  categoria_id int [not null]
+  descricao_equipamento text [not null]
+  descricao_defeito text [not null]
+  data_hora_abertura datetime [not null]
+  ativo boolean [default: true]
+  estado_atual estado_solicitacao [default: 'ABERTA']
+
+  valor_orcamento decimal(10,2)
+  data_hora_orcamento datetime
+  funcionario_orcamento_id int
+
+  motivo_rejeicao text
+
+  descricao_manutencao text
+  orientacoes_cliente text
+  data_hora_manutencao datetime
+  funcionario_manutencao_id int
+
+  funcionario_atual_id int
+
+  data_hora_pagamento datetime
+  data_hora_finalizacao datetime
+  funcionario_finalizacao_id int
+}
+
+Table historico_solicitacao {
+  id int [pk, increment]
+  solicitacao_id int [not null]
+  data_hora datetime [not null]
+  estado_anterior estado_solicitacao
+  estado_novo estado_solicitacao [not null]
+  funcionario_origem_id int
+  funcionario_destino_id int
+  observacao text
+}
+
+Ref fk_cliente_usuario: cliente.usuario_id - usuario.id
+Ref fk_funcionario_usuario: funcionario.usuario_id - usuario.id
+
+Ref fk_solicitacao_cliente: solicitacao.cliente_id > cliente.usuario_id
+Ref fk_solicitacao_categoria: solicitacao.categoria_id > categoria_equipamento.id
+Ref fk_solic_func_orcamento: solicitacao.funcionario_orcamento_id > funcionario.usuario_id
+Ref fk_solic_func_manutencao: solicitacao.funcionario_manutencao_id > funcionario.usuario_id
+Ref fk_solic_func_atual: solicitacao.funcionario_atual_id > funcionario.usuario_id
+Ref fk_solic_func_finalizacao: solicitacao.funcionario_finalizacao_id > funcionario.usuario_id
+
+Ref fk_historico_solicitacao: historico_solicitacao.solicitacao_id > solicitacao.id
+Ref fk_historico_func_origem: historico_solicitacao.funcionario_origem_id > funcionario.usuario_id
+Ref fk_historico_func_destino: historico_solicitacao.funcionario_destino_id > funcionario.usuario_id
