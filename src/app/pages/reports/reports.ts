@@ -36,7 +36,7 @@ export class Reports {
     let solicitacoes: Solicitacao[];
 
     try {
-      solicitacoes = await firstValueFrom<Solicitacao[]>(this.solicitacaoService.listarTodas());
+      solicitacoes = await firstValueFrom<Solicitacao[]>(this.solicitacaoService.listarReceitas());
     } catch (error) {
       console.error('Erro ao buscar solicitações:', error);
       this.mensagem = 'Erro ao buscar solicitações.';

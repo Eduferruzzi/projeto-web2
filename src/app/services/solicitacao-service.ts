@@ -98,6 +98,12 @@ export class SolicitacaoService {
             )
     }
 
+    listarReceitas(): Observable<Solicitacao[]> {
+        return this.http.get<SolicitacaoAPI[]>(`${API_URL}/receitas`, AUTH_OPTIONS).pipe(
+                map(solicitacoes => solicitacoes.map(solicitacao => this.paraSolicitacao(solicitacao)))
+            )
+    }
+
     cadastrar(solicitacao: SolicitacaoInput): Observable<Solicitacao> {
         return this.http.post<SolicitacaoAPI>(API_URL, solicitacao, AUTH_OPTIONS).pipe(
                 map((resposta) => this.paraSolicitacao(resposta))

@@ -59,6 +59,12 @@ public class SolicitacaoREST {
         return ResponseEntity.ok(solicitacaoService.listarTodos(funcionarioId));
     }   
 
+    @GetMapping("/receitas")
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarReceitas(HttpServletRequest request) {
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
+        return ResponseEntity.ok(solicitacaoService.listarReceitas(funcionarioId));
+    }
+
     @GetMapping("/abertas")
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarAbertas(HttpServletRequest request) {
         exigirFuncionarioAutenticado(request);

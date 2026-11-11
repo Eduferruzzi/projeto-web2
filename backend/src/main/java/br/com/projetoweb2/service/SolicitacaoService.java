@@ -48,6 +48,18 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
+    public List<SolicitacaoResponseDTO> listarReceitas(Integer funcionarioId) {
+        exigirFuncionarioAtivo(funcionarioId);
+        return solicitacaoRepository.findAll()
+                .stream()
+                .filter(solicitacao -> solicitacao.getDataHoraPagamento() != null)
+                .filter(solicitacao -> solicitacao.getStatus() == SolicitacaoStatus.PAGA
+                        || solicitacao.getStatus() == SolicitacaoStatus.FINALIZADA)
+                .map(SolicitacaoResponseDTO::de)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<SolicitacaoResponseDTO> listarAbertas() {
         return solicitacaoRepository
                 .findByAtivoTrueAndStatus(SolicitacaoStatus.ABERTA)
