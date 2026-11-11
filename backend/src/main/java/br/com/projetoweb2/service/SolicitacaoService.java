@@ -230,6 +230,11 @@ public class SolicitacaoService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Solicitacao nao encontrada."));
 
+        if (!Boolean.TRUE.equals(solicitacao.getAtivo())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Solicitacao nao encontrada.");
+        }
+
         if (!solicitacao.getCliente().getId().equals(clienteId)) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "Esta solicitacao pertence a outro cliente.");

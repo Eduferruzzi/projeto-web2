@@ -3,6 +3,9 @@ package br.com.projetoweb2.rest;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import br.com.projetoweb2.service.LoginService;
+import br.com.projetoweb2.DTO.LoginResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,59 +44,88 @@ public class SolicitacaoREST {
     private final SolicitacaoService solicitacaoService;
     private final FuncionarioRepository funcionarioRepository;
 
-    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository, SolicitacaoService solicitacaoService, FuncionarioRepository funcionarioRepository) {
+    private final LoginService loginService;
+
+    public SolicitacaoREST(SolicitacaoRepository solicitacaoRepository, SolicitacaoService solicitacaoService, FuncionarioRepository funcionarioRepository, LoginService loginService) {
+        this.loginService = loginService;
         this.solicitacaoRepository = solicitacaoRepository;
         this.solicitacaoService = solicitacaoService;
         this.funcionarioRepository = funcionarioRepository;
     }
 
     @GetMapping
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos() {
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarTodos(HttpServletRequest request) {
+        exigirFuncionarioAutenticado(request);
         return ResponseEntity.ok(solicitacaoService.listarTodos());
     }   
 
     @GetMapping("/abertas")
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAbertas() {
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAbertas(HttpServletRequest request) {
+        exigirFuncionarioAutenticado(request);
         return ResponseEntity.ok(solicitacaoService.listarAbertas());
     }
 
     @GetMapping("/ativas")
-    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtivas() {
+    public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtivas(HttpServletRequest request) {
+        exigirFuncionarioAutenticado(request);
         return ResponseEntity.ok(solicitacaoService.listarAtivas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(@PathVariable("id") int id) {
+    public ResponseEntity<SolicitacaoResponseDTO> buscarPorId(
+            @PathVariable("id") int id, HttpServletRequest request) {
+        var usuario = exigirUsuarioAutenticado(request);
+        if ("CLIENTE".equals(usuario.perfil())) {
+            return ResponseEntity.ok(solicitacaoService.buscar(id, usuario.id()));
+        }
+        exigirFuncionarioAutenticado(request);
         return ResponseEntity.ok(solicitacaoService.buscarPorId(id));
     }
 
     // RF013 - Solicitações visíveis ao funcionário
     @GetMapping("/visiveis/{funcionarioId}")
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarVisiveis(
-            @PathVariable("funcionarioId") Integer funcionarioId) {
-
+            @PathVariable("funcionarioId") Integer funcionarioId, HttpServletRequest request) {
+        Integer funcionarioLogadoId = exigirFuncionarioAutenticado(request);
+        if (!funcionarioLogadoId.equals(funcionarioId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Funcionario diferente da sessao.");
+        }
         return ResponseEntity.ok(
-                solicitacaoService.listarVisiveis(funcionarioId)
+                solicitacaoService.listarVisiveis(funcionarioLogadoId)
         );
     }
 
     // Solicitações atribuídas ao funcionário
     @GetMapping("/atribuidas/{funcionarioId}")
     public ResponseEntity<List<SolicitacaoResponseDTO>> listarAtribuidas(
-            @PathVariable("funcionarioId") Integer funcionarioId) {
-
+            @PathVariable("funcionarioId") Integer funcionarioId, HttpServletRequest request) {
+        Integer funcionarioLogadoId = exigirFuncionarioAutenticado(request);
+        if (!funcionarioLogadoId.equals(funcionarioId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Funcionario diferente da sessao.");
+        }
         return ResponseEntity.ok(
-                solicitacaoService.listarAtribuidas(funcionarioId)
+                solicitacaoService.listarAtribuidas(funcionarioLogadoId)
         );
     }
 
     @PostMapping
-    public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados) {
+    public ResponseEntity<SolicitacaoResponseDTO> inserir(@RequestBody SolicitacaoRequestDTO dados, HttpServletRequest request) {
+        var usuario = exigirUsuarioAutenticado(request);
+        if (!"CLIENTE".equals(usuario.perfil())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Operacao exclusiva de cliente.");
+        }
+        if (dados == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados obrigatorios.");
+        }
+        if (!usuario.id().equals(dados.clienteId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cliente diferente da sessao.");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(solicitacaoService.criar(dados));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Solicitacao> alterar(@PathVariable ("id") int id, @RequestBody Solicitacao dados) {
+    public ResponseEntity<Solicitacao> alterar(@PathVariable ("id") int id, @RequestBody Solicitacao dados, HttpServletRequest request) {
+            exigirFuncionarioAutenticado(request);
             Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
 
             if (solicitacao == null || !Boolean.TRUE.equals(solicitacao.getAtivo())) {
@@ -118,7 +150,14 @@ public class SolicitacaoREST {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<SolicitacaoResponseDTO> alterarStatus(@PathVariable ("id") int id, @RequestBody StatusRequestDTO dados) {
+    public ResponseEntity<SolicitacaoResponseDTO> alterarStatus(@PathVariable ("id") int id, @RequestBody StatusRequestDTO dados, HttpServletRequest request) {
+        Integer funcionarioId = exigirFuncionarioAutenticado(request);
+        if (dados == null || dados.getFuncionarioId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionario obrigatorio.");
+        }
+        if (!funcionarioId.equals(dados.getFuncionarioId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Funcionario diferente da sessao.");
+        }
         return ResponseEntity.ok(solicitacaoService.alterarStatus(id, dados));
     }
 
@@ -218,7 +257,8 @@ public class SolicitacaoREST {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id) {
+    public ResponseEntity<Solicitacao> desativar(@PathVariable("id") int id, HttpServletRequest request) {
+        exigirFuncionarioAutenticado(request);
         
         Solicitacao solicitacao = solicitacaoRepository.findById(id).orElse(null);
 
@@ -230,5 +270,22 @@ public class SolicitacaoREST {
         solicitacaoRepository.save(solicitacao);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    private LoginResponseDTO exigirUsuarioAutenticado(HttpServletRequest request) {
+        HttpSession sessao = request.getSession(false);
+        if (sessao == null || !(sessao.getAttribute("usuarioId") instanceof Integer usuarioId)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado.");
+        }
+        return loginService.buscarUsuarioAtivo(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sessao invalida."));
+    }
+
+    private Integer exigirFuncionarioAutenticado(HttpServletRequest request) {
+        var usuario = exigirUsuarioAutenticado(request);
+        if (!"FUNCIONARIO".equals(usuario.perfil()) ||
+                funcionarioRepository.findByIdAndUsuarioAtivoTrue(usuario.id()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Operacao exclusiva de funcionario.");
+        }
+        return usuario.id();
     }
 }
