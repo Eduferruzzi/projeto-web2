@@ -16,7 +16,7 @@ import br.com.projetoweb2.DTO.RejeicaoRequestDTO;
 import br.com.projetoweb2.DTO.SolicitacaoResponseDTO;
 import br.com.projetoweb2.service.SolicitacaoService;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 @RequestMapping("/solicitacoes")
 public class SolicitacaoClienteREST {

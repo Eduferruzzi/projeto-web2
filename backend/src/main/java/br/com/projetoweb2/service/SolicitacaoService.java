@@ -306,8 +306,20 @@ public class SolicitacaoService {
                         "Informe os detalhes da manutenção.");
             }
 
+            if (dados.getDescricaoManutencao() == null
+                    || dados.getDescricaoManutencao().isBlank()
+                    || dados.getOrientacoesCliente() == null
+                    || dados.getOrientacoesCliente().isBlank()) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Informe a descrição da manutenção e as orientações ao cliente.");
+            }
+
             solicitacao.setFuncionarioResponsavel(funcionario);
             solicitacao.setDataHoraManutencao(agora);
+            solicitacao.setDescricaoManutencao(dados.getDescricaoManutencao().trim());
+            solicitacao.setOrientacoesCliente(dados.getOrientacoesCliente().trim());
 
             solicitacao.registrarMudancaDeEstado(
                     SolicitacaoStatus.ARRUMADA,

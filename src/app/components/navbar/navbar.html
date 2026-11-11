@@ -1,14 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
     <div class="container">
 
-        <a class="navbar-brand fw-semibold" routerLink="/customer-home">
+        <a
+            class="navbar-brand fw-semibold"
+            [routerLink]="ehFuncionario ? '/employee-home' : '/customer-home'"
+        >
             Bruno Manutenções
         </a>
 
         <button
             class="navbar-toggler"
             type="button"
-            aria-controls="menuNavbar"
+            [attr.aria-controls]="ehFuncionario ? 'menuNavbarEmployee' : 'menuNavbar'"
             [attr.aria-expanded]="menuAberto"
             aria-label="Abrir menu"
             (click)="alternarMenu()"
@@ -16,8 +19,44 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="menuNavbar" [class.show]="menuAberto">
+        <div
+            class="collapse navbar-collapse"
+            [id]="ehFuncionario ? 'menuNavbarEmployee' : 'menuNavbar'"
+            [class.show]="menuAberto"
+        >
             <ul class="navbar-nav mx-auto">
+                @if(ehFuncionario) {
+                <li class="nav-item">
+                    <a
+                        class="nav-link"
+                        routerLink="/employee-home"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                        Início
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/employee-requests" routerLinkActive="active">
+                        Solicitações
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/employee-crud" routerLinkActive="active">
+                        Funcionários
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/categories" routerLinkActive="active">
+                        Equipamentos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/reports" routerLinkActive="active">
+                        Relatórios
+                    </a>
+                </li>
+                } @else {
                 <li class="nav-item">
                     <a
                         class="nav-link"
@@ -28,6 +67,7 @@
                         Início
                     </a>
                 </li>
+                }
             </ul>
 
             <div class="d-flex align-items-center gap-3">

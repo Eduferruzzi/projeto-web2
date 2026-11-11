@@ -19,6 +19,10 @@ export class Navbar {
     return this.loginService.usuarioLogado;
   }
 
+  get ehFuncionario(): boolean {
+    return this.usuarioLogado?.perfil === 'FUNCIONARIO';
+  }
+
   logout(): void {
     this.loginService.logout().subscribe({
       next: () => {

@@ -11,6 +11,7 @@ export interface SolicitacaoInput {
 }
 
 const API_URL = 'http://localhost:8080/solicitacoes';
+const AUTH_OPTIONS = { withCredentials: true };
 
 export interface SolicitacaoAPI {
   id: number;
@@ -76,7 +77,7 @@ export class SolicitacaoService {
         // RF013 - Solicitações visíveis para o funcionário
     listarVisiveis(funcionarioId: number): Observable<Solicitacao[]> {
         return this.http.get<SolicitacaoAPI[]>(
-            `${API_URL}/visiveis/${funcionarioId}`
+            `${API_URL}/visiveis/${funcionarioId}`, AUTH_OPTIONS
         ).pipe(
             map(dados => dados.map(s => this.paraSolicitacao(s)))
         );
@@ -85,7 +86,7 @@ export class SolicitacaoService {
     // Solicitações atribuídas ao funcionário
     listarAtribuidas(funcionarioId: number): Observable<Solicitacao[]> {
         return this.http.get<SolicitacaoAPI[]>(
-            `${API_URL}/atribuidas/${funcionarioId}`
+            `${API_URL}/atribuidas/${funcionarioId}`, AUTH_OPTIONS
         ).pipe(
             map(dados => dados.map(s => this.paraSolicitacao(s)))
         );
@@ -148,13 +149,17 @@ export class SolicitacaoService {
         solicitacaoId: number,
         funcionarioId: number | null,
         observacao: string | null,
-        status: EstadoSolicitacao
+        status: EstadoSolicitacao,
+        descricaoManutencao: string | null = null,
+        orientacoesCliente: string | null = null
     ): Observable<Solicitacao> {
         return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaoId}/status`, {
             funcionarioId,
             observacao,
-            status
-        }).pipe(
+            status,
+            descricaoManutencao,
+            orientacoesCliente
+        }, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
@@ -171,7 +176,11 @@ export class SolicitacaoService {
 
     // RF 012 Efetuar o orcamento 
     efetuarOrcamento(id : number, funcionarioId : number, valor : number): Observable<void> {
-        return this.http.put<void>(`${API_URL}/${id}/orcamento/${funcionarioId}`, { valorOrcamento: valor }).pipe(
+        return this.http.put<void>(
+            `${API_URL}/${id}/orcamento/${funcionarioId}`,
+            { valorOrcamento: valor },
+            AUTH_OPTIONS
+        ).pipe(
             catchError((error) => {
                 return throwError(() => error);
             })
@@ -190,7 +199,7 @@ export class SolicitacaoService {
         return this.http.put<SolicitacaoAPI>(`${API_URL}/${solicitacaId}/redirecionar`, {
             funcionarioOrigemId,
             funcionarioDestinoId
-        }).pipe(
+        }, AUTH_OPTIONS).pipe(
             map((resposta) => this.paraSolicitacao(resposta)),
             catchError((error) => {
                 return throwError(() => error);
