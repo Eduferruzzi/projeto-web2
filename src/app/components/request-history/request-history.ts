@@ -16,10 +16,7 @@ export class RequestHistory {
   }
 
   private paraTimestamp(dataHora: string): number {
-    const [data, hora = '00:00'] = dataHora.split(' ');
-    const [dia, mes, ano] = data.split('/').map(Number);
-    const [horas, minutos] = hora.split(':').map(Number);
-    return new Date(ano, mes - 1, dia, horas, minutos).getTime();
+    return new Date(dataHora).getTime();
   }
 
   descreverPasso(passo: HistoricoSolicitacao): string {
@@ -31,6 +28,9 @@ export class RequestHistory {
   }
 
   mostrarResponsavel(passo: HistoricoSolicitacao): string {
+    if (passo.estadoNovo === 'REDIRECIONADA') {
+      return `${passo.funcionarioOrigem ?? 'Não informado'} → ${passo.funcionarioDestino ?? 'Não informado'}`;
+    }
     return passo.funcionarioOrigem ?? passo.funcionarioDestino ?? 'Cliente';
   }
 }

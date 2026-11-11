@@ -22,14 +22,11 @@ export class MaintenanceRequest implements OnInit {
   descricaoEquipamento = '';
   categoria: CatEquip = new CatEquip();
   descricaoDefeito = '';
-  solicitacaoId: number = 0
   
-  solicitacaoEnviada = false;
   categorias = signal<CatEquip[]>([]);
   carregandoCategorias = signal(true);
   erroCategorias = signal('');
 
-  carregando = signal(false);
   salvando = signal(false);
   erro = signal('');
 
@@ -74,7 +71,6 @@ export class MaintenanceRequest implements OnInit {
     .subscribe(
       {
         next: (solicitacaoSalva: Solicitacao) => {
-          this.solicitacaoEnviada = true;
           formulario.resetForm();
           this.router.navigate(['/user-home'], { state: { solicitacaoId: solicitacaoSalva.id } })
         },
