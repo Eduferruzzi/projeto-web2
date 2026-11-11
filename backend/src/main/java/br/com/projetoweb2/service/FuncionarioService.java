@@ -102,10 +102,23 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public void desativar(Integer id) {
+    public void desativar(Integer id, Integer usuarioLogadoId) {
+
+        if(funcionarioRepository.findByIdAndUsuarioAtivoTrue(usuarioLogadoId).isEmpty()){
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Usuario sem permissao"
+            );
+        }
+
+        if(id.equals(usuarioLogadoId)){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Voce nao pode desativar sua propria conta"
+            );
+        }
 
         Funcionario funcionario = buscarAtivo(id);
-        funcionario.getUsuario().setAtivo(false);
 
         if(funcionarioRepository.countByUsuarioAtivoTrue() <= 1) {
             throw new ResponseStatusException(
@@ -184,4 +197,18 @@ public class FuncionarioService {
                     );
                 }
             }
-        }
+
+            @Transactional(readOnly = true)
+            public void validarFuncionarioAutenticado(Integer usuarioId) {
+
+                if (funcionarioRepository
+                        .findByIdAndUsuarioAtivoTrue(usuarioId)
+                        .isEmpty()) {
+
+                    throw new ResponseStatusException(
+                            HttpStatus.FORBIDDEN,
+                            "Acesso permitido apenas a funcionários ativos."
+                    );
+                }
+            }
+}

@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { Usuario, Login } from '../shared/models';
 import {
   clearAuthenticatedUser,
@@ -27,15 +27,18 @@ export class LoginService {
     }
   }
 
-  logout(): void {
-    clearAuthenticatedUser();
-  }
+  logout(): Observable<void> {
+    return this.http.post<void>('http://localhost:8080/logout', {}, {withCredentials: true})
+    .pipe (
+      tap(() => {clearAuthenticatedUser();})
+    );
+  };
 
   private http = inject(HttpClient);
 
   login(login: Login): Observable<Usuario | null> {
     return this.http
-      .post<Usuario>(API_URL, login, { observe: 'response' })
+      .post<Usuario>(API_URL, login, { observe: 'response', withCredentials: true })
       .pipe(
         map((resp: HttpResponse<Usuario>) => (resp.status === 200 ? resp.body : null)),
         catchError(() => of(null))
