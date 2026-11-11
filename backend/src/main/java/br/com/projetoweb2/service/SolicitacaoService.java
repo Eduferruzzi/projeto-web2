@@ -73,10 +73,7 @@ public class SolicitacaoService {
         exigirFuncionarioAtivo(funcionarioId);
 
         return solicitacaoRepository
-                .listarVisiveisFuncionario(
-                        funcionarioId,
-                        List.of(SolicitacaoStatus.ABERTA, SolicitacaoStatus.FINALIZADA)
-                )
+                .findByAtivoTrueOrderByDataHoraAberturaAsc()
                 .stream()
                 .filter(solicitacao -> podeVisualizar(solicitacao, funcionarioId))
                 .map(SolicitacaoResponseDTO::de)
@@ -108,10 +105,13 @@ public class SolicitacaoService {
     }
 
     private boolean podeVisualizar(Solicitacao solicitacao, Integer funcionarioId) {
-        return solicitacao.getStatus() == SolicitacaoStatus.ABERTA
-                || solicitacao.getStatus() == SolicitacaoStatus.FINALIZADA
-                || (solicitacao.getFuncionarioAtual() != null
-                    && funcionarioId.equals(solicitacao.getFuncionarioAtual().getId()));
+        
+        if(solicitacao.getStatus() != SolicitacaoStatus.REDIRECIONADA){
+                return true;
+        }
+
+        return solicitacao.getFuncionarioAtual() != null && funcionarioId.equals(solicitacao.getFuncionarioAtual().getId());
+
     }
 
     @Transactional
@@ -176,8 +176,8 @@ public class SolicitacaoService {
         solicitacao.registrarMudancaDeEstado(
                 SolicitacaoStatus.APROVADA,
                 LocalDateTime.now(),
-                solicitacao.getFuncionarioAtual(),
-                solicitacao.getFuncionarioAtual(),
+                null,
+                null,
                 "Orcamento aprovado pelo cliente.");
 
         return SolicitacaoResponseDTO.de(solicitacaoRepository.save(solicitacao));
@@ -301,13 +301,15 @@ public class SolicitacaoService {
         // Concluir manutenção
         if ("ARRUMADA".equals(dados.getStatus())) {
 
-            if (solicitacao.getStatus() != SolicitacaoStatus.APROVADA
-                    && solicitacao.getStatus() != SolicitacaoStatus.REDIRECIONADA) {
+            if (solicitacao.getStatus() == SolicitacaoStatus.REDIRECIONADA) {
+                Funcionario atual = solicitacao.getFuncionarioAtual();
 
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "A solicitação não está disponível para manutenção.");
-            }
+                if (atual == null || !atual.getId().equals(funcionario.getId())) {
+                        throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Somente o destinatário pode realizar esta manutenção.");
+                }
+                }
 
             Funcionario atual = solicitacao.getFuncionarioAtual();
 
@@ -338,6 +340,7 @@ public class SolicitacaoService {
             }
 
             solicitacao.setFuncionarioResponsavel(funcionario);
+            solicitacao.setFuncionarioAtual(funcionario);
             solicitacao.setDataHoraManutencao(agora);
             solicitacao.setDescricaoManutencao(dados.getDescricaoManutencao().trim());
             solicitacao.setOrientacoesCliente(dados.getOrientacoesCliente().trim());
@@ -453,13 +456,16 @@ public class SolicitacaoService {
                         "Funcionário de destino não encontrado ou inativo."));
 
         // Verificar funcionário responsável atual
+
+        if (solicitacao.getStatus() == SolicitacaoStatus.REDIRECIONADA) {
         Funcionario atual = solicitacao.getFuncionarioAtual();
 
         if (atual == null || !atual.getId().equals(origem.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Somente o funcionário responsável pode redirecionar.");
+                throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Somente o destinatário pode redirecionar esta solicitação.");
         }
+}
 
         // Atualizar destino
         solicitacao.setFuncionarioAtual(destino);
