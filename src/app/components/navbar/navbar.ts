@@ -23,7 +23,8 @@ export class Navbar {
     return this.usuarioLogado?.perfil === 'FUNCIONARIO';
   }
 
-  logout(): void {
+  logout($event: Event): void {
+    $event.preventDefault();
     this.loginService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);
