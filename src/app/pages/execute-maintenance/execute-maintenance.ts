@@ -99,7 +99,14 @@ export class ExecuteMaintenance implements OnInit {
         this.mensagemSucesso = false;
         return;
       }
-      this.solicitacaoService.alterarEstado(solicitacao.id, this.funcionarioId!, obs, status)
+      this.solicitacaoService.alterarEstado(
+        solicitacao.id,
+        this.funcionarioId!,
+        obs,
+        status,
+        descricao.trim(),
+        orientacoes.trim()
+      )
         .subscribe({
           next: () => this.router.navigate(['/employee-requests']),
           error: (error: HttpErrorResponse) => {
