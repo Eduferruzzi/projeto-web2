@@ -37,8 +37,9 @@ public class FuncionarioREST {
 
     @PostMapping
     public ResponseEntity<Funcionario> criar(
-            @RequestBody Funcionario dados) {
+            @RequestBody Funcionario dados, HttpServletRequest request) {
 
+        exigirFuncionarioAutenticado(request);
         Funcionario criado =
                 funcionarioService.criar(dados);
 
@@ -50,8 +51,9 @@ public class FuncionarioREST {
     @PutMapping("/{id}")
     public Funcionario atualizar(
             @PathVariable Integer id,
-            @RequestBody Funcionario dados) {
+            @RequestBody Funcionario dados, HttpServletRequest request) {
 
+        exigirFuncionarioAutenticado(request);
         return funcionarioService.atualizar(id, dados);
     }
 

@@ -28,6 +28,10 @@ import java.time.LocalDateTime;
 import br.com.projetoweb2.model.Funcionario;
 import br.com.projetoweb2.repository.FuncionarioRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+
 @CrossOrigin 
 @RestController
 @RequestMapping("/solicitacoes")
@@ -120,7 +124,21 @@ public class SolicitacaoREST {
 
     @PutMapping("/{id}/redirecionar")
     @Transactional
-    public ResponseEntity<SolicitacaoResponseDTO> redirecionar(@PathVariable ("id") int id, @RequestBody RedirecionamentoRequestDTO dados) {
+    public ResponseEntity<SolicitacaoResponseDTO> redirecionar(@PathVariable ("id") int id, @RequestBody RedirecionamentoRequestDTO dados, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if(session == null || !(session.getAttribute("usuarioId") instanceof Integer usuarioLogadoId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if(dados == null || dados.getFuncionarioOrigemId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if(!usuarioLogadoId.equals(dados.getFuncionarioOrigemId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(solicitacaoService.redirecionar(id, dados));
     }
 
@@ -129,7 +147,17 @@ public class SolicitacaoREST {
     public ResponseEntity<Void> registrarOrcamento(
         @PathVariable("id") Integer id,
         @PathVariable("funcionarioId") Integer funcionarioId,
-        @RequestBody Solicitacao dados) {
+        @RequestBody Solicitacao dados, HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+
+        if(session == null || !(session.getAttribute("usuarioId") instanceof Integer usuarioLogadoId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if(!usuarioLogadoId.equals(funcionarioId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         if (id == null || id <= 0
                 || funcionarioId == null || funcionarioId <= 0) {
@@ -166,7 +194,7 @@ public class SolicitacaoREST {
                 .orElse(null);
 
         if (funcionario == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         LocalDateTime agora = LocalDateTime.now();
