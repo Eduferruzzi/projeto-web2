@@ -57,4 +57,8 @@ export class CustomerHome implements OnInit{
     );
   }
 
+  verif(text: string, limite: number = 30): string {
+    return text.length > limite ? text.substring(0, limite) + '...' : text;
+  }
+
 }

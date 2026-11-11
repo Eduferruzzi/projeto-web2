@@ -35,7 +35,7 @@
                         <div class="d-flex justify-content-between gap-3">
                             <div>
                                 <p class="text-secondary small mb-1">{{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
-                                <h3 class="h5 mb-0">{{solicitacao.descricaoEquipamento}}</h3>
+                                <h3 class="h5 mb-0">{{ verif(solicitacao.descricaoEquipamento) }}</h3>
                             </div>
                             @switch (solicitacao.estado){
                                 @case ("ABERTA") {
