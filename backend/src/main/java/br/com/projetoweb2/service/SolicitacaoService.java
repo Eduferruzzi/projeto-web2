@@ -301,25 +301,27 @@ public class SolicitacaoService {
         // Concluir manutenção
         if ("ARRUMADA".equals(dados.getStatus())) {
 
-            if (solicitacao.getStatus() == SolicitacaoStatus.REDIRECIONADA) {
-                Funcionario atual = solicitacao.getFuncionarioAtual();
-
-                if (atual == null || !atual.getId().equals(funcionario.getId())) {
-                        throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Somente o destinatário pode realizar esta manutenção.");
-                }
-                }
-
-            Funcionario atual = solicitacao.getFuncionarioAtual();
-
-            if (atual == null
-                    || !atual.getId().equals(funcionario.getId())) {
+        // Somente solicitações aprovadas ou redirecionadas podem receber a manutencao
+        if (solicitacao.getStatus() != SolicitacaoStatus.APROVADA
+                && solicitacao.getStatus() != SolicitacaoStatus.REDIRECIONADA) {
 
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
-                        "A manutenção pertence a outro funcionário.");
-            }
+                        "A solicitação não está disponível para manutenção.");
+        }
+
+        // Quando redirecionada, somente o destinatário pode executar.
+        if (solicitacao.getStatus() == SolicitacaoStatus.REDIRECIONADA) {
+
+                Funcionario atual = solicitacao.getFuncionarioAtual();
+
+                if (atual == null || !atual.getId().equals(funcionario.getId())) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Somente o destinatário pode realizar esta manutenção.");
+                }
+        }
+
 
             if (dados.getObservacao() == null
                     || dados.getObservacao().isBlank()) {
