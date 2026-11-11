@@ -1,6 +1,7 @@
 
 package br.com.projetoweb2.rest;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,7 @@ public class FuncionarioREST {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desativar(
+    public ResponseEntity<?> desativar(
             @PathVariable Integer id, HttpServletRequest request) {
 
         HttpSession session = request.getSession(false);
@@ -67,7 +68,15 @@ public class FuncionarioREST {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
         }
 
-        funcionarioService.desativar(id, usuarioLogadoId);
+        try {
+            funcionarioService.desativar(id, usuarioLogadoId);
+        } catch (ResponseStatusException exception) {
+            if (exception.getStatusCode().value() == HttpStatus.CONFLICT.value()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", exception.getReason()));
+            }
+            throw exception;
+        }
 
         return ResponseEntity.noContent().build();
     }

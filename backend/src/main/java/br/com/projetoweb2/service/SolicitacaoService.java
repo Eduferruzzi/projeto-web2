@@ -38,9 +38,11 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<SolicitacaoResponseDTO> listarTodos() {
+    public List<SolicitacaoResponseDTO> listarTodos(Integer funcionarioId) {
+        exigirFuncionarioAtivo(funcionarioId);
         return solicitacaoRepository.findAll()
                 .stream()
+                .filter(solicitacao -> podeVisualizar(solicitacao, funcionarioId))
                 .map(SolicitacaoResponseDTO::de)
                 .toList();
     }
@@ -55,10 +57,12 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<SolicitacaoResponseDTO> listarAtivas() {
+    public List<SolicitacaoResponseDTO> listarAtivas(Integer funcionarioId) {
+        exigirFuncionarioAtivo(funcionarioId);
         return solicitacaoRepository
                 .findByAtivoTrueOrderByDataHoraAberturaAsc()
                 .stream()
+                .filter(solicitacao -> podeVisualizar(solicitacao, funcionarioId))
                 .map(SolicitacaoResponseDTO::de)
                 .toList();
     }
@@ -71,9 +75,10 @@ public class SolicitacaoService {
         return solicitacaoRepository
                 .listarVisiveisFuncionario(
                         funcionarioId,
-                        SolicitacaoStatus.REDIRECIONADA
+                        List.of(SolicitacaoStatus.ABERTA, SolicitacaoStatus.FINALIZADA)
                 )
                 .stream()
+                .filter(solicitacao -> podeVisualizar(solicitacao, funcionarioId))
                 .map(SolicitacaoResponseDTO::de)
                 .toList();
     }
@@ -91,11 +96,22 @@ public class SolicitacaoService {
     }
 
     @Transactional(readOnly = true)
-    public SolicitacaoResponseDTO buscarPorId(Integer id) {
-        return solicitacaoRepository.buscarComHistorico(id)
-                .map(SolicitacaoResponseDTO::de)
+    public SolicitacaoResponseDTO buscarPorId(Integer id, Integer funcionarioId) {
+        exigirFuncionarioAtivo(funcionarioId);
+        Solicitacao solicitacao = solicitacaoRepository.buscarComHistorico(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Solicitacao nao encontrada."));
+        if (!podeVisualizar(solicitacao, funcionarioId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solicitacao atribuida a outro funcionario.");
+        }
+        return SolicitacaoResponseDTO.de(solicitacao);
+    }
+
+    private boolean podeVisualizar(Solicitacao solicitacao, Integer funcionarioId) {
+        return solicitacao.getStatus() == SolicitacaoStatus.ABERTA
+                || solicitacao.getStatus() == SolicitacaoStatus.FINALIZADA
+                || (solicitacao.getFuncionarioAtual() != null
+                    && funcionarioId.equals(solicitacao.getFuncionarioAtual().getId()));
     }
 
     @Transactional
@@ -342,6 +358,12 @@ public class SolicitacaoService {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
                         "Somente solicitações pagas podem ser finalizadas.");
+            }
+
+            Funcionario atual = solicitacao.getFuncionarioAtual();
+            if (atual == null || !funcionario.getId().equals(atual.getId())) {
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN, "Somente o funcionario responsavel pode finalizar a solicitacao.");
             }
 
             solicitacao.setFuncionarioFinalizacao(funcionario);

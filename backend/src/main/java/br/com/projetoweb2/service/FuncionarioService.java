@@ -11,6 +11,8 @@ import br.com.projetoweb2.model.Funcionario;
 import br.com.projetoweb2.model.Usuario;
 import br.com.projetoweb2.repository.FuncionarioRepository;
 import br.com.projetoweb2.repository.UsuarioRepository;
+import br.com.projetoweb2.repository.SolicitacaoRepository;
+import br.com.projetoweb2.enums.SolicitacaoStatus;
 
 
 //Toda a logica estava em FuncionarioREST, mas foi movida para cá para manter o REST apenas como interface de comunicação com o front
@@ -20,14 +22,16 @@ public class FuncionarioService {
     private final FuncionarioRepository funcionarioRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordService passwordService;
+    private final SolicitacaoRepository solicitacaoRepository;
 
     public FuncionarioService(
             FuncionarioRepository funcionarioRepository,
             UsuarioRepository usuarioRepository,
-            PasswordService passwordService) {
+            PasswordService passwordService, SolicitacaoRepository solicitacaoRepository) {
         this.funcionarioRepository = funcionarioRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordService = passwordService;
+        this.solicitacaoRepository = solicitacaoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -125,6 +129,12 @@ public class FuncionarioService {
                     HttpStatus.CONFLICT,
                     "Não é possível desativar o último funcionário ativo."
             );
+        }
+
+        if (solicitacaoRepository.existsByAtivoTrueAndFuncionarioAtualIdAndStatusNot(
+                id, SolicitacaoStatus.FINALIZADA)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Ha pendencias, resolver antes de excluir");
         }
 
         funcionario.getUsuario().setAtivo(false);
